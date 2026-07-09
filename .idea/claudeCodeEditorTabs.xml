@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ClaudeCodeEditorTabs">
-    <option name="activeSessionId" value="783f6b1c-57c5-4dff-9f8f-54643d5e0ef4" />
+    <option name="activeSessionId" value="31415348-3e34-4ad5-8075-1282ccecf6ca" />
     <option name="openSessionIds">
       <list>
         <option value="783f6b1c-57c5-4dff-9f8f-54643d5e0ef4" />
+        <option value="31415348-3e34-4ad5-8075-1282ccecf6ca" />
       </list>
     </option>
     <option name="sessionPaths">
       <map>
+        <entry key="31415348-3e34-4ad5-8075-1282ccecf6ca" value="/sessions/75e3b89c-2f22-4d18-9828-5b09313e1644" />
         <entry key="783f6b1c-57c5-4dff-9f8f-54643d5e0ef4" value="/switch-account" />
       </map>
     </option>
     <option name="sessionTitles">
       <map>
+        <entry key="31415348-3e34-4ad5-8075-1282ccecf6ca" value="# Project Spec: Did the Press See It Coming? Predi" />
         <entry key="783f6b1c-57c5-4dff-9f8f-54643d5e0ef4" value="What should I do to start downloading the data @RE" />
       </map>
     </option>
