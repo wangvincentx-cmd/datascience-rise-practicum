@@ -1,0 +1,3 @@
+speaker_name,publisher,state,date,episode,quote,predicted_label,realized_label,confidence,hit
+Charles Ranlett Flint,test paper a,ohio,1907-10-25,1907 Panic,I can see no reason to believe there will be a panic in the future.,improve,improve,assertive,1.0
+Secretary Mellon,test paper b,new york,1930-01-15,1929 Crash,Business will be normal again by spring and prosperity will return.,improve,worsen,assertive,0.0

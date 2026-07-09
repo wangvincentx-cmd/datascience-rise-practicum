@@ -1,0 +1,33 @@
+episode,term,start,end,total_hits,pages_taken
+1907 Panic,financial panic,1907-10-01,1908-06-30,2908,30
+1907 Panic,business outlook,1907-10-01,1908-06-30,433,30
+1907 Panic,return of prosperity,1907-10-01,1908-06-30,339,30
+1920 Depression,business depression,1920-06-01,1921-03-31,1563,30
+1920 Depression,business outlook,1920-06-01,1921-03-31,640,30
+1920 Depression,return of prosperity,1920-06-01,1921-03-31,177,30
+1929 Crash,business outlook,1929-11-01,1930-12-31,310,30
+1929 Crash,return of prosperity,1929-11-01,1930-12-31,208,30
+1929 Crash,business revival,1929-11-01,1930-12-31,181,30
+1929 Crash,business depression,1929-11-01,1930-12-31,1823,30
+1937 Recession,business recession,1937-09-01,1938-03-31,959,30
+1937 Recession,business outlook,1937-09-01,1938-03-31,94,30
+1937 Recession,business revival,1937-09-01,1938-03-31,33,30
+1945 Reconversion,postwar depression,1945-08-01,1946-06-30,33,30
+1945 Reconversion,business outlook,1945-08-01,1946-06-30,32,30
+1945 Reconversion,unemployment will,1945-08-01,1946-06-30,4005,30
+1945 Reconversion,reconversion,1945-08-01,1946-06-30,6214,30
+1948 Recession,business outlook,1948-07-01,1949-06-30,42,30
+1948 Recession,recession,1948-07-01,1949-06-30,412,30
+1948 Recession,business slump,1948-07-01,1949-06-30,14,14
+1957 Recession,recession,1957-08-01,1958-06-30,2119,30
+1957 Recession,business outlook,1957-08-01,1958-06-30,40,30
+1957 Recession,recovery will,1957-08-01,1958-06-30,2477,30
+1905 Calm (control),financial panic,1905-06-01,1906-05-31,329,30
+1905 Calm (control),business outlook,1905-06-01,1906-05-31,234,30
+1905 Calm (control),return of prosperity,1905-06-01,1906-05-31,25,25
+1925 Calm (control),business depression,1925-06-01,1926-05-31,196,30
+1925 Calm (control),business outlook,1925-06-01,1926-05-31,267,30
+1925 Calm (control),return of prosperity,1925-06-01,1926-05-31,45,30
+1955 Calm (control),recession,1955-06-01,1956-05-31,214,30
+1955 Calm (control),business outlook,1955-06-01,1956-05-31,34,30
+1955 Calm (control),business slump,1955-06-01,1956-05-31,7,7

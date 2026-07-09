@@ -1,0 +1,11 @@
+episode,n,hit_rate,brier,share_predicting_improve
+1905 Calm (control),24,0.417,0.323,0.417
+1907 Panic,37,0.649,0.231,0.649
+1920 Depression,57,0.474,0.301,0.544
+1925 Calm (control),37,0.486,0.295,0.486
+1929 Crash,53,0.245,0.392,0.755
+1937 Recession,40,0.55,0.27,0.7
+1945 Reconversion,60,0.433,0.317,0.167
+1948 Recession,26,0.308,0.367,0.5
+1955 Calm (control),18,0.5,0.29,0.5
+1957 Recession,51,0.647,0.231,0.686

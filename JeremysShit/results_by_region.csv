@@ -1,0 +1,5 @@
+region,n,hit_rate
+midwest,103,0.437
+northeast,27,0.667
+south,207,0.459
+west,61,0.492
