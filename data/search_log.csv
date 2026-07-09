@@ -1,0 +1,6 @@
+timestamp,source,arm,window,phrase,total_hits,pages_fetched
+2026-07-09T15:12:23,loc,elections,1948,will be elected,2,1
+2026-07-09T15:18:01,loc,elections,1948,will be elected,2,1
+2026-07-09T15:18:58,loc,elections,1948,will be elected,2,1
+2026-07-09T15:18:58,nyt,economy,gfc_2008,"""recession likely""",2,1
+2026-07-09T15:30:20,loc,elections,1948,will be elected,3420,2
