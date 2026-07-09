@@ -1,0 +1,5 @@
+publisher,n,hit_rate,brier
+"the milwaukee leader (milwaukee, wis.) 1911-1938",10,0.6,0.25
+"evening star (washington, d.c.) 1854-1972",77,0.519,0.282
+the washington times (washington [d.c.]) 1902-1939,40,0.375,0.34
+"toledo union journal (toledo, ohio) 1942-current",10,0.2,0.41
