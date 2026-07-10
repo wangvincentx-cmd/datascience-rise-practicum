@@ -25,8 +25,12 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 export CONGRESS_API_KEY=your_key      # https://api.congress.gov/sign-up (or DEMO_KEY, ~40 req/hr)
 export NYT_API_KEY=your_key           # https://developer.nytimes.com/, enable Article Search API
-export DEEPSEEK_API_KEY=your_key      # https://platform.deepseek.com/
+export GEMINI_API_KEY=your_key        # https://aistudio.google.com/apikey (free tier)
 ```
+
+`link_coverage.py` and `extract_press.py` also auto-load a `bill_arm/.env` file
+(via `python-dotenv`) if present, as an alternative to `export`. `.env` is
+git-ignored -- never commit it.
 
 Run `python test_offline.py` first. It runs the real parsing, aggregation,
 and modeling functions against mocked API responses -- no network or API
@@ -37,7 +41,8 @@ keys needed. It must pass before spending any API budget.
 ```
 download_bills_bulk.py  govinfo BILLSTATUS bulk ingester -> data/bills/{congress}.jsonl  (preferred)
 download_bills.py    Congress.gov API ingester     -> data/bills/{congress}.jsonl  (spot-checks, bill text)
-build_features.py    structural feature table      -> data/features.csv
+build_macro_features.py  FRED macro indicators (no key) -> data/macro_daily.csv
+build_features.py    structural feature table      -> data/features.csv  (joins macro_daily.csv if present)
 model.py              Model 1 (and Model 2, see below), split by Congress, metrics
 link_coverage.py      NYT search per bill           -> data/press_raw/{congress}.jsonl
 extract_press.py      LLM article-match + prediction -> data/press_labeled/{congress}.jsonl
@@ -50,9 +55,10 @@ data/majority_by_congress.csv   per-Congress chamber majorities (hardcoded, 108t
 
 Build in stages, cheapest and most certain first:
 
-1. `download_bills.py` -> `build_features.py` -> `model.py` (Model 1). Get an
-   honest structural baseline with imbalance-aware metrics before touching
-   the press pipeline.
+1. `download_bills.py` -> `build_macro_features.py` -> `build_features.py` ->
+   `model.py` (Model 1). Get an honest structural baseline (now including
+   the macroeconomic climate at introduction) with imbalance-aware metrics
+   before touching the press pipeline.
 2. `link_coverage.py` -> `extract_press.py` -> `coverage_report.py`. Stop at
    the decision gate and read the covered-subset size before spending more
    budget. If it's under ~300 covered bills with a non-neutral prediction,
@@ -79,6 +85,7 @@ Example commands, smallest first:
 python download_bills_bulk.py --congress 118 --bill-types sjres   # tiny test
 python download_bills_bulk.py --congress 108 ... --congress 118    # full corpus
 python download_bills.py --congress 118 --limit 25                 # API spot-check
+python build_macro_features.py                                     # once; covers 2002-2025
 python build_features.py --congress 118
 python model.py --features data/features.csv --test-congresses 118
 
@@ -120,6 +127,13 @@ anything dated after introduction are forbidden. Press coverage is windowed
 to `[introduced_date - 7 days, introduced_date + 180 days]` (capped at the
 bill's final action if that came sooner) for the same reason.
 
+Macroeconomic indicators (`build_macro_features.py`) are joined by
+introduced_date but must respect the same rule: government statistics are
+revised and released with a lag after the period they describe, so each
+FRED series is shifted forward by its typical publication lag before the
+join -- see the script's docstring for the per-series lag and the USREC
+(NBER recession) caveat specifically.
+
 ## Known limits
 
 1. The NYT Article Search API returns headline, abstract, lead paragraph,
@@ -137,6 +151,11 @@ bill's final action if that came sooner) for the same reason.
    (Model 2, research questions 2-3) is the novel piece.
 5. `sponsor_is_committee_chair` is not implemented (no committee-leadership
    data source wired up) and is always null in the feature table.
+6. `recession_flag` (NBER, via FRED's USREC) is announced 6-21 months after
+   the fact historically, not in real time. It's included as a coarse,
+   backward-looking macro signal, not something a real-time predictor could
+   have used at introduction -- disclose this if it shows up as an important
+   feature.
 
 ## Prior art
 

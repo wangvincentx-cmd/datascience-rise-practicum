@@ -290,7 +290,7 @@ with tempfile.TemporaryDirectory() as d:
           (118, "hr", "815", "veterans health") in searched)
 
 # ---------------------------------------------------------------------------
-print("\n[8] extract_press.py: LLM extraction with a fake DeepSeek client")
+print("\n[8] extract_press.py: LLM extraction with a fake LLM client")
 
 
 class FakeMessage:
@@ -308,22 +308,13 @@ class FakeCompletionResponse:
         self.choices = [FakeChoice(content)]
 
 
-class FakeCompletions:
+class FakeLLMClient:
+    """Stands in for extract_press.LLMPool -- exposes .create() directly."""
     def __init__(self, text):
         self._text = text
 
     def create(self, **kw):
         return FakeCompletionResponse(self._text)
-
-
-class FakeChat:
-    def __init__(self, text):
-        self.completions = FakeCompletions(text)
-
-
-class FakeDeepSeekClient:
-    def __init__(self, text):
-        self.chat = FakeChat(text)
 
 
 ep_bill = {"congress": 118, "bill_type": "hr", "number": "815",
@@ -335,28 +326,28 @@ ep_article = {"headline": "Veterans Health Bill Set to Pass", "pub_date": "2023-
              "snippet_text": "The bill is expected to become law by summer."}
 
 match_reply = ('{"about_this_bill": true, "prediction": "pass", "confidence": "firm"}')
-result = extract_press.extract_from_article(FakeDeepSeekClient(match_reply), ep_bill, ep_article)
+result = extract_press.extract_from_article(FakeLLMClient(match_reply), ep_bill, ep_article)
 check("extract_from_article parses a clean match",
       result == {"about_this_bill": True, "prediction": "pass", "confidence": "firm"})
 
 fenced_reply = ('```json\n{"about_this_bill": false, "prediction": null, '
                '"confidence": null}\n```')
-result2 = extract_press.extract_from_article(FakeDeepSeekClient(fenced_reply), ep_bill, ep_article)
+result2 = extract_press.extract_from_article(FakeLLMClient(fenced_reply), ep_bill, ep_article)
 check("extract_from_article strips markdown fences",
       result2 == {"about_this_bill": False, "prediction": None, "confidence": None})
 
 bad_reply = ('{"about_this_bill": true, "prediction": "definitely-yes", "confidence": "firm"}')
-result3 = extract_press.extract_from_article(FakeDeepSeekClient(bad_reply), ep_bill, ep_article)
+result3 = extract_press.extract_from_article(FakeLLMClient(bad_reply), ep_bill, ep_article)
 check("extract_from_article rejects an out-of-schema prediction value",
       result3["prediction"] is None)
 
-malformed = extract_press.extract_from_article(FakeDeepSeekClient("not json"), ep_bill, ep_article)
+malformed = extract_press.extract_from_article(FakeLLMClient("not json"), ep_bill, ep_article)
 check("extract_from_article returns None for a malformed reply", malformed is None)
 
 # note: if the LLM incorrectly says about_this_bill=false but still fills in a
 # prediction, extract_from_article must not leak it through as a signal.
 leaky_reply = ('{"about_this_bill": false, "prediction": "pass", "confidence": "firm"}')
-result4 = extract_press.extract_from_article(FakeDeepSeekClient(leaky_reply), ep_bill, ep_article)
+result4 = extract_press.extract_from_article(FakeLLMClient(leaky_reply), ep_bill, ep_article)
 check("extract_from_article nulls out prediction/confidence when about_this_bill is false",
       result4["prediction"] is None and result4["confidence"] is None)
 

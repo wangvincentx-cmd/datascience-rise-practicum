@@ -34,12 +34,16 @@ Usage:
 import argparse
 import csv
 import json
+import os
 import re
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
 import requests
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE = "https://api.nytimes.com/svc/search/v2/articlesearch.json"
 REQUEST_DELAY = 12.0
@@ -244,7 +248,6 @@ def main():
                     help="also search sponsor-last-name + policy-area (noisy, more API calls)")
     args = ap.parse_args()
 
-    import os
     api_key = os.environ.get("NYT_API_KEY")
     if not api_key:
         raise SystemExit("Set NYT_API_KEY first. Free key at https://developer.nytimes.com/")
