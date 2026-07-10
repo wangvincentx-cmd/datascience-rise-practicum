@@ -1,9 +1,11 @@
 .venv/
 __pycache__/
+.env
 data/bills/
 data/press_raw/
 data/press_labeled/
 data/features.csv
+data/macro_daily.csv
 data/modeling.csv
 data/press_features_*.csv
 data/press_search_log.csv

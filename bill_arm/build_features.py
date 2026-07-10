@@ -7,7 +7,15 @@ download_bills.py is later-dated, so no extra leakage filtering is needed at
 this stage, but sponsor_is_committee_chair is left unset (no committee
 leadership data source wired up; documented as a known gap, not fabricated).
 
+Macroeconomic climate columns (unemployment_rate, recession_flag,
+gdp_growth_yoy, cpi_inflation_yoy, consumer_sentiment, initial_claims) are
+joined in from data/macro_daily.csv (see build_macro_features.py), which is
+already lag-adjusted to what was publicly known as of each calendar day --
+so the join here is a plain lookup by introduced_date, no leakage handling
+needed at this stage.
+
 Input:  data/bills/{congress}.jsonl (one or more files)
+        data/macro_daily.csv (optional; run build_macro_features.py first)
 Output: data/features.csv
 
 Usage:
@@ -94,7 +102,17 @@ def row_from_record(rec, majority_table):
     }
 
 
-def build_features(bill_files, majority_table_path="data/majority_by_congress.csv"):
+def add_macro_features(df, macro_csv="data/macro_daily.csv"):
+    if not Path(macro_csv).exists():
+        return df
+    macro = pd.read_csv(macro_csv, parse_dates=["date"])
+    df = df.assign(_intro_date=pd.to_datetime(df["introduced_date"]))
+    df = df.merge(macro, left_on="_intro_date", right_on="date", how="left")
+    return df.drop(columns=["date", "_intro_date"])
+
+
+def build_features(bill_files, majority_table_path="data/majority_by_congress.csv",
+                   macro_csv="data/macro_daily.csv"):
     majority_table = load_majority_table(majority_table_path)
     rows = []
     for path in bill_files:
@@ -105,7 +123,8 @@ def build_features(bill_files, majority_table_path="data/majority_by_congress.cs
                     continue
                 rec = json.loads(line)
                 rows.append(row_from_record(rec, majority_table))
-    return pd.DataFrame(rows)
+    df = pd.DataFrame(rows)
+    return add_macro_features(df, macro_csv)
 
 
 def main():
@@ -114,6 +133,8 @@ def main():
                     help="repeatable; defaults to all data/bills/*.jsonl")
     ap.add_argument("--bills-dir", default="data/bills")
     ap.add_argument("--majority-table", default="data/majority_by_congress.csv")
+    ap.add_argument("--macro-csv", default="data/macro_daily.csv",
+                    help="from build_macro_features.py; skipped if missing")
     ap.add_argument("--out", default="data/features.csv")
     args = ap.parse_args()
 
@@ -128,7 +149,7 @@ def main():
         if not files:
             raise SystemExit(f"No .jsonl files in {bills_dir}. Run download_bills.py first.")
 
-    df = build_features(files, args.majority_table)
+    df = build_features(files, args.majority_table, args.macro_csv)
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(args.out, index=False)
 

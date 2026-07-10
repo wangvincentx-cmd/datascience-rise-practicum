@@ -5,9 +5,15 @@ bill-level press features (Section 8).
 
 Repoints the reused LLM structured-extraction pattern (see JeremysShit/
 election_arm/extract_predictions.py: one call per item, fixed JSON schema,
-fence stripping, malformed-reply handling) to DeepSeek via its OpenAI-
-compatible API, and to the article-about-this-bill + passage-prediction
-schema instead of the elections/economy claim schema.
+fence stripping, malformed-reply handling) to a rotating pool of free-tier
+OpenAI-compatible providers (Groq, Mistral, OpenRouter, Gemini), and to the
+article-about-this-bill + passage-prediction schema instead of the
+elections/economy claim schema.
+
+Free tiers cap daily/per-minute request volume per provider. LLMPool tries
+providers in order and sticks with whichever one is currently working,
+advancing to the next on a rate-limit error instead of failing the run --
+see LLMPool below. No paid tier is used.
 
 Design: article-match and passage-prediction are decided in ONE call per
 article, same rationale as the reused pattern -- a separate matching pass
@@ -19,7 +25,11 @@ Input:  data/press_raw/{congress}.jsonl   (from link_coverage.py)
 Output: data/press_labeled/{congress}.jsonl   (per-article classification)
         data/press_features_{congress}.csv    (bill-level aggregated features)
 
-Requires: pip install openai ; export DEEPSEEK_API_KEY=...
+Requires: pip install openai python-dotenv ; set at least one of
+          GROQ_API_KEY (https://console.groq.com/keys),
+          MISTRAL_API_KEY (https://console.mistral.ai/api-keys),
+          OPENROUTER_API_KEY (https://openrouter.ai/keys),
+          GEMINI_API_KEY (https://aistudio.google.com/apikey)
 
 Usage:
   python extract_press.py --congress 118 --limit 20
@@ -29,16 +39,57 @@ Usage:
 import argparse
 import json
 import os
+import time
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
-from openai import OpenAI
+from dotenv import load_dotenv
+from openai import OpenAI, RateLimitError
 
-MODEL = "deepseek-chat"
-DEEPSEEK_BASE_URL = "https://api.deepseek.com"
+load_dotenv()
+
+# (name, env var, base_url, model) -- tried in this order, free tier only.
+PROVIDERS = [
+    ("groq", "GROQ_API_KEY", "https://api.groq.com/openai/v1", "llama-3.3-70b-versatile"),
+    ("mistral", "MISTRAL_API_KEY", "https://api.mistral.ai/v1", "mistral-small-latest"),
+    ("openrouter", "OPENROUTER_API_KEY", "https://openrouter.ai/api/v1",
+     "meta-llama/llama-3.3-70b-instruct:free"),
+    ("gemini", "GEMINI_API_KEY", "https://generativelanguage.googleapis.com/v1beta/openai/",
+     "gemini-flash-latest"),
+]
 MAX_ARTICLE_CHARS = 4000
+
+
+class LLMPool:
+    """Rotates across free-tier providers, sticking with whichever one last
+    worked and advancing past rate-limited ones instead of raising."""
+
+    def __init__(self, providers=PROVIDERS):
+        self.providers = []
+        for name, env_var, base_url, model in providers:
+            key = os.environ.get(env_var)
+            if key:
+                self.providers.append(
+                    (name, OpenAI(api_key=key, base_url=base_url), model))
+        if not self.providers:
+            raise SystemExit("No provider API keys set. Need at least one of: "
+                             + ", ".join(p[1] for p in providers))
+        self.idx = 0
+
+    def create(self, **kwargs):
+        n = len(self.providers)
+        for attempt in range(n):
+            name, client, model = self.providers[self.idx]
+            try:
+                return client.chat.completions.create(model=model, **kwargs)
+            except RateLimitError:
+                print(f"  {name} rate-limited, switching provider")
+                self.idx = (self.idx + 1) % n
+        print(f"  all {n} providers rate-limited, sleeping 60s")
+        time.sleep(60)
+        return self.create(**kwargs)
 
 PROMPT = """You are given metadata about a specific U.S. Congressional bill and the text
 of a candidate newspaper article that MIGHT be about that bill. The article
@@ -81,14 +132,14 @@ def bill_context_str(bill):
            f"Introduced date: {bill.get('introduced_date')}\n")
 
 
-def extract_from_article(client, bill, article, model=MODEL):
+def extract_from_article(pool, bill, article):
     context = bill_context_str(bill)
     article_text = (f"Headline: {article.get('headline')}\n"
                     f"Date: {article.get('pub_date')}\n"
                     f"Section: {article.get('section')}\n"
                     f"Text:\n{(article.get('snippet_text') or '')[:MAX_ARTICLE_CHARS]}")
-    resp = client.chat.completions.create(
-        model=model, temperature=0, max_tokens=300,
+    resp = pool.create(
+        temperature=0, max_tokens=300,
         messages=[{"role": "system", "content": PROMPT},
                  {"role": "user", "content": f"BILL:\n{context}\nARTICLE:\n{article_text}"}],
     )
@@ -133,7 +184,7 @@ def load_done_keys(out_path):
     return done
 
 
-def label_articles(client, candidates, bills_by_key, out_path, limit=None):
+def label_articles(pool, candidates, bills_by_key, out_path, limit=None):
     done = load_done_keys(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     processed = 0
@@ -145,7 +196,7 @@ def label_articles(client, candidates, bills_by_key, out_path, limit=None):
             bill = bills_by_key.get((c["bill_type"], c["number"]))
             if bill is None:
                 continue
-            result = extract_from_article(client, bill, c)
+            result = extract_from_article(pool, bill, c)
             record = dict(c)
             if result is None:
                 record.update({"about_this_bill": False, "prediction": None,
@@ -224,9 +275,8 @@ def main():
                     help="cap number of NEW articles labeled, for testing")
     args = ap.parse_args()
 
-    api_key = os.environ.get("DEEPSEEK_API_KEY")
-    if not api_key:
-        raise SystemExit("Set DEEPSEEK_API_KEY first.")
+    pool = LLMPool()
+    print(f"providers available: {', '.join(name for name, _, _ in pool.providers)}")
 
     raw_path = Path(args.press_raw_dir) / f"{args.congress}.jsonl"
     bills_path = Path(args.bills_dir) / f"{args.congress}.jsonl"
@@ -239,9 +289,8 @@ def main():
     bills = load_jsonl(bills_path)
     bills_by_key = {(b["bill_type"], b["number"]): b for b in bills}
 
-    client = OpenAI(api_key=api_key, base_url=DEEPSEEK_BASE_URL)
     labeled_path = Path(args.labeled_dir) / f"{args.congress}.jsonl"
-    label_articles(client, candidates, bills_by_key, labeled_path, args.limit)
+    label_articles(pool, candidates, bills_by_key, labeled_path, args.limit)
 
     labeled_records = load_jsonl(labeled_path)
     features = aggregate_bill_features(labeled_records, bills)
