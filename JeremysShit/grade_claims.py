@@ -66,12 +66,28 @@ def call_llm(prompt, model, base_url, api_key, max_retries=3):
     }).encode()
     req = urllib.request.Request(
         base_url.rstrip("/") + "/chat/completions", data=body,
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"})
+        # Groq (and other Cloudflare-fronted providers) 403 the default
+        # Python-urllib User-Agent; a browser-like UA is required.
+        headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0",
+                 "Authorization": f"Bearer {api_key}"})
     for attempt in range(max_retries):
         try:
             with urllib.request.urlopen(req, timeout=120) as resp:
                 out = json.load(resp)
             return json.loads(out["choices"][0]["message"]["content"])
+        except urllib.error.HTTPError as e:
+            # 429 = rate limit. Honor the provider's Retry-After (Groq sends it)
+            # and don't spend the failure budget on it — free tiers throttle,
+            # they don't fail, so keep waiting rather than dropping the claim.
+            if e.code == 429:
+                wait = int(e.headers.get("Retry-After", 15)) + 1
+                print(f"    rate limited, sleeping {wait}s")
+                time.sleep(wait)
+                continue
+            if attempt == max_retries - 1:
+                raise
+            print(f"    retry after error: {e}")
+            time.sleep(5 * (attempt + 1))
         except Exception as e:
             if attempt == max_retries - 1:
                 raise
@@ -87,14 +103,33 @@ def grade(args):
         claims = list(csv.DictReader(f))
     if args.limit:
         claims = claims[: args.limit]
-    print(f"Grading {len(claims)} claims with {args.model} at {args.base_url}")
 
     out_fields = list(claims[0].keys()) + GRADE_FIELDS
-    graded = []
+
+    # Resume-safety: reuse claims already graded in a prior run (is_prediction
+    # filled), regrade only the missing/failed ones. Free-tier rate limits and
+    # daily request caps mean a full 1,300-claim run spans several sessions;
+    # this makes each rerun cheap and picks up stragglers left by rate limiting.
+    done = {}
+    if os.path.exists(args.out):
+        with open(args.out, encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                if r.get("is_prediction", "").strip():
+                    done[r["claim_id"]] = r
+        print(f"Resuming: {len(done)} claims already graded in {args.out}")
+
+    todo = [c for c in claims if c["claim_id"] not in done]
+    print(f"Grading {len(todo)} claims with {args.model} at {args.base_url} "
+          f"({len(claims) - len(todo)} already done)")
+
+    graded = list(done.values())
     with open(args.out, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=out_fields)
         writer.writeheader()
-        for i, row in enumerate(claims, 1):
+        for r in done.values():                       # preserve prior grades
+            writer.writerow({k: r.get(k, "") for k in out_fields})
+        f.flush()
+        for i, row in enumerate(todo, 1):
             prompt = RUBRIC_PROMPT.format(date=row["date"], episode=row["episode"],
                                           quote=row["quote"])
             try:
@@ -105,9 +140,10 @@ def grade(args):
             for k in GRADE_FIELDS:
                 row[k] = str(g.get(k, ""))
             writer.writerow(row)
-            graded.append(row)
+            if g:                                      # only count real grades
+                graded.append(row)
             if i % 25 == 0:
-                print(f"  {i}/{len(claims)} graded")
+                print(f"  {i}/{len(todo)} graded ({len(graded)} total)")
                 f.flush()
     n_pred = sum(1 for r in graded if r["is_prediction"] == "yes")
     print(f"\nDone: {len(graded)} graded -> {args.out}  ({n_pred} judged real predictions)")
@@ -116,7 +152,8 @@ def grade(args):
     # since those are the ones that reach the scoring stage).
     preds = [r for r in graded if r["is_prediction"] == "yes"]
     random.seed(42)
-    sample = random.sample(preds, max(5, int(len(preds) * args.sample_frac))) if preds else []
+    n_sample = min(len(preds), max(5, int(len(preds) * args.sample_frac)))
+    sample = random.sample(preds, n_sample) if preds else []
     with open("validation_sample.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=out_fields + [f"human_{k}" for k in GRADE_FIELDS])
         w.writeheader()

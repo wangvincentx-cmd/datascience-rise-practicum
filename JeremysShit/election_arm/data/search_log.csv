@@ -235,3 +235,131 @@ timestamp,source,arm,window,phrase,total_hits,pages_fetched
 2026-07-09T22:24:28,nyt,elections,2008,"""predicted""",0,1
 2026-07-09T22:24:41,nyt,elections,2008,"""seen winning""",0,1
 2026-07-09T22:24:53,nyt,elections,2008,"""is likely to win""",0,1
+2026-07-10T10:19:47,nyt,economy,calm_1905,"""recession is coming""",0,1
+2026-07-10T10:20:00,nyt,economy,calm_1905,"""recession likely""",0,1
+2026-07-10T10:20:12,nyt,economy,calm_1905,"""recovery expected""",0,1
+2026-07-10T10:20:25,nyt,economy,calm_1905,"""economy will improve""",0,1
+2026-07-10T10:20:37,nyt,economy,calm_1905,"""downturn ahead""",0,1
+2026-07-10T10:20:50,nyt,economy,calm_1905,"""worst is over""",0,1
+2026-07-10T10:21:03,nyt,economy,calm_1905,"""depression is coming""",0,1
+2026-07-10T10:21:15,nyt,economy,calm_1905,"""prosperity will return""",0,1
+2026-07-10T10:21:28,nyt,economy,calm_1905,"""hard times ahead""",0,1
+2026-07-10T10:21:41,nyt,economy,calm_1925,"""recession is coming""",0,1
+2026-07-10T10:21:54,nyt,economy,calm_1925,"""recession likely""",0,1
+2026-07-10T10:22:06,nyt,economy,calm_1925,"""recovery expected""",0,1
+2026-07-10T10:22:19,nyt,economy,calm_1925,"""economy will improve""",0,1
+2026-07-10T10:22:31,nyt,economy,calm_1925,"""downturn ahead""",0,1
+2026-07-10T10:22:44,nyt,economy,calm_1925,"""worst is over""",0,1
+2026-07-10T10:22:56,nyt,economy,calm_1925,"""depression is coming""",0,1
+2026-07-10T10:23:09,nyt,economy,calm_1925,"""prosperity will return""",0,1
+2026-07-10T10:23:21,nyt,economy,calm_1925,"""hard times ahead""",0,1
+2026-07-10T10:23:34,nyt,economy,calm_1955,"""recession is coming""",0,1
+2026-07-10T10:23:47,nyt,economy,calm_1955,"""recession likely""",0,1
+2026-07-10T10:23:50,loc,elections,1948,will be elected,3420,2
+2026-07-10T10:23:59,nyt,economy,calm_1955,"""recovery expected""",0,1
+2026-07-10T10:24:12,nyt,economy,calm_1955,"""economy will improve""",0,1
+2026-07-10T10:24:24,nyt,economy,calm_1955,"""downturn ahead""",0,1
+2026-07-10T10:24:37,nyt,economy,calm_1955,"""worst is over""",0,1
+2026-07-10T10:24:49,nyt,economy,calm_1955,"""depression is coming""",0,1
+2026-07-10T10:25:02,nyt,economy,calm_1955,"""prosperity will return""",0,1
+2026-07-10T10:25:15,nyt,economy,calm_1955,"""hard times ahead""",0,1
+2026-07-10T10:25:27,nyt,economy,calm_1965,"""recession is coming""",0,1
+2026-07-10T10:25:40,nyt,economy,calm_1965,"""recession likely""",0,1
+2026-07-10T10:25:53,nyt,economy,calm_1965,"""recovery expected""",0,1
+2026-07-10T10:26:05,nyt,economy,calm_1965,"""economy will improve""",0,1
+2026-07-10T10:26:18,nyt,economy,calm_1965,"""downturn ahead""",0,1
+2026-07-10T10:26:30,nyt,economy,calm_1965,"""worst is over""",0,1
+2026-07-10T10:26:43,nyt,economy,calm_1965,"""depression is coming""",0,1
+2026-07-10T10:26:55,nyt,economy,calm_1965,"""prosperity will return""",0,1
+2026-07-10T10:27:08,nyt,economy,calm_1965,"""hard times ahead""",0,1
+2026-07-10T10:27:21,nyt,economy,calm_1995,"""recession is coming""",0,1
+2026-07-10T10:27:34,nyt,economy,calm_1995,"""recession likely""",0,1
+2026-07-10T10:27:46,nyt,economy,calm_1995,"""recovery expected""",0,1
+2026-07-10T10:27:59,nyt,economy,calm_1995,"""economy will improve""",0,1
+2026-07-10T10:28:11,nyt,economy,calm_1995,"""downturn ahead""",0,1
+2026-07-10T10:28:24,nyt,economy,calm_1995,"""worst is over""",0,1
+2026-07-10T10:28:36,nyt,economy,calm_1995,"""depression is coming""",0,1
+2026-07-10T10:28:49,nyt,economy,calm_1995,"""prosperity will return""",0,1
+2026-07-10T10:29:01,nyt,economy,calm_1995,"""hard times ahead""",0,1
+2026-07-10T10:29:14,nyt,economy,calm_2005,"""recession is coming""",0,1
+2026-07-10T10:29:26,nyt,economy,calm_2005,"""recession likely""",0,1
+2026-07-10T10:29:39,nyt,economy,calm_2005,"""recovery expected""",0,1
+2026-07-10T10:29:52,nyt,economy,calm_2005,"""economy will improve""",0,1
+2026-07-10T10:30:04,nyt,economy,calm_2005,"""downturn ahead""",0,1
+2026-07-10T10:30:17,nyt,economy,calm_2005,"""worst is over""",0,1
+2026-07-10T10:30:29,nyt,economy,calm_2005,"""depression is coming""",0,1
+2026-07-10T10:30:42,nyt,economy,calm_2005,"""prosperity will return""",0,1
+2026-07-10T10:30:54,nyt,economy,calm_2005,"""hard times ahead""",0,1
+2026-07-10T10:31:07,nyt,economy,crash_1929,"""recession is coming""",0,1
+2026-07-10T10:31:11,loc,elections,1948,will carry the state,70,1
+2026-07-10T10:31:19,nyt,economy,crash_1929,"""recession likely""",0,1
+2026-07-10T10:31:32,nyt,economy,crash_1929,"""recovery expected""",0,1
+2026-07-10T10:31:44,loc,elections,1948,certain of election,2,1
+2026-07-10T10:31:45,nyt,economy,crash_1929,"""economy will improve""",0,1
+2026-07-10T10:31:57,nyt,economy,crash_1929,"""downturn ahead""",0,1
+2026-07-10T10:32:10,nyt,economy,crash_1929,"""worst is over""",0,1
+2026-07-10T10:32:23,nyt,economy,crash_1929,"""depression is coming""",0,1
+2026-07-10T10:32:30,loc,elections,1948,predicted victory,10,1
+2026-07-10T10:32:36,nyt,economy,crash_1929,"""prosperity will return""",0,1
+2026-07-10T10:32:48,nyt,economy,crash_1929,"""hard times ahead""",0,1
+2026-07-10T10:33:01,nyt,economy,crash_1987,"""recession is coming""",0,1
+2026-07-10T10:33:13,nyt,economy,crash_1987,"""recession likely""",0,1
+2026-07-10T10:33:26,nyt,economy,crash_1987,"""recovery expected""",0,1
+2026-07-10T10:33:38,nyt,economy,crash_1987,"""economy will improve""",0,1
+2026-07-10T10:33:51,nyt,economy,crash_1987,"""downturn ahead""",0,1
+2026-07-10T10:33:54,loc,elections,1948,straw vote,13,1
+2026-07-10T10:34:04,nyt,economy,crash_1987,"""worst is over""",0,1
+2026-07-10T10:34:15,loc,elections,1948,betting odds election,0,1
+2026-07-10T10:34:16,nyt,economy,crash_1987,"""depression is coming""",0,1
+2026-07-10T10:34:28,loc,elections,1948,landslide election,0,1
+2026-07-10T10:34:29,nyt,economy,crash_1987,"""prosperity will return""",0,1
+2026-07-10T10:34:41,nyt,economy,crash_1987,"""hard times ahead""",0,1
+2026-07-10T10:34:54,nyt,economy,depression_1920,"""recession is coming""",0,1
+2026-07-10T10:35:07,nyt,economy,depression_1920,"""recession likely""",0,1
+2026-07-10T10:35:19,nyt,economy,depression_1920,"""recovery expected""",0,1
+2026-07-10T10:35:32,nyt,economy,depression_1920,"""economy will improve""",0,1
+2026-07-10T10:35:44,nyt,economy,depression_1920,"""downturn ahead""",0,1
+2026-07-10T10:35:57,nyt,economy,depression_1920,"""worst is over""",0,1
+2026-07-10T10:36:09,nyt,economy,depression_1920,"""depression is coming""",0,1
+2026-07-10T10:36:22,nyt,economy,depression_1920,"""prosperity will return""",0,1
+2026-07-10T10:36:30,loc,elections,1948test,straw vote,13,1
+2026-07-10T10:36:35,nyt,economy,depression_1920,"""hard times ahead""",0,1
+2026-07-10T10:36:47,nyt,economy,dotcom_2001,"""recession is coming""",0,1
+2026-07-10T10:36:50,loc,elections,t,straw vote,13,1
+2026-07-10T10:37:00,nyt,economy,dotcom_2001,"""recession likely""",0,1
+2026-07-10T10:37:12,nyt,economy,dotcom_2001,"""recovery expected""",0,1
+2026-07-10T10:37:16,loc,elections,t,straw vote,13,1
+2026-07-10T10:37:25,nyt,economy,dotcom_2001,"""economy will improve""",0,1
+2026-07-10T10:37:37,nyt,economy,dotcom_2001,"""downturn ahead""",0,1
+2026-07-10T10:37:50,nyt,economy,dotcom_2001,"""worst is over""",0,1
+2026-07-10T10:38:02,nyt,economy,dotcom_2001,"""depression is coming""",0,1
+2026-07-10T10:38:15,nyt,economy,dotcom_2001,"""prosperity will return""",0,1
+2026-07-10T10:38:28,nyt,economy,dotcom_2001,"""hard times ahead""",0,1
+2026-07-10T10:38:34,loc,elections,t,straw vote,13,1
+2026-07-10T10:38:40,nyt,economy,gfc_2008,"""recession is coming""",0,1
+2026-07-10T10:38:53,nyt,economy,gfc_2008,"""recession likely""",0,1
+2026-07-10T10:39:05,nyt,economy,gfc_2008,"""recovery expected""",0,1
+2026-07-10T10:39:18,nyt,economy,gfc_2008,"""economy will improve""",0,1
+2026-07-10T10:39:31,nyt,economy,gfc_2008,"""downturn ahead""",0,1
+2026-07-10T10:39:43,nyt,economy,gfc_2008,"""worst is over""",0,1
+2026-07-10T10:39:56,nyt,economy,gfc_2008,"""depression is coming""",0,1
+2026-07-10T10:40:08,nyt,economy,gfc_2008,"""prosperity will return""",0,1
+2026-07-10T10:40:21,nyt,economy,gfc_2008,"""hard times ahead""",0,1
+2026-07-10T10:40:33,nyt,economy,gulf_1990,"""recession is coming""",0,1
+2026-07-10T10:40:46,nyt,economy,gulf_1990,"""recession likely""",0,1
+2026-07-10T10:40:59,nyt,economy,gulf_1990,"""recovery expected""",0,1
+2026-07-10T10:41:11,nyt,economy,gulf_1990,"""economy will improve""",0,1
+2026-07-10T10:41:24,nyt,economy,gulf_1990,"""downturn ahead""",0,1
+2026-07-10T10:41:37,nyt,economy,gulf_1990,"""worst is over""",0,1
+2026-07-10T10:41:49,nyt,economy,gulf_1990,"""depression is coming""",0,1
+2026-07-10T10:42:02,nyt,economy,gulf_1990,"""prosperity will return""",0,1
+2026-07-10T10:42:14,nyt,economy,gulf_1990,"""hard times ahead""",0,1
+2026-07-10T10:42:27,nyt,economy,oil_1973,"""recession is coming""",0,1
+2026-07-10T10:42:40,nyt,economy,oil_1973,"""recession likely""",0,1
+2026-07-10T10:42:52,nyt,economy,oil_1973,"""recovery expected""",0,1
+2026-07-10T10:43:05,nyt,economy,oil_1973,"""economy will improve""",0,1
+2026-07-10T10:43:17,nyt,economy,oil_1973,"""downturn ahead""",0,1
+2026-07-10T10:43:30,nyt,economy,oil_1973,"""worst is over""",0,1
+2026-07-10T10:43:43,nyt,economy,oil_1973,"""depression is coming""",0,1
+2026-07-10T10:43:55,nyt,economy,oil_1973,"""prosperity will return""",0,1
+2026-07-10T10:44:08,nyt,economy,oil_1973,"""hard times ahead""",0,1

@@ -162,6 +162,18 @@ def fetch_page_detail(result):
     if data is None:
         return None
     item = data.get("item", {}) or {}
+    ocr = find_full_text(data)
+    if not ocr:
+        # The page OCR is NOT inline in the resource JSON — it lives behind the
+        # fulltext_file text-service URL, whose JSON nests the page text under a
+        # 'full_text' key. Without this second fetch every page comes back empty
+        # and is silently dropped (the "13 hits, 0 saved" bug).
+        ft_url = (data.get("resource") or {}).get("fulltext_file") \
+            or data.get("fulltext_service")
+        if ft_url:
+            ft_data = get_json(ft_url)
+            if ft_data:
+                ocr = find_full_text(ft_data)
     return {
         "page_id": item_url,
         "lccn": first(item.get("number_lccn")),
@@ -170,7 +182,7 @@ def fetch_page_detail(result):
         "state": first(item.get("location_state")),
         "city": first(item.get("location_city")),
         "page": (data.get("pagination") or {}).get("current"),
-        "ocr_text": find_full_text(data),
+        "ocr_text": ocr,
     }
 
 

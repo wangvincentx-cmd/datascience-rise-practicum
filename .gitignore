@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Incomplete / regenerable grading output (commit the finished version deliberately)
+JeremysShit/claims_graded_test.csv
