@@ -1,23 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ClaudeCodeEditorTabs">
-    <option name="activeSessionId" value="31415348-3e34-4ad5-8075-1282ccecf6ca" />
+    <option name="activeSessionId" value="8a30c312-ef40-4637-8dfa-b8d4e39ea474" />
     <option name="openSessionIds">
       <list>
-        <option value="783f6b1c-57c5-4dff-9f8f-54643d5e0ef4" />
-        <option value="31415348-3e34-4ad5-8075-1282ccecf6ca" />
+        <option value="8a30c312-ef40-4637-8dfa-b8d4e39ea474" />
       </list>
     </option>
     <option name="sessionPaths">
       <map>
-        <entry key="31415348-3e34-4ad5-8075-1282ccecf6ca" value="/sessions/new" />
-        <entry key="783f6b1c-57c5-4dff-9f8f-54643d5e0ef4" value="/switch-account" />
+        <entry key="8a30c312-ef40-4637-8dfa-b8d4e39ea474" value="/sessions/4e2396aa-554c-491b-bc85-d018bf1c35dd" />
       </map>
     </option>
     <option name="sessionTitles">
       <map>
-        <entry key="31415348-3e34-4ad5-8075-1282ccecf6ca" value="Claude Code" />
-        <entry key="783f6b1c-57c5-4dff-9f8f-54643d5e0ef4" value="What should I do to start downloading the data @RE" />
+        <entry key="8a30c312-ef40-4637-8dfa-b8d4e39ea474" value="does the model predict which newspaper companies h" />
       </map>
     </option>
   </component>
