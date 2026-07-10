@@ -363,3 +363,57 @@ timestamp,source,arm,window,phrase,total_hits,pages_fetched
 2026-07-10T10:43:43,nyt,economy,oil_1973,"""depression is coming""",0,1
 2026-07-10T10:43:55,nyt,economy,oil_1973,"""prosperity will return""",0,1
 2026-07-10T10:44:08,nyt,economy,oil_1973,"""hard times ahead""",0,1
+2026-07-10T10:44:20,nyt,economy,panic_1907,"""recession is coming""",0,1
+2026-07-10T10:44:33,nyt,economy,panic_1907,"""recession likely""",0,1
+2026-07-10T10:44:46,nyt,economy,panic_1907,"""recovery expected""",0,1
+2026-07-10T10:44:58,nyt,economy,panic_1907,"""economy will improve""",0,1
+2026-07-10T10:45:11,nyt,economy,panic_1907,"""downturn ahead""",0,1
+2026-07-10T10:45:23,nyt,economy,panic_1907,"""worst is over""",0,1
+2026-07-10T10:45:36,nyt,economy,panic_1907,"""depression is coming""",0,1
+2026-07-10T10:45:49,nyt,economy,panic_1907,"""prosperity will return""",0,1
+2026-07-10T10:46:01,nyt,economy,panic_1907,"""hard times ahead""",0,1
+2026-07-10T10:46:14,nyt,economy,postwar_1945,"""recession is coming""",0,1
+2026-07-10T10:46:26,nyt,economy,postwar_1945,"""recession likely""",0,1
+2026-07-10T10:46:39,nyt,economy,postwar_1945,"""recovery expected""",0,1
+2026-07-10T10:46:52,nyt,economy,postwar_1945,"""economy will improve""",0,1
+2026-07-10T10:47:04,nyt,economy,postwar_1945,"""downturn ahead""",0,1
+2026-07-10T10:47:17,nyt,economy,postwar_1945,"""worst is over""",0,1
+2026-07-10T10:47:29,nyt,economy,postwar_1945,"""depression is coming""",0,1
+2026-07-10T10:47:42,nyt,economy,postwar_1945,"""prosperity will return""",0,1
+2026-07-10T10:47:55,nyt,economy,postwar_1945,"""hard times ahead""",0,1
+2026-07-10T10:48:07,nyt,economy,recession_1937,"""recession is coming""",0,1
+2026-07-10T10:48:20,nyt,economy,recession_1937,"""recession likely""",0,1
+2026-07-10T10:48:32,nyt,economy,recession_1937,"""recovery expected""",0,1
+2026-07-10T10:48:45,nyt,economy,recession_1937,"""economy will improve""",0,1
+2026-07-10T10:48:58,nyt,economy,recession_1937,"""downturn ahead""",0,1
+2026-07-10T10:49:10,nyt,economy,recession_1937,"""worst is over""",0,1
+2026-07-10T10:49:23,nyt,economy,recession_1937,"""depression is coming""",0,1
+2026-07-10T10:49:35,nyt,economy,recession_1937,"""prosperity will return""",0,1
+2026-07-10T10:49:48,nyt,economy,recession_1937,"""hard times ahead""",0,1
+2026-07-10T10:50:01,nyt,economy,recession_1948,"""recession is coming""",0,1
+2026-07-10T10:50:13,nyt,economy,recession_1948,"""recession likely""",0,1
+2026-07-10T10:50:26,nyt,economy,recession_1948,"""recovery expected""",0,1
+2026-07-10T10:50:39,nyt,economy,recession_1948,"""economy will improve""",0,1
+2026-07-10T10:50:51,nyt,economy,recession_1948,"""downturn ahead""",0,1
+2026-07-10T10:51:04,nyt,economy,recession_1948,"""worst is over""",0,1
+2026-07-10T10:51:17,nyt,economy,recession_1948,"""depression is coming""",0,1
+2026-07-10T10:51:30,nyt,economy,recession_1948,"""prosperity will return""",0,1
+2026-07-10T10:51:42,nyt,economy,recession_1948,"""hard times ahead""",0,1
+2026-07-10T10:51:55,nyt,economy,recession_1957,"""recession is coming""",0,1
+2026-07-10T10:52:08,nyt,economy,recession_1957,"""recession likely""",0,1
+2026-07-10T10:52:20,nyt,economy,recession_1957,"""recovery expected""",0,1
+2026-07-10T10:52:33,nyt,economy,recession_1957,"""economy will improve""",0,1
+2026-07-10T10:52:46,nyt,economy,recession_1957,"""downturn ahead""",0,1
+2026-07-10T10:52:58,nyt,economy,recession_1957,"""worst is over""",0,1
+2026-07-10T10:53:11,nyt,economy,recession_1957,"""depression is coming""",0,1
+2026-07-10T10:53:24,nyt,economy,recession_1957,"""prosperity will return""",0,1
+2026-07-10T10:53:36,nyt,economy,recession_1957,"""hard times ahead""",0,1
+2026-07-10T10:53:49,nyt,economy,volcker_1980,"""recession is coming""",0,1
+2026-07-10T10:54:02,nyt,economy,volcker_1980,"""recession likely""",0,1
+2026-07-10T10:54:14,nyt,economy,volcker_1980,"""recovery expected""",0,1
+2026-07-10T10:54:27,nyt,economy,volcker_1980,"""economy will improve""",0,1
+2026-07-10T10:54:39,nyt,economy,volcker_1980,"""downturn ahead""",0,1
+2026-07-10T10:54:52,nyt,economy,volcker_1980,"""worst is over""",0,1
+2026-07-10T10:55:04,nyt,economy,volcker_1980,"""depression is coming""",0,1
+2026-07-10T10:55:17,nyt,economy,volcker_1980,"""prosperity will return""",0,1
+2026-07-10T10:55:30,nyt,economy,volcker_1980,"""hard times ahead""",0,1
