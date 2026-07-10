@@ -3,3 +3,235 @@ timestamp,source,arm,window,phrase,total_hits,pages_fetched
 2026-07-09T15:20:31,nyt,economy,gfc_2008,"""recession likely""",2,1
 2026-07-09T15:22:59,loc,elections,1948,will be elected,2,1
 2026-07-09T15:22:59,nyt,economy,gfc_2008,"""recession likely""",2,1
+2026-07-09T21:35:55,nyt,elections,1948,"""will be elected""",0,1
+2026-07-09T21:36:08,nyt,elections,1948,"""will carry""",0,1
+2026-07-09T21:36:20,nyt,elections,1948,"""expected to win""",0,1
+2026-07-09T21:36:33,nyt,elections,1948,"""leads in the polls""",0,1
+2026-07-09T21:36:46,nyt,elections,1948,"""favored to win""",0,1
+2026-07-09T21:36:58,nyt,elections,1948,"""predicted""",0,1
+2026-07-09T21:37:11,nyt,elections,1948,"""seen winning""",0,1
+2026-07-09T21:37:24,nyt,elections,1948,"""is likely to win""",0,1
+2026-07-09T21:38:05,nyt,elections,1900,"""will be elected""",0,1
+2026-07-09T21:38:18,nyt,elections,1900,"""will carry""",0,1
+2026-07-09T21:38:30,nyt,elections,1900,"""expected to win""",0,1
+2026-07-09T21:38:43,nyt,elections,1900,"""leads in the polls""",0,1
+2026-07-09T21:38:55,nyt,elections,1900,"""favored to win""",0,1
+2026-07-09T21:39:08,nyt,elections,1900,"""predicted""",0,1
+2026-07-09T21:39:20,nyt,elections,1900,"""seen winning""",0,1
+2026-07-09T21:39:33,nyt,elections,1900,"""is likely to win""",0,1
+2026-07-09T21:39:45,nyt,elections,1904,"""will be elected""",0,1
+2026-07-09T21:39:58,nyt,elections,1904,"""will carry""",0,1
+2026-07-09T21:40:11,nyt,elections,1904,"""expected to win""",0,1
+2026-07-09T21:40:23,nyt,elections,1904,"""leads in the polls""",0,1
+2026-07-09T21:40:36,nyt,elections,1904,"""favored to win""",0,1
+2026-07-09T21:40:48,nyt,elections,1904,"""predicted""",0,1
+2026-07-09T21:41:01,nyt,elections,1904,"""seen winning""",0,1
+2026-07-09T21:41:14,nyt,elections,1904,"""is likely to win""",0,1
+2026-07-09T21:41:26,nyt,elections,1908,"""will be elected""",0,1
+2026-07-09T21:41:39,nyt,elections,1908,"""will carry""",0,1
+2026-07-09T21:41:51,nyt,elections,1908,"""expected to win""",0,1
+2026-07-09T21:42:04,nyt,elections,1908,"""leads in the polls""",0,1
+2026-07-09T21:42:17,nyt,elections,1908,"""favored to win""",0,1
+2026-07-09T21:42:30,nyt,elections,1908,"""predicted""",0,1
+2026-07-09T21:42:42,nyt,elections,1908,"""seen winning""",0,1
+2026-07-09T21:42:55,nyt,elections,1908,"""is likely to win""",0,1
+2026-07-09T21:43:08,nyt,elections,1912,"""will be elected""",0,1
+2026-07-09T21:43:20,nyt,elections,1912,"""will carry""",0,1
+2026-07-09T21:43:32,nyt,elections,1912,"""expected to win""",0,1
+2026-07-09T21:43:45,nyt,elections,1912,"""leads in the polls""",0,1
+2026-07-09T21:43:58,nyt,elections,1912,"""favored to win""",0,1
+2026-07-09T21:44:10,nyt,elections,1912,"""predicted""",0,1
+2026-07-09T21:44:23,nyt,elections,1912,"""seen winning""",0,1
+2026-07-09T21:44:36,nyt,elections,1912,"""is likely to win""",0,1
+2026-07-09T21:44:48,nyt,elections,1916,"""will be elected""",0,1
+2026-07-09T21:45:01,nyt,elections,1916,"""will carry""",0,1
+2026-07-09T21:45:13,nyt,elections,1916,"""expected to win""",0,1
+2026-07-09T21:45:26,nyt,elections,1916,"""leads in the polls""",0,1
+2026-07-09T21:45:38,nyt,elections,1916,"""favored to win""",0,1
+2026-07-09T21:45:51,nyt,elections,1916,"""predicted""",0,1
+2026-07-09T21:46:03,nyt,elections,1916,"""seen winning""",0,1
+2026-07-09T21:46:16,nyt,elections,1916,"""is likely to win""",0,1
+2026-07-09T21:46:28,nyt,elections,1920,"""will be elected""",0,1
+2026-07-09T21:46:41,nyt,elections,1920,"""will carry""",0,1
+2026-07-09T21:46:54,nyt,elections,1920,"""expected to win""",0,1
+2026-07-09T21:47:06,nyt,elections,1920,"""leads in the polls""",0,1
+2026-07-09T21:47:19,nyt,elections,1920,"""favored to win""",0,1
+2026-07-09T21:47:31,nyt,elections,1920,"""predicted""",0,1
+2026-07-09T21:47:44,nyt,elections,1920,"""seen winning""",0,1
+2026-07-09T21:47:56,nyt,elections,1920,"""is likely to win""",0,1
+2026-07-09T21:48:09,nyt,elections,1924,"""will be elected""",0,1
+2026-07-09T21:48:22,nyt,elections,1924,"""will carry""",0,1
+2026-07-09T21:48:34,nyt,elections,1924,"""expected to win""",0,1
+2026-07-09T21:48:47,nyt,elections,1924,"""leads in the polls""",0,1
+2026-07-09T21:49:00,nyt,elections,1924,"""favored to win""",0,1
+2026-07-09T21:49:12,nyt,elections,1924,"""predicted""",0,1
+2026-07-09T21:49:25,nyt,elections,1924,"""seen winning""",0,1
+2026-07-09T21:49:37,nyt,elections,1924,"""is likely to win""",0,1
+2026-07-09T21:49:50,nyt,elections,1928,"""will be elected""",0,1
+2026-07-09T21:50:02,nyt,elections,1928,"""will carry""",0,1
+2026-07-09T21:50:15,nyt,elections,1928,"""expected to win""",0,1
+2026-07-09T21:50:27,nyt,elections,1928,"""leads in the polls""",0,1
+2026-07-09T21:50:40,nyt,elections,1928,"""favored to win""",0,1
+2026-07-09T21:50:52,nyt,elections,1928,"""predicted""",0,1
+2026-07-09T21:51:05,nyt,elections,1928,"""seen winning""",0,1
+2026-07-09T21:51:17,nyt,elections,1928,"""is likely to win""",0,1
+2026-07-09T21:51:30,nyt,elections,1932,"""will be elected""",0,1
+2026-07-09T21:51:42,nyt,elections,1932,"""will carry""",0,1
+2026-07-09T21:51:55,nyt,elections,1932,"""expected to win""",0,1
+2026-07-09T21:52:08,nyt,elections,1932,"""leads in the polls""",0,1
+2026-07-09T21:52:20,nyt,elections,1932,"""favored to win""",0,1
+2026-07-09T21:52:33,nyt,elections,1932,"""predicted""",0,1
+2026-07-09T21:52:45,nyt,elections,1932,"""seen winning""",0,1
+2026-07-09T21:52:58,nyt,elections,1932,"""is likely to win""",0,1
+2026-07-09T21:53:10,nyt,elections,1936,"""will be elected""",0,1
+2026-07-09T21:53:23,nyt,elections,1936,"""will carry""",0,1
+2026-07-09T21:53:35,nyt,elections,1936,"""expected to win""",0,1
+2026-07-09T21:53:48,nyt,elections,1936,"""leads in the polls""",0,1
+2026-07-09T21:54:01,nyt,elections,1936,"""favored to win""",0,1
+2026-07-09T21:54:13,nyt,elections,1936,"""predicted""",0,1
+2026-07-09T21:54:26,nyt,elections,1936,"""seen winning""",0,1
+2026-07-09T21:54:38,nyt,elections,1936,"""is likely to win""",0,1
+2026-07-09T21:54:51,nyt,elections,1940,"""will be elected""",0,1
+2026-07-09T21:55:03,nyt,elections,1940,"""will carry""",0,1
+2026-07-09T21:55:16,nyt,elections,1940,"""expected to win""",0,1
+2026-07-09T21:55:28,nyt,elections,1940,"""leads in the polls""",0,1
+2026-07-09T21:55:41,nyt,elections,1940,"""favored to win""",0,1
+2026-07-09T21:55:53,nyt,elections,1940,"""predicted""",0,1
+2026-07-09T21:56:06,nyt,elections,1940,"""seen winning""",0,1
+2026-07-09T21:56:18,nyt,elections,1940,"""is likely to win""",0,1
+2026-07-09T21:56:31,nyt,elections,1944,"""will be elected""",0,1
+2026-07-09T21:56:43,nyt,elections,1944,"""will carry""",0,1
+2026-07-09T21:56:56,nyt,elections,1944,"""expected to win""",0,1
+2026-07-09T21:57:08,nyt,elections,1944,"""leads in the polls""",0,1
+2026-07-09T21:57:21,nyt,elections,1944,"""favored to win""",0,1
+2026-07-09T21:57:34,nyt,elections,1944,"""predicted""",0,1
+2026-07-09T21:57:46,nyt,elections,1944,"""seen winning""",0,1
+2026-07-09T21:57:59,nyt,elections,1944,"""is likely to win""",0,1
+2026-07-09T21:58:11,nyt,elections,1948,"""will be elected""",0,1
+2026-07-09T21:58:24,nyt,elections,1948,"""will carry""",0,1
+2026-07-09T21:58:36,nyt,elections,1948,"""expected to win""",0,1
+2026-07-09T21:58:49,nyt,elections,1948,"""leads in the polls""",0,1
+2026-07-09T21:59:01,nyt,elections,1948,"""favored to win""",0,1
+2026-07-09T21:59:14,nyt,elections,1948,"""predicted""",0,1
+2026-07-09T21:59:26,nyt,elections,1948,"""seen winning""",0,1
+2026-07-09T21:59:39,nyt,elections,1948,"""is likely to win""",0,1
+2026-07-09T21:59:51,nyt,elections,1952,"""will be elected""",0,1
+2026-07-09T22:00:04,nyt,elections,1952,"""will carry""",0,1
+2026-07-09T22:00:17,nyt,elections,1952,"""expected to win""",0,1
+2026-07-09T22:00:29,nyt,elections,1952,"""leads in the polls""",0,1
+2026-07-09T22:00:42,nyt,elections,1952,"""favored to win""",0,1
+2026-07-09T22:00:54,nyt,elections,1952,"""predicted""",0,1
+2026-07-09T22:01:07,nyt,elections,1952,"""seen winning""",0,1
+2026-07-09T22:01:19,nyt,elections,1952,"""is likely to win""",0,1
+2026-07-09T22:01:32,nyt,elections,1956,"""will be elected""",0,1
+2026-07-09T22:01:44,nyt,elections,1956,"""will carry""",0,1
+2026-07-09T22:01:57,nyt,elections,1956,"""expected to win""",0,1
+2026-07-09T22:02:09,nyt,elections,1956,"""leads in the polls""",0,1
+2026-07-09T22:02:22,nyt,elections,1956,"""favored to win""",0,1
+2026-07-09T22:02:34,nyt,elections,1956,"""predicted""",0,1
+2026-07-09T22:02:47,nyt,elections,1956,"""seen winning""",0,1
+2026-07-09T22:03:00,nyt,elections,1956,"""is likely to win""",0,1
+2026-07-09T22:03:12,nyt,elections,1960,"""will be elected""",0,1
+2026-07-09T22:03:25,nyt,elections,1960,"""will carry""",0,1
+2026-07-09T22:03:37,nyt,elections,1960,"""expected to win""",0,1
+2026-07-09T22:03:50,nyt,elections,1960,"""leads in the polls""",0,1
+2026-07-09T22:04:02,nyt,elections,1960,"""favored to win""",0,1
+2026-07-09T22:04:15,nyt,elections,1960,"""predicted""",0,1
+2026-07-09T22:04:28,nyt,elections,1960,"""seen winning""",0,1
+2026-07-09T22:04:40,nyt,elections,1960,"""is likely to win""",0,1
+2026-07-09T22:04:53,nyt,elections,1964,"""will be elected""",0,1
+2026-07-09T22:05:05,nyt,elections,1964,"""will carry""",0,1
+2026-07-09T22:05:18,nyt,elections,1964,"""expected to win""",0,1
+2026-07-09T22:05:31,nyt,elections,1964,"""leads in the polls""",0,1
+2026-07-09T22:05:43,nyt,elections,1964,"""favored to win""",0,1
+2026-07-09T22:05:56,nyt,elections,1964,"""predicted""",0,1
+2026-07-09T22:06:08,nyt,elections,1964,"""seen winning""",0,1
+2026-07-09T22:06:21,nyt,elections,1964,"""is likely to win""",0,1
+2026-07-09T22:06:33,nyt,elections,1968,"""will be elected""",0,1
+2026-07-09T22:06:46,nyt,elections,1968,"""will carry""",0,1
+2026-07-09T22:07:07,nyt,elections,1968,"""expected to win""",0,1
+2026-07-09T22:07:19,nyt,elections,1968,"""leads in the polls""",0,1
+2026-07-09T22:07:32,nyt,elections,1968,"""favored to win""",0,1
+2026-07-09T22:07:44,nyt,elections,1968,"""predicted""",0,1
+2026-07-09T22:07:57,nyt,elections,1968,"""seen winning""",0,1
+2026-07-09T22:08:09,nyt,elections,1968,"""is likely to win""",0,1
+2026-07-09T22:08:22,nyt,elections,1972,"""will be elected""",0,1
+2026-07-09T22:08:34,nyt,elections,1972,"""will carry""",0,1
+2026-07-09T22:08:47,nyt,elections,1972,"""expected to win""",0,1
+2026-07-09T22:08:59,nyt,elections,1972,"""leads in the polls""",0,1
+2026-07-09T22:09:12,nyt,elections,1972,"""favored to win""",0,1
+2026-07-09T22:09:24,nyt,elections,1972,"""predicted""",0,1
+2026-07-09T22:09:37,nyt,elections,1972,"""seen winning""",0,1
+2026-07-09T22:09:49,nyt,elections,1972,"""is likely to win""",0,1
+2026-07-09T22:10:02,nyt,elections,1976,"""will be elected""",0,1
+2026-07-09T22:10:14,nyt,elections,1976,"""will carry""",0,1
+2026-07-09T22:10:27,nyt,elections,1976,"""expected to win""",0,1
+2026-07-09T22:10:40,nyt,elections,1976,"""leads in the polls""",0,1
+2026-07-09T22:10:52,nyt,elections,1976,"""favored to win""",0,1
+2026-07-09T22:11:04,nyt,elections,1976,"""predicted""",0,1
+2026-07-09T22:11:17,nyt,elections,1976,"""seen winning""",0,1
+2026-07-09T22:11:30,nyt,elections,1976,"""is likely to win""",0,1
+2026-07-09T22:11:42,nyt,elections,1980,"""will be elected""",0,1
+2026-07-09T22:11:55,nyt,elections,1980,"""will carry""",0,1
+2026-07-09T22:12:07,nyt,elections,1980,"""expected to win""",0,1
+2026-07-09T22:12:20,nyt,elections,1980,"""leads in the polls""",0,1
+2026-07-09T22:12:33,nyt,elections,1980,"""favored to win""",0,1
+2026-07-09T22:12:45,nyt,elections,1980,"""predicted""",0,1
+2026-07-09T22:12:58,nyt,elections,1980,"""seen winning""",0,1
+2026-07-09T22:13:10,nyt,elections,1980,"""is likely to win""",0,1
+2026-07-09T22:13:23,nyt,elections,1984,"""will be elected""",0,1
+2026-07-09T22:13:35,nyt,elections,1984,"""will carry""",0,1
+2026-07-09T22:13:48,nyt,elections,1984,"""expected to win""",0,1
+2026-07-09T22:14:00,nyt,elections,1984,"""leads in the polls""",0,1
+2026-07-09T22:14:13,nyt,elections,1984,"""favored to win""",0,1
+2026-07-09T22:14:26,nyt,elections,1984,"""predicted""",0,1
+2026-07-09T22:14:38,nyt,elections,1984,"""seen winning""",0,1
+2026-07-09T22:14:51,nyt,elections,1984,"""is likely to win""",0,1
+2026-07-09T22:15:03,nyt,elections,1988,"""will be elected""",0,1
+2026-07-09T22:15:16,nyt,elections,1988,"""will carry""",0,1
+2026-07-09T22:15:28,nyt,elections,1988,"""expected to win""",0,1
+2026-07-09T22:15:41,nyt,elections,1988,"""leads in the polls""",0,1
+2026-07-09T22:15:53,nyt,elections,1988,"""favored to win""",0,1
+2026-07-09T22:16:06,nyt,elections,1988,"""predicted""",0,1
+2026-07-09T22:16:18,nyt,elections,1988,"""seen winning""",0,1
+2026-07-09T22:16:31,nyt,elections,1988,"""is likely to win""",0,1
+2026-07-09T22:16:44,nyt,elections,1992,"""will be elected""",0,1
+2026-07-09T22:16:56,nyt,elections,1992,"""will carry""",0,1
+2026-07-09T22:17:09,nyt,elections,1992,"""expected to win""",0,1
+2026-07-09T22:17:21,nyt,elections,1992,"""leads in the polls""",0,1
+2026-07-09T22:17:34,nyt,elections,1992,"""favored to win""",0,1
+2026-07-09T22:17:46,nyt,elections,1992,"""predicted""",0,1
+2026-07-09T22:17:59,nyt,elections,1992,"""seen winning""",0,1
+2026-07-09T22:18:12,nyt,elections,1992,"""is likely to win""",0,1
+2026-07-09T22:18:24,nyt,elections,1996,"""will be elected""",0,1
+2026-07-09T22:18:37,nyt,elections,1996,"""will carry""",0,1
+2026-07-09T22:18:49,nyt,elections,1996,"""expected to win""",0,1
+2026-07-09T22:19:02,nyt,elections,1996,"""leads in the polls""",0,1
+2026-07-09T22:19:14,nyt,elections,1996,"""favored to win""",0,1
+2026-07-09T22:19:27,nyt,elections,1996,"""predicted""",0,1
+2026-07-09T22:19:39,nyt,elections,1996,"""seen winning""",0,1
+2026-07-09T22:19:52,nyt,elections,1996,"""is likely to win""",0,1
+2026-07-09T22:20:04,nyt,elections,2000,"""will be elected""",0,1
+2026-07-09T22:20:17,nyt,elections,2000,"""will carry""",0,1
+2026-07-09T22:20:29,nyt,elections,2000,"""expected to win""",0,1
+2026-07-09T22:20:42,nyt,elections,2000,"""leads in the polls""",0,1
+2026-07-09T22:20:55,nyt,elections,2000,"""favored to win""",0,1
+2026-07-09T22:21:07,nyt,elections,2000,"""predicted""",0,1
+2026-07-09T22:21:20,nyt,elections,2000,"""seen winning""",0,1
+2026-07-09T22:21:32,nyt,elections,2000,"""is likely to win""",0,1
+2026-07-09T22:21:45,nyt,elections,2004,"""will be elected""",0,1
+2026-07-09T22:21:57,nyt,elections,2004,"""will carry""",0,1
+2026-07-09T22:22:10,nyt,elections,2004,"""expected to win""",0,1
+2026-07-09T22:22:22,nyt,elections,2004,"""leads in the polls""",0,1
+2026-07-09T22:22:35,nyt,elections,2004,"""favored to win""",0,1
+2026-07-09T22:22:48,nyt,elections,2004,"""predicted""",0,1
+2026-07-09T22:23:00,nyt,elections,2004,"""seen winning""",0,1
+2026-07-09T22:23:13,nyt,elections,2004,"""is likely to win""",0,1
+2026-07-09T22:23:25,nyt,elections,2008,"""will be elected""",0,1
+2026-07-09T22:23:38,nyt,elections,2008,"""will carry""",0,1
+2026-07-09T22:23:50,nyt,elections,2008,"""expected to win""",0,1
+2026-07-09T22:24:03,nyt,elections,2008,"""leads in the polls""",0,1
+2026-07-09T22:24:15,nyt,elections,2008,"""favored to win""",0,1
+2026-07-09T22:24:28,nyt,elections,2008,"""predicted""",0,1
+2026-07-09T22:24:41,nyt,elections,2008,"""seen winning""",0,1
+2026-07-09T22:24:53,nyt,elections,2008,"""is likely to win""",0,1

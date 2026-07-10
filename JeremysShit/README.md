@@ -29,6 +29,10 @@ Merged design: **[project_plan_v3_merged.md](project_plan_v3_merged.md)**
                                          Michigan household sentiment as third benchmark
 5. SURVEY ARM  BU_RISE_forecast_analysis_FIXED.ipynb   Livingston 1946-2026 analysis
                                          (verified runs end-to-end locally, 2026-07-09)
+6. TIER 3      tier3_robustness.py       Diebold-Mariano test for the head-to-head;
+                                         robustness: no-change bands halved/doubled,
+                                         second-LLM (Claude) agreement on a 50-claim
+                                         sample, Livingston era boundaries +/-3 years
 
 TESTS          test_offline.py           21 offline checks, mock API responses through
                                          the real functions — run after any change
@@ -62,6 +66,8 @@ and run `python grade_claims.py --kappa validation_sample_filled.csv` (target κ
 | `claims_graded.csv`, `validation_sample.csv` | Grading output |
 | `claims_scored.csv`, `results_by_episode.csv`, `publisher_leaderboard.csv`, `famous_calls.csv`, `figures/` | Scoring output |
 | `model.py` | Accuracy-factors model (episode-grouped split) |
+| `model_figures.py` | Poster figure suite for the model (ROC, calibration, LOEO, importances) |
+| `tier3_robustness.py` | Diebold-Mariano + robustness suite (bands, second LLM, era shifts) |
 | `test_offline.py` | Offline test harness (21 checks, no network) |
 | `election_arm/` | Vincent's election pipeline lands here (schema contract in its README) |
 | `cache/` | Every downloaded page/series (safe to delete; will re-download) |

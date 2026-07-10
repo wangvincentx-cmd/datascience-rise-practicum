@@ -239,12 +239,16 @@ def tier1(s):
                   "best calls first — mine it for the poster's best/worst-calls sidebar)")
 
 
-def livingston_directional():
-    """Livingston 12-month median forecasts as directional calls, 1946-1963."""
+def livingston_directional(band_scale=1.0):
+    """Livingston 12-month median forecasts as directional calls, 1946-1963.
+
+    band_scale multiplies the no-change bands (tier3_robustness.py's
+    sensitivity test); 1.0 reproduces the headline numbers."""
     xl = pd.ExcelFile("medians.xlsx")
     rows = []
     bounds = {"CPI": (-8, 99), "IP": (-18, 40)}
-    for v, band in [("CPI", 1.5), ("IP", 2.0), ("UNPR", 0.3)]:
+    for v, band in [("CPI", 1.5 * band_scale), ("IP", 2.0 * band_scale),
+                    ("UNPR", 0.3 * band_scale)]:
         d = xl.parse(v).sort_values("Date").reset_index(drop=True)
         bp, f12 = d[f"{v}_BP"], d[f"{v}_12M"]
         nxt = bp.shift(-2)
