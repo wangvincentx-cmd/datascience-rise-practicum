@@ -41,6 +41,25 @@ import urllib.request
 
 USER_AGENT = "BU-RISE-student-research/0.2 (economic prediction accuracy study)"
 
+# A 429 whose Retry-After exceeds this is the DAILY request cap (Groq free tier:
+# 1,000 req/day on the 70b, on a ~2.5h rolling reset), not a transient throttle.
+# Sleeping a daily cap off would hang the process for hours; bail out instead and
+# resume tomorrow — graded rows are already on disk. Must sit well above any
+# transient throttle, which comes back as minutes, not hours.
+DAILY_CAP_SECONDS = 1800
+
+# Providers reserve a request's MAXIMUM possible output against the
+# tokens-per-minute budget, not what it actually uses. Left unset, Groq reserves
+# its default (thousands of tokens) per call against a 12k/min ceiling and
+# throttles us hard. The graded JSON is ~100 tokens; 300 is ample.
+MAX_TOKENS = 300
+
+
+class DailyCapReached(Exception):
+    def __init__(self, wait):
+        self.wait = wait
+        super().__init__(f"daily request cap hit (provider says retry in {wait/3600:.1f}h)")
+
 try:
     # macOS python.org builds ship without a populated system trust store, so
     # urllib fails TLS verification against every https endpoint.
@@ -65,8 +84,13 @@ Return strict JSON with exactly these fields:
 - horizon_months: best estimate of the prediction horizon: 6, 12, or "vague"
 - confidence: "assertive" (will, is certain, undoubtedly) or "hedged" (may, might,
   likely, is expected, if)
-- voice: "editorial" (the paper's own view), "quoted_expert" (banker, economist,
-  businessman), "quoted_official" (president, senator, government), or "unclear"
+- voice: WHO is making the prediction —
+    "journalist" (the paper's own editorial line or a reporter's own words),
+    "expert"     (economist, banker, businessman, financial analyst, professor),
+    "official"   (a government officeholder: president, senator, cabinet, Fed),
+    "layperson"  (an ordinary citizen, consumer, "man on the street"),
+    "unclear"    (can't tell who is speaking).
+  Judge the SPEAKER, not the topic.
 - speaker_name: the personal name of whoever makes the prediction, if one is stated
   or clearly implied in the sentence (e.g. "Roger Babson", "Secretary Mellon"),
   else "na". Names only — not organizations or newspapers.
@@ -85,6 +109,7 @@ def call_llm(prompt, model, base_url, api_key, max_retries=5):
         "model": model,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.0,
+        "max_tokens": MAX_TOKENS,
         "response_format": {"type": "json_object"},
     }).encode()
     for attempt in range(max_retries):
@@ -99,14 +124,19 @@ def call_llm(prompt, model, base_url, api_key, max_retries=5):
                 out = json.load(resp)
             return json.loads(out["choices"][0]["message"]["content"])
         except urllib.error.HTTPError as e:
-            if e.code == 429 and attempt < max_retries - 1:
-                wait = float(e.headers.get("Retry-After") or 0) or 10 * (2 ** attempt)
-                print(f"    rate limited, waiting {wait:.0f}s")
-                time.sleep(wait)
-                continue
+            if e.code == 429:
+                wait = float(e.headers.get("Retry-After") or 0) or 15.0
+                if wait > DAILY_CAP_SECONDS:
+                    raise DailyCapReached(wait)
+                if attempt < max_retries - 1:
+                    # The tokens/min window resets in about a second, so a short
+                    # wait clears it. Exponential backoff here just stalls the run.
+                    print(f"    rate limited, waiting {wait:.0f}s", flush=True)
+                    time.sleep(wait)
+                    continue
             if attempt == max_retries - 1:
                 raise
-            print(f"    retry after HTTP {e.code}")
+            print(f"    retry after HTTP {e.code}", flush=True)
             time.sleep(5 * (attempt + 1))
         except Exception as e:
             if attempt == max_retries - 1:
@@ -147,8 +177,14 @@ def grade(args):
                                           quote=row["quote"])
             try:
                 g = call_llm(prompt, args.model, args.base_url, api_key)
+            except DailyCapReached as e:
+                print(f"\n=== {e} ===")
+                print(f"Stopping cleanly with {len(graded)} claims graded and saved.")
+                print(f"Rerun the same command once the cap resets; it will resume "
+                      f"from claim {i} of {len(todo)} remaining.", flush=True)
+                break
             except Exception as e:
-                print(f"  claim {row['claim_id']}: FAILED ({e}) — marked ungraded")
+                print(f"  claim {row['claim_id']}: FAILED ({e}) — marked ungraded", flush=True)
                 g = {}
             for k in GRADE_FIELDS:
                 row[k] = str(g.get(k, ""))
@@ -156,7 +192,7 @@ def grade(args):
             graded.append(row)
             f.flush()
             if i % 25 == 0:
-                print(f"  {i}/{len(todo)} graded")
+                print(f"  {i}/{len(todo)} graded", flush=True)
             if args.sleep and i < len(todo):
                 time.sleep(args.sleep)
     n_pred = sum(1 for r in graded if r["is_prediction"] == "yes")
