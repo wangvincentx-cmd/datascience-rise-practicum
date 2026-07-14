@@ -245,8 +245,8 @@ def second_llm_agreement(limit):
             "unemployment_direction": {"type": "string"},
             "horizon_months": {"type": "string"},
             "confidence": {"type": "string", "enum": ["assertive", "hedged"]},
-            "voice": {"type": "string", "enum": ["editorial", "quoted_expert",
-                                                 "quoted_official", "unclear"]},
+            "voice": {"type": "string", "enum": ["journalist", "expert",
+                                                 "official", "layperson", "unclear"]},
             "speaker_name": {"type": "string"},
         },
     }

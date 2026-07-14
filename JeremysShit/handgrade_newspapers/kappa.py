@@ -32,6 +32,10 @@ ECONOMY_ARM = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ECONOMY_ARM))
 from grade_claims import cohens_kappa  # noqa: E402
 
+# voice is extracted by the LLM and used as a model feature, but is NOT
+# hand-graded — so it has no human counterpart to compare against and stays
+# out of the kappa report. It is therefore an unvalidated feature: say so if
+# it turns up as important in the model.
 CONDITIONAL = ["topic", "direction", "confidence"]
 
 

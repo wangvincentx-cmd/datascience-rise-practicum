@@ -148,24 +148,66 @@ Two arms are tracked here: **bill_arm** (primary) and the **economy arm**
       6 real claims via Groq / `llama-3.3-70b-versatile`.
 - [x] Fixed: a failed grading run silently overwrote `validation_sample.csv`
       with zero rows, which would have destroyed hand-graded work.
+- [x] Fixed three throughput bugs that stalled the first real run dead (1 claim
+      in 5 min):
+      (a) **No `max_tokens` — the root cause.** Providers reserve a request's
+      *maximum possible* output against the tokens/min budget, not what it
+      actually uses. Unset, Groq reserved thousands of tokens per call against a
+      12k/min ceiling while we genuinely used ~600. Now capped at 300 (the graded
+      JSON is ~100), which is worth roughly 10x throughput.
+      (b) Exponential backoff slept 10/20/40/80s to wait out a tokens/min window
+      that resets in ~200ms — now honours `Retry-After` with a 15s fallback.
+      (c) `DAILY_CAP_SECONDS` was 300, so a *transient* 6-minute throttle was
+      misread as the daily cap and the run quit. Raised to 1800; the genuine cap
+      comes back as hours (~2.5h rolling reset).
+      Also `-u`/`flush=True` — the log was silently buffering and looked empty
+      during the stall, which hid all of the above.
+- [x] Resolved the `1105dda` merge conflicts, which had left `<<<<<<<` markers
+      in both `grade_claims.py` (unrunnable — syntax error) and `.gitignore`.
+      That commit carried a parallel, independent fix of the same UA/resume
+      bugs; kept the HEAD version since it is a superset (adds the `certifi`
+      SSL fix, `--sleep`, `--overwrite`).
+- [x] `voice` (who is speaking) reworked into a 5-bucket taxonomy —
+      `journalist / expert / official / layperson / unclear` — in the LLM rubric
+      (`grade_claims.py`) and the second-vendor schema (`tier3_robustness.py`).
+      Verified the live model returns only in-taxonomy values. **Decision
+      (2026-07-14): `voice` is NOT hand-graded** — dropped from the grading file
+      and the kappa report to keep the human task to five columns.
 - [x] `handgrade_newspapers/` — blind, episode-stratified 80-claim sample
-      (`handgrade_BLANK.csv`), grading instructions (`README.md`), and
-      `kappa.py` computing human-vs-human *and* human-vs-LLM Cohen's kappa.
-      Sampled from `claims_raw.csv` rather than the LLM's output, so it can
-      catch the LLM *wrongly rejecting* a real prediction — the built-in
+      (`handgrade_BLANK.csv`, five `human_*` columns), grading instructions
+      (`README.md`), and `kappa.py` computing human-vs-human *and* human-vs-LLM
+      Cohen's kappa on is_prediction, topic, direction, confidence. Sampled from
+      `claims_raw.csv` rather than the LLM's output, so it can catch the LLM
+      *wrongly rejecting* a real prediction — the built-in
       `validation_sample.csv` cannot.
 - [x] Repo-root `.gitignore` added (there was none; `.env` and API keys were
-      one `git add .` from being committed).
+      one `git add .` from being committed). `claims_graded.csv` and
+      `grade_run.log` are ignored while a run is in flight — a half-finished
+      grading file is a partial corpus, not a result. Commit the finished one
+      deliberately: `git add -f JeremysShit/claims_graded.csv`.
 
 ## Not done / next up
 
-- [ ] **Run `grade_claims.py` for real.** This is the blocker for everything
-      below. ~55 min for 1,324 claims at `--sleep 2.5`; may hit Groq's daily
-      token cap partway (~660k tokens needed) — rerun resumes.
+- [ ] **Run `grade_claims.py` for real.** IN PROGRESS (2026-07-14), ~176/1,324
+      done. **Groq's free tier cannot finish this in one day**: the good model
+      (`llama-3.3-70b-versatile`) allows **1,000 requests/day** and we need
+      1,324. Plan: run to the cap today (~claim 1,070), rerun tomorrow, resume
+      handles the rest (~20 min). Alternatives rejected — `llama-3.1-8b-instant`
+      has 14,400 req/day but is far weaker at this nuanced call, and we already
+      know the LLM errs toward too-loose.
+- [ ] Decide the **conditional rule** before the final regrade: does *"business
+      will lack confidence until this uncertainty is dissipated"* count as a
+      prediction? Recommend NO — `score_claims.py` cannot verify whether the
+      condition was met, so scoring it is unfair to the paper. Needs Vincent's
+      sign-off; it goes in `RUBRIC_PROMPT`.
 - [ ] Regenerate every downstream artifact afterwards. `claims_scored.csv`,
       `publisher_leaderboard.csv`, `results_by_episode.csv`,
       `model_predictions.csv` and all 8 figures currently derive from
       `--heuristic` keyword labels, not LLM grades.
+- [ ] Rewrite `RUBRIC_PROMPT` to close the three gaps found by adjudication
+      (quoted forecasts count / ads never count / conditionals — pending
+      Vincent's decision), then regrade. Do this AFTER the in-flight run
+      finishes. Resume makes the regrade cheap.
 - [ ] Compute kappa; if `direction` < 0.6, tighten `RUBRIC_PROMPT` and
       regrade before proceeding to scoring.
 - [ ] Spec Step 4: composite 0-1 claim score (accuracy + punctuality +
@@ -185,6 +227,34 @@ Two arms are tracked here: **bill_arm** (primary) and the **economy arm**
 - **All current numbers are provisional.** `claims_scored.csv` has
   `topic=general_business`, `voice=unclear`, `is_prediction=yes` on all 403
   rows — those are `--heuristic` fallback defaults, not findings.
+- **`voice` is an unvalidated feature.** The LLM labels it and `model.py` can
+  use it, but it is not hand-graded, so there is no kappa for it. If it shows up
+  as an important predictor of accuracy ("experts beat journalists"), that claim
+  rests on unaudited LLM labels — disclose it, or hand-grade voice after all.
+- **The rubric has three concrete gaps, found by adjudicating all 80 hand-graded
+  claims against an independent pass (`handgrade_newspapers/adjudication_claude.csv`,
+  82% agreement, 14 disagreements — the disagreements are patterned, not random):**
+  1. **Quoted forecasts.** Vincent rejected the four most explicit claims in the
+     sample — incl. #867 (*"the downward trend will continue until the last
+     quarter of '50 when production will be 15 per cent below the '48 average"*:
+     direction + dated horizon + magnitude) and #1048 (Slichter, named economist,
+     dated horizon) — apparently because they are reported in a third party's
+     voice. That rule would gut the corpus of its best content; `voice` exists
+     precisely so quoted experts can be counted *and* distinguished. The rubric
+     must say quoted forecasts count.
+  2. **Advertisements.** #972 (champagne price list), #861 (Standard Oil motor-oil
+     ad), #1210 (lumber-yard promo) were graded as predictions because they use
+     words like "outlook"/"prosperity". The rubric says ads → no; it needs to say
+     so louder.
+  3. **Conditionals.** #845, #223 ("*Until this uncertainty is dissipated,
+     business will lack confidence*") are genuinely ambiguous and currently
+     unruled. `score_claims.py` cannot verify whether the "if" was satisfied, so
+     scoring them as forecasts is systematically unfair to the paper. NEEDS A
+     DECISION (recommend: conditional → not a prediction).
+  Net: Vincent's 27.5% prediction rate is too strict (driven by gap 1); the LLM's
+  ~63% is too loose (swallowing ads and OCR garbage). Both err, in opposite
+  directions. Fix `RUBRIC_PROMPT` and regrade — but only after the current run
+  finishes, so the corpus isn't split across two rubrics.
 - `publisher_leaderboard.csv` has only 4 publishers above the n≥10 threshold.
   Underpowered for "which paper predicted best" until the corpus grows.
 - **Sampling skew**: 378 of 1,324 claims (29%) are from Washington DC, 261
@@ -198,8 +268,14 @@ Two arms are tracked here: **bill_arm** (primary) and the **economy arm**
   (`"Panic Is Nearly Over"`) was graded `is_prediction: yes, direction:
   improve`. Misfiled retrospectives add harmless noise to the current model
   but would *manufacture* signal in the state-prediction model.
-- `horizon_months` came back `vague` on all 6 smoke-test claims; `score_claims.py`
-  expects 6 or 12. Check the distribution after the full grading run.
+- **`horizon_months` is mostly `vague`** — ~70% of predictions in the first 100
+  real graded claims (44 vague / 14 six-month / 4 twelve-month). `score_claims.py`
+  needs a 6 or 12 to pick an outcome window, so a large share of claims may be
+  unscorable as things stand. This is precisely the gap spec Step 4 describes
+  ("if the paper gives no number, read 'soon' / 'long-term' and map it to a
+  range per sub-genre") — that inference is still unimplemented. Confirm the
+  final distribution once the run lands, then decide: implement the mapping,
+  or default vague→12 and disclose it.
 - `JeremysShit/` has no venv of its own (`test_offline.py` needs pandas; run
   it with `bill_arm/.venv` for now).
 - `famous_calls.csv` contains a row from publisher `"test paper a"` — test
@@ -207,11 +283,12 @@ Two arms are tracked here: **bill_arm** (primary) and the **economy arm**
 
 ## Needs to be done by you (not automatable / requires a decision)
 
-- [ ] **Hand-grade the 80-claim sample.** Two graders, independently, no
-      discussion, without looking at `claims_graded.csv`. See
-      `handgrade_newspapers/README.md`. ~2-3 hours each. This is the
-      credibility floor: without it the method is "we asked an AI and
-      believed it."
+- [ ] **Hand-grade the 80-claim sample.** Vincent DONE (80/80, 2026-07-14: 22
+      predictions / 58 not). **Jeremy still needs to grade** — his copy must be
+      made from `handgrade_BLANK.csv`, never from Vincent's file, or the
+      human-vs-human kappa is worthless. Five `human_*` columns per row (see
+      `handgrade_newspapers/README.md`), ~2-3 hours. This is the credibility
+      floor: without it the method is "we asked an AI and believed it."
 - [ ] Rotate the Groq API key — it was pasted in plaintext into a chat
       transcript.
 - [ ] Decide whether DC counts as a financial center or a government town,

@@ -82,7 +82,8 @@ get filed as predictions, a paper printed the day after the 1929 crash saying
 "we are ruined" scores as a brilliant forecast. That is fake signal, and it is
 the single biggest threat to this project's credibility.
 
-If `human_is_prediction` is `no`, **leave the next three columns blank.**
+If `human_is_prediction` is `no`, **leave the next three label columns blank**
+(`topic`, `direction`, `confidence`). `human_notes` is always optional.
 
 ### `human_topic` → one of
 
