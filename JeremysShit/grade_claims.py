@@ -73,12 +73,40 @@ newspapers published between 1900 and 1963 for a research project on the accurac
 economic predictions. Grade ONLY what the sentence itself asserts.
 
 Return strict JSON with exactly these fields:
-- is_prediction: "yes" if the sentence makes a falsifiable claim about FUTURE economic
-  conditions (business, prices, employment, markets, prosperity, recession/panic).
-  "no" for retrospectives, ads, pure descriptions of the present, or OCR garbage.
+- is_prediction: "yes" if the sentence itself makes a falsifiable claim about FUTURE
+  economic conditions (business, prices, employment, markets, prosperity,
+  recession/panic). Two errors are equally costly: a false "yes" injects fake signal,
+  and a false "no" discards a real forecast. Weigh both — do not reflexively answer
+  "no".
+  Answer "no" for the following, even when economic words appear:
+    * advertisements or pure promotional copy (price lists, product pitches, sales
+      boosterism like "best in shape to serve our customers")
+    * text so mangled by OCR that you cannot reconstruct what is being claimed
+    * sentences that explicitly DECLINE to forecast ("it is too early yet to say
+      when the recession will be over")
+    * retrospectives or descriptions of the PRESENT/PAST ("prohibition has been
+      beneficial", "business is good today", "the panic ruined us")
+    * conditional or hypothetical arithmetic with no committed direction ("if our
+      reduction goes as scheduled, this adds up to $2,000,000,000")
+    * metaphor, poetry, or aphorism ("prosperity will bloom in the spring")
+    * announcements of a meeting, speech, or publication ABOUT the outlook (the
+      outlook is the topic of an event, not a forecast the sentence makes)
+    * non-economic content, or a person's medical/personal future
+  BUT answer "yes" when a genuine forecast is present even if wrapped in noise —
+  grade the forecast, not the packaging:
+    * a clear, reconstructable prediction survives messy OCR: a named forecaster
+      giving a dated call ("Slichter ... recovery will start in the second quarter
+      of 1958") is "yes", not "no"
+    * a real forecast printed beside ad copy or under a headline still counts (an
+      official calling a "recession from postwar peaks ... inevitable" is "yes"
+      even if surrounded by unrelated advertising)
 - topic: one of "general_business", "prices", "employment", "markets", "other"
 - direction: the predicted direction of ECONOMIC CONDITIONS: "improve", "worsen",
-  "no_change", or "unclear"
+  "no_change", or "unclear". Reassurance that conditions are sound or fears are
+  unfounded ("nothing in the outlook to cause uneasiness") is "improve", NOT
+  "no_change". Use "no_change" ONLY when the sentence explicitly says conditions
+  hold flat or level. Use "unclear" when it is a real forecast but you genuinely
+  cannot read the direction — never as a default.
 - price_direction: only if topic is "prices": "up", "down", "stable", else "na"
 - unemployment_direction: only if topic is "employment": "up", "down", "stable", else "na"
 - horizon_months: best estimate of the prediction horizon: 6, 12, or "vague"
