@@ -467,3 +467,10 @@ timestamp,source,arm,window,phrase,total_hits,pages_fetched
 2026-07-16T10:56:38,nyt,economy,gfc_2008,"""recovery expected""",0,1
 2026-07-16T10:56:51,nyt,economy,gfc_2008,"""economy will improve""",0,1
 2026-07-16T10:57:03,nyt,economy,gfc_2008,"""downturn ahead""",0,1
+2026-07-16T10:57:41,nyt,economy,gfc_2008,"""worst is over""",0,3
+2026-07-16T10:57:53,nyt,economy,gfc_2008,"""depression is coming""",0,1
+2026-07-16T10:58:06,nyt,economy,gfc_2008,"""prosperity will return""",0,1
+2026-07-16T10:58:31,nyt,economy,gfc_2008,"""hard times ahead""",0,2
+2026-07-16T10:58:43,nyt,economy,gulf_1990,"""recession is coming""",0,1
+2026-07-16T10:58:56,nyt,economy,gulf_1990,"""recession likely""",0,1
+2026-07-16T10:59:09,nyt,economy,gulf_1990,"""recovery expected""",0,1
