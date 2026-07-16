@@ -18,6 +18,14 @@ stay under its requests-per-minute cap:
     (OpenRouter's free tier caps at ~50 requests/day without $10 of credit —
      too slow for the full 1,324-claim corpus.)
 
+OpenAI, paid tier 1 (verified 2026-07-16): 500 requests/min AND 200,000
+tokens/min -- the TOKEN cap binds first here, not the request cap, because
+RUBRIC_PROMPT is ~960 input tokens/call. With --model gpt-5.6-luna (a
+reasoning model -- see MAX_TOKENS_REASONING_CAP below) mean usage is
+~960 in + ~250 out =~1,200 tokens/call, so 200k/min sustains only ~166
+calls/min, not 500. --sleep 0.45 keeps ~30% headroom under the token cap;
+--sleep 0.12 (i.e. respecting only the request cap) WILL throttle.
+
 Usage:
     python grade_claims.py                             # grade claims_raw.csv
     python grade_claims.py --limit 20                  # cheap test run first!
@@ -51,8 +59,12 @@ DAILY_CAP_SECONDS = 1800
 # Providers reserve a request's MAXIMUM possible output against the
 # tokens-per-minute budget, not what it actually uses. Left unset, Groq reserves
 # its default (thousands of tokens) per call against a 12k/min ceiling and
-# throttles us hard. The graded JSON is ~100 tokens; 300 is ample.
+# throttles us hard. The graded JSON is ~100 tokens; 300 is ample -- for a
+# NON-reasoning model. Do not raise this default: it would needlessly halve
+# Groq's sustainable throughput for every model, reasoning or not. Reasoning
+# models get bumped per-model, adaptively, in call_llm() instead.
 MAX_TOKENS = 300
+MAX_TOKENS_REASONING_CAP = 2000  # ceiling for the adaptive bump, see call_llm
 
 
 class DailyCapReached(Exception):
@@ -95,11 +107,11 @@ Return strict JSON with exactly these fields:
   BUT answer "yes" when a genuine forecast is present even if wrapped in noise —
   grade the forecast, not the packaging:
     * a clear, reconstructable prediction survives messy OCR: a named forecaster
-      giving a dated call ("Slichter ... recovery will start in the second quarter
-      of 1958") is "yes", not "no"
-    * a real forecast printed beside ad copy or under a headline still counts (an
-      official calling a "recession from postwar peaks ... inevitable" is "yes"
-      even if surrounded by unrelated advertising)
+      giving a dated directional call (e.g. "Prof. Vane expects fac tory output to
+      climb through the spring of 1912") is "yes", not "no"
+    * a real forecast printed beside ad copy or under a headline still counts
+      (e.g. a banker quoted as saying "trade will slacken next year" in a column
+      that also carries a department-store advertisement is still "yes")
 - topic: one of "general_business", "prices", "employment", "markets", "other"
 - direction: the predicted direction of ECONOMIC CONDITIONS: "improve", "worsen",
   "no_change", or "unclear". Reassurance that conditions are sound or fears are
@@ -132,17 +144,34 @@ GRADE_FIELDS = ["is_prediction", "topic", "direction", "price_direction",
                 "speaker_name"]
 
 
-def call_llm(prompt, model, base_url, api_key, max_retries=5):
-    body = json.dumps({
-        "model": model,
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.0,
-        "max_tokens": MAX_TOKENS,
-        "response_format": {"type": "json_object"},
-    }).encode()
+# Newer "reasoning" models (OpenAI o1/o3/gpt-5.x family) reject the classic
+# max_tokens + temperature=0 request shape. Rather than hardcode model-name
+# patterns that will go stale, learn it once from the API's own error and
+# remember it for the rest of the run -- works for this family and any future
+# one with the same restriction, with no per-call rediscovery cost.
+_PARAM_ADAPTATIONS = {}  # model -> {"no_max_tokens": bool, "no_temperature": bool}
+
+
+def call_llm(prompt, model, base_url, api_key, max_retries=5, min_tokens=None):
+    adapt = _PARAM_ADAPTATIONS.setdefault(model, {})
+    if min_tokens and "token_budget" not in adapt:
+        # Skip the wasted first-attempt-at-300 retry tax when we already know
+        # (from a prior survey) that this model needs more -- every failed
+        # attempt still bills tokens even with an empty answer, so on a heavy
+        # reasoner this isn't just slower, it's real wasted money at scale.
+        adapt["token_budget"] = min_tokens
     for attempt in range(max_retries):
+        params = {
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "response_format": {"type": "json_object"},
+        }
+        if not adapt.get("no_temperature"):
+            params["temperature"] = 0.0
+        token_key = "max_completion_tokens" if adapt.get("no_max_tokens") else "max_tokens"
+        params[token_key] = adapt.get("token_budget", MAX_TOKENS)
         req = urllib.request.Request(
-            base_url.rstrip("/") + "/chat/completions", data=body,
+            base_url.rstrip("/") + "/chat/completions", data=json.dumps(params).encode(),
             headers={"Content-Type": "application/json",
                      "Authorization": f"Bearer {api_key}",
                      # Groq's edge rejects the default Python-urllib agent (CF 1010).
@@ -150,7 +179,22 @@ def call_llm(prompt, model, base_url, api_key, max_retries=5):
         try:
             with urllib.request.urlopen(req, timeout=120, context=SSL_CONTEXT) as resp:
                 out = json.load(resp)
-            return json.loads(out["choices"][0]["message"]["content"])
+            choice = out["choices"][0]
+            content = choice["message"]["content"]
+            if not content and choice.get("finish_reason") == "length":
+                # Reasoning models (o1/o3/gpt-5.x) bill invisible "thinking"
+                # tokens against the SAME budget as the visible JSON answer.
+                # Empty content + finish_reason=length means reasoning ate the
+                # whole budget before writing anything -- not a real failure,
+                # just needs headroom. Bump once, remember it for this model
+                # for the rest of the run (cheap models never hit this path).
+                budget = adapt.get("token_budget", MAX_TOKENS)
+                if budget < MAX_TOKENS_REASONING_CAP and attempt < max_retries - 1:
+                    adapt["token_budget"] = min(budget * 3, MAX_TOKENS_REASONING_CAP)
+                    print(f"    reasoning ate the token budget (empty answer) -- "
+                          f"raising to {adapt['token_budget']} for this model", flush=True)
+                    continue
+            return json.loads(content)
         except urllib.error.HTTPError as e:
             if e.code == 429:
                 wait = float(e.headers.get("Retry-After") or 0) or 15.0
@@ -161,6 +205,24 @@ def call_llm(prompt, model, base_url, api_key, max_retries=5):
                     # wait clears it. Exponential backoff here just stalls the run.
                     print(f"    rate limited, waiting {wait:.0f}s", flush=True)
                     time.sleep(wait)
+                    continue
+            if e.code == 400:
+                try:
+                    err = json.loads(e.read())["error"]
+                except Exception:
+                    err = {}
+                param = err.get("param")
+                if param == "max_tokens" and "max_tokens" in params:
+                    adapt["no_max_tokens"] = True
+                    params["max_completion_tokens"] = params.pop("max_tokens")
+                    print("    adapting: max_tokens -> max_completion_tokens "
+                          "(remembered for rest of run)", flush=True)
+                    continue
+                if param == "temperature" and "temperature" in params:
+                    adapt["no_temperature"] = True
+                    del params["temperature"]
+                    print("    adapting: dropping unsupported temperature param "
+                          "(remembered for rest of run)", flush=True)
                     continue
             if attempt == max_retries - 1:
                 raise
@@ -204,7 +266,8 @@ def grade(args):
             prompt = RUBRIC_PROMPT.format(date=row["date"], episode=row["episode"],
                                           quote=row["quote"])
             try:
-                g = call_llm(prompt, args.model, args.base_url, api_key)
+                g = call_llm(prompt, args.model, args.base_url, api_key,
+                            min_tokens=args.min_tokens)
             except DailyCapReached as e:
                 print(f"\n=== {e} ===")
                 print(f"Stopping cleanly with {len(graded)} claims graded and saved.")
@@ -275,6 +338,10 @@ if __name__ == "__main__":
     ap.add_argument("--sleep", type=float, default=0.0,
                     help="seconds between calls; free tiers rate-limit by requests/minute "
                          "(Groq: 2.5, Google AI Studio: 4.5)")
+    ap.add_argument("--min-tokens", type=int, default=None,
+                    help="seed the reasoning-model token budget above the 300 "
+                         "default -- skips the wasted first-attempt retry tax "
+                         "when a survey already showed this model needs more")
     ap.add_argument("--overwrite", action="store_true",
                     help="ignore an existing --out file instead of resuming from it")
     ap.add_argument("--sample-frac", type=float, default=0.2)

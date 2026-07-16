@@ -137,7 +137,10 @@ def search_phrase(api_key, arm, window_id, phrase, begin, end, max_pages=None):
         if not docs:
             break
         yield from docs
-        if (page + 1) * 10 >= (total_hits or 0):
+        # meta.hits is unreliable on these narrow quoted-phrase queries (often
+        # reports 0 even when docs come back) -- page on actual page size
+        # instead of trusting it, or a real corpus gets truncated at page 1.
+        if len(docs) < 10:
             break
         page += 1
     log_search(arm, window_id, phrase, total_hits or 0, page + 1)
@@ -213,6 +216,11 @@ def main():
     ap.add_argument("--window", help="economy: single window_id")
     ap.add_argument("--max-pages", type=int, default=None,
                     help="cap result pages per phrase (10 hits each), for testing")
+    ap.add_argument("--include-pre-1963", action="store_true",
+                    help="economy, no --window: also hit windows before 1963 "
+                         "(LOC already covers these full-text -- NYT-only "
+                         "headline/lead data there is redundant and just "
+                         "burns free-tier budget; default is post-1963 only)")
     args = ap.parse_args()
 
     api_key = os.environ.get("NYT_API_KEY")
@@ -227,7 +235,12 @@ def main():
                        ELECTION_PHRASES, {"cycle": year}, args.max_pages)
     else:
         windows = load_economy_windows()
-        ids = [args.window] if args.window else sorted(windows)
+        if args.window:
+            ids = [args.window]
+        elif args.include_pre_1963:
+            ids = sorted(windows)
+        else:
+            ids = sorted(wid for wid, (begin, _, _) in windows.items() if begin >= "19630101")
         for wid in ids:
             if wid not in windows:
                 raise SystemExit(f"Unknown window '{wid}'. Options: {sorted(windows)}")

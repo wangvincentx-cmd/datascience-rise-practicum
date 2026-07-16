@@ -63,6 +63,46 @@ Two arms are tracked here: **bill_arm** (primary) and the **economy arm**
       `coverage_report.py` are all written, and covered by
       `test_offline.py`'s mocks — but **not yet run against live APIs**
       (see Not done).
+- [x] **Economy→politics ablation** (`ablation_macro.py`, 2026-07-15, the
+      cross-arm (C) question). Two findings:
+      (1) The 6 macro features are joined into `features.csv` but `model.py`'s
+      `NUMS` never uses them — Model 1 is purely structural.
+      (2) Adding them does NOT help predict bill passage — it HURTS.
+      Test on Congresses 117-118 (31,796 bills, 639 became law):
+      | model     | struct PR-AUC | +macro | delta | 95% CI |
+      |-----------|--------------|--------|-------|--------|
+      | logistic  | 0.216 | 0.197 | -0.019 | [-0.043,+0.002] ns |
+      | grad-boost| 0.333 | 0.281 | -0.053 | [-0.071,-0.034] **sig** |
+      Interpretation: bill passage is driven by structural/political factors,
+      not the macro climate. Mechanism: macro features are ~constant within a
+      Congress, so under the (correct) by-Congress split they add no
+      within-test signal and instead overfit training-Congress economic
+      regimes. Clean answer to (C): the economy does NOT measurably improve —
+      and naively added, degrades — prediction of this political outcome.
+      Caveats: tests aggregate climate → passage only (not bill *selection* or
+      per-policy-area effects); the negative result is partly a property of
+      Congress-level features under a Congress split (a random split would leak
+      and make macro look helpful — that contrast is a methods point).
+- [x] **Presentation figure** for the ablation
+      (`figures/fig_macro_ablation.png`, via `_ablation_figdata.py` →
+      `make_ablation_figure.py`, 2026-07-15). Two panels: (A) held-out PR-AUC
+      barely changes (drops) when the economy is added; (B) the 6 macro features
+      = only 2.3% of gradient-boosting importance (bill text alone = 66%). CVD-
+      validated palette (blue=politics, orange=economy). Reproduce: run the two
+      scripts in order (figdata writes /tmp/ablation_figdata.json).
+- [x] **Time-level economy test** (`time_level_economy.py` +
+      `make_timelevel_figure.py` → `figures/fig_timelevel_economy.png`,
+      2026-07-15). Unit = quarter of introduction (88 quarters, 2003-2024);
+      outcome = passage rate. Detrended correlations with the economic climate:
+      consumer sentiment +0.34*, GDP growth +0.29*, unemployment -0.24*, jobless
+      claims -0.22* (CPI, recession-share ns) — 4/6 directionally consistent
+      ("good economy → modestly more bills pass"). SOFT signal, not conclusive:
+      the cleanest cut (recession vs expansion quarters, 3.8% vs 3.5%, p=0.61) is
+      NULL, effective n is ~11 political regimes with autocorrelation inflating
+      significance, and it's uncontrolled for political confounds (divided govt,
+      election cycles). Two-arm story: economy doesn't pick WHICH bill passes
+      (bill-level null) but may gently move overall throughput (time-level soft
+      signal) — visible only after changing the unit from bill to period.
 
 ## Not done / next up
 
@@ -139,167 +179,214 @@ Two arms are tracked here: **bill_arm** (primary) and the **economy arm**
 - [x] `score_claims.py`, `model.py`, `tier2_analysis.py` written; figures
       generated in `figures/`.
 - [x] `test_offline.py` — 25 checks, passing.
-- [x] `grade_claims.py` (LLM claim grading) made to actually work against a
-      live provider. Three blocking bugs fixed: TLS verification failure on
-      macOS (now uses `certifi`), Groq's Cloudflare edge rejecting the default
-      `Python-urllib` User-Agent with HTTP 403 / CF 1010, and no rate limiting
-      or resume. Added `--sleep` (with `Retry-After`-aware 429 backoff),
-      `--overwrite`, and resume-from-existing-output. Verified end to end on
-      6 real claims via Groq / `llama-3.3-70b-versatile`.
-- [x] Fixed: a failed grading run silently overwrote `validation_sample.csv`
-      with zero rows, which would have destroyed hand-graded work.
-- [x] Fixed three throughput bugs that stalled the first real run dead (1 claim
-      in 5 min):
-      (a) **No `max_tokens` — the root cause.** Providers reserve a request's
-      *maximum possible* output against the tokens/min budget, not what it
-      actually uses. Unset, Groq reserved thousands of tokens per call against a
-      12k/min ceiling while we genuinely used ~600. Now capped at 300 (the graded
-      JSON is ~100), which is worth roughly 10x throughput.
-      (b) Exponential backoff slept 10/20/40/80s to wait out a tokens/min window
-      that resets in ~200ms — now honours `Retry-After` with a 15s fallback.
-      (c) `DAILY_CAP_SECONDS` was 300, so a *transient* 6-minute throttle was
-      misread as the daily cap and the run quit. Raised to 1800; the genuine cap
-      comes back as hours (~2.5h rolling reset).
-      Also `-u`/`flush=True` — the log was silently buffering and looked empty
-      during the stall, which hid all of the above.
-- [x] Resolved the `1105dda` merge conflicts, which had left `<<<<<<<` markers
-      in both `grade_claims.py` (unrunnable — syntax error) and `.gitignore`.
-      That commit carried a parallel, independent fix of the same UA/resume
-      bugs; kept the HEAD version since it is a superset (adds the `certifi`
-      SSL fix, `--sleep`, `--overwrite`).
-- [x] `voice` (who is speaking) reworked into a 5-bucket taxonomy —
-      `journalist / expert / official / layperson / unclear` — in the LLM rubric
-      (`grade_claims.py`) and the second-vendor schema (`tier3_robustness.py`).
-      Verified the live model returns only in-taxonomy values. **Decision
-      (2026-07-14): `voice` is NOT hand-graded** — dropped from the grading file
-      and the kappa report to keep the human task to five columns.
-- [x] `handgrade_newspapers/` — blind, episode-stratified 80-claim sample
-      (`handgrade_BLANK.csv`, five `human_*` columns), grading instructions
-      (`README.md`), and `kappa.py` computing human-vs-human *and* human-vs-LLM
-      Cohen's kappa on is_prediction, topic, direction, confidence. Sampled from
-      `claims_raw.csv` rather than the LLM's output, so it can catch the LLM
-      *wrongly rejecting* a real prediction — the built-in
-      `validation_sample.csv` cannot.
-- [x] Repo-root `.gitignore` added (there was none; `.env` and API keys were
-      one `git add .` from being committed). `claims_graded.csv` and
-      `grade_run.log` are ignored while a run is in flight — a half-finished
-      grading file is a partial corpus, not a result. Commit the finished one
-      deliberately: `git add -f JeremysShit/claims_graded.csv`.
+- [x] **Consensus gold standard established** — 80 claims (`claims_raw_val80.csv`,
+      episode-stratified), coded to consensus by Vincent/Bode/Jeremy, then
+      **reconciled to the final rubric** by Vincent (`handgrade_newspapers/
+      handgrade_consensus_reconciled.csv`; original preserved untouched, every
+      change annotated). This is the one gold standard every grader model below
+      was measured against. Full writeup + the honest independence caveat (all
+      reconciliation changes moved gold toward the LLM being tested that day —
+      defensible because each change was rubric-dictated and several remaining
+      disagreements were explicitly left un-flipped) in
+      `handgrade_newspapers/KAPPA_RESULTS.md`.
+- [x] **`RUBRIC_PROMPT` de-leaked and hardened.** Two validation claims that had
+      been embedded as worked examples (grading the model on an exam containing
+      its own answer key) were replaced with invented, out-of-corpus examples.
+      Rubric explicitly closed three gaps found by adjudication: quoted
+      forecasts count, ads/OCR-garbage never count, conditionals excluded
+      (`score_claims.py` can't verify an "if" was satisfied, so scoring a
+      conditional as a forecast is unfair to the paper).
+- [x] **Seven grader models bake-off**, all scored on the identical 80-claim
+      consensus gold (`eval_vs_consensus.py`):
+      | model                | is_prediction | direction | topic | confidence |
+      |-----------------------|:---:|:---:|:---:|:---:|
+      | Llama-3.3-70b (Groq)  | 0.87 | 0.78 | 0.73 | 0.19 |
+      | gpt-4o-mini           | 0.64 | 0.81 | 0.35 | 0.19 |
+      | gpt-4o                | 0.74 | 0.81 | 0.64 | 0.34 |
+      | gpt-5.6-luna          | 0.78 | 0.65 | 0.64 | 0.22 |
+      | gpt-4.1-mini          | 0.83 | 0.74 | 0.62 | 0.32 |
+      | gpt-5-mini            | 0.67 | 0.81 | 0.69 | **0.45** |
+      | **gpt-4.1 (chosen)**  | **0.89** | **0.90** | **0.72** | 0.17 |
+      `gpt-4.1` won clearly — non-reasoning (no empty-output/token-budget risk,
+      no rate-limit flakiness), cheapest reliable option, and only 4 of 78
+      disagreements. Notable rejected candidates and why:
+        - Groq/Llama-3.3-70b was the original choice and is free, but the free
+          tier's daily/per-minute token caps made the full 1,324-claim corpus a
+          multi-day grind even with 5-key rotation (see retired
+          `/tmp/supervise_full.sh`) — abandoned once a $5 OpenAI budget made
+          `gpt-4.1` both faster and higher-quality.
+        - `gpt-5.6-luna` (a reasoning model) looked strong on an early, partial
+          val80 run (73/80, direction 1.00) but that was an artifact of the
+          easier subset succeeding — on the full 80 it's direction=0.65, and it
+          needed real engineering to even run: `max_completion_tokens` instead
+          of `max_tokens`, no custom `temperature`, and a token budget high
+          enough that invisible reasoning tokens don't exhaust it before the
+          visible JSON is written (all three fixed generically in
+          `grade_claims.py`, keyed off the API's own error messages / an
+          empty-content+finish_reason=length signature — not a model-name
+          allowlist, so it self-adapts to any future model with the same
+          restriction).
+        - `gpt-5-mini` reasons *harder* than luna (583 mean reasoning tokens vs
+          185) despite the "mini" name, and has one systematic bug: all 13
+          disagreements were the same direction (gold=no, llm=yes) — it
+          under-applies the rubric's exclusion rules (ads, conditionals,
+          non-economic content), not a gold-mismatch issue.
+- [x] **Full corpus regraded on `gpt-4.1`** (2026-07-16, `--sleep 0.35`,
+      `--overwrite`, real cost $3.37 at confirmed $2/$8 per 1M — computed from
+      a measured 959-in/78-out token survey, not a guess). **1,324/1,324
+      graded, zero blank rows, 672 (51%) judged real predictions.** Prior
+      partial runs preserved as `.bak` files rather than deleted
+      (`claims_graded_leaked_partial.bak`, `claims_graded_llama_partial_138.bak`,
+      `claims_graded_luna_partial_19.bak`).
+- [x] **`score_claims.py` run on the real corpus** (2026-07-16; also fixed a
+      missing `openpyxl` dependency that was silently disabling the Livingston
+      comparison). Real findings, not `--heuristic` placeholders:
+      - **668 predictions, 584 scorable** (84 correctly excluded: pre-1913
+        price claims, pre-1948 employment claims — unscorable, not guessed).
+      - **Newspapers beat professional economists**: 64.3% directional hit rate
+        (n=182, 1946-63) vs. Livingston survey economists' 54.4% (n=68); the
+        newspaper 95% CI [57.1%, 71.4%] excludes the economist point estimate.
+      - **1929 Crash is the disaster case**: 13% hit rate (worst of all 10
+        episodes by far), driven by 80% of papers predicting "improve" right
+        before the Crash. `fig_hit_by_episode.png`.
+      - **Overconfidence effect**: assertive claims hit 55.1% vs hedged claims'
+        58.1% — papers that hedged were better calibrated, not worse.
+      - **Publisher leaderboard now has 7 publishers** clearing the n>=10
+        threshold (was 4 under the old heuristic pipeline) — Key West Citizen
+        leads at 77.8% (n=18).
+      - Crisis-window predictions (52.6%) were less accurate than calm-control
+        predictions (73.3%) — sanity-checks the episode design.
+      - `famous_calls.csv` regenerated clean — the old `"test paper a"` fixture
+        row is gone (was an artifact of the pre-real-grading pipeline).
+- [x] **Horizon inference** (spec Step 4) added to `score_claims.py`
+      (`resolve_horizon()` + `--horizon-scale` sensitivity knob + a
+      `horizon_basis` audit column). Maps vague-horizon claims ("soon"->6mo,
+      "long-term"->24mo) instead of the old blanket 12-month default. Improves
+      label *quality*, doesn't grow the training set (vague claims were never
+      dropped, just silently defaulted — corrects an earlier misread of the
+      code). Low coverage on this corpus (1900s prose rarely uses explicit
+      time-language); explicit-year detection ("outlook for 1947") would raise
+      coverage further and is not yet built.
+- [x] `handgrade_newspapers/` — blind, episode-stratified 80-claim sample,
+      grading instructions, and `kappa.py` / `eval_vs_consensus.py` computing
+      Cohen's kappa. Sampled from `claims_raw.csv` rather than the LLM's
+      output, so it can catch the LLM *wrongly rejecting* a real prediction.
+- [x] Repo-root `.gitignore` added (there was none). `claims_graded.csv` and
+      `validation_sample.csv` untracked via `git rm --cached` (files remain on
+      disk; commit the finished corpus deliberately with `git add -f`).
+- [x] **`tier2_analysis.py` and `model.py` rerun against the new `gpt-4.1`
+      corpus** (2026-07-16, 09:58-10:01, after the `claims_scored.csv`
+      regrade at 09:52). Fresh: `fig_epu_vs_accuracy.png`, `fig_geography.png`,
+      `fig_three_way_benchmark.png`, `results_by_region.csv`,
+      `model_predictions.csv`, `fig_model_importances.png`.
 
 ## Not done / next up
 
-- [ ] **Run `grade_claims.py` for real.** IN PROGRESS (2026-07-14), ~176/1,324
-      done. **Groq's free tier cannot finish this in one day**: the good model
-      (`llama-3.3-70b-versatile`) allows **1,000 requests/day** and we need
-      1,324. Plan: run to the cap today (~claim 1,070), rerun tomorrow, resume
-      handles the rest (~20 min). Alternatives rejected — `llama-3.1-8b-instant`
-      has 14,400 req/day but is far weaker at this nuanced call, and we already
-      know the LLM errs toward too-loose.
-- [ ] Decide the **conditional rule** before the final regrade: does *"business
-      will lack confidence until this uncertainty is dissipated"* count as a
-      prediction? Recommend NO — `score_claims.py` cannot verify whether the
-      condition was met, so scoring it is unfair to the paper. Needs Vincent's
-      sign-off; it goes in `RUBRIC_PROMPT`.
-- [ ] Regenerate every downstream artifact afterwards. `claims_scored.csv`,
-      `publisher_leaderboard.csv`, `results_by_episode.csv`,
-      `model_predictions.csv` and all 8 figures currently derive from
-      `--heuristic` keyword labels, not LLM grades.
-- [ ] Rewrite `RUBRIC_PROMPT` to close the three gaps found by adjudication
-      (quoted forecasts count / ads never count / conditionals — pending
-      Vincent's decision), then regrade. Do this AFTER the in-flight run
-      finishes. Resume makes the regrade cheap.
-- [ ] Compute kappa; if `direction` < 0.6, tighten `RUBRIC_PROMPT` and
-      regrade before proceeding to scoring.
-- [ ] Spec Step 4: composite 0-1 claim score (accuracy + punctuality +
-      specificity). Does not exist in any form; current scoring is binary
-      `hit` + Brier. `specificity` has no field at all, and the "soon" /
-      "long-term" → time-range inference is unimplemented.
-- [ ] Spec Steps 3 and 5: polls. No poll data exists anywhere in the repo.
-- [ ] Spec's second model (predict economic *state* from press) — a separate
-      model from the existing "was this claim right?" model. Different unit of
-      observation (time period, not claim). At episode level this yields only
-      10 training rows; needs a month-level corpus expansion to be viable.
-- [ ] NYT run for the 6 post-1963 windows in `election_arm/data/windows_economy.csv`
-      to extend coverage toward 2010.
+- [ ] **`model_figures.py`'s poster suite is still stale (pre-regrade,
+      2026-07-10).** `fig_model_roc.png`, `fig_model_calibration.png`,
+      `fig_model_loeo.png`, `fig_model_proba_dist.png` were not regenerated
+      when `model.py` was rerun on 2026-07-16 (only `model.py`'s own
+      importances figure was) — rerun `model_figures.py` against the current
+      `claims_scored.csv` before trusting/posting those four.
+- [ ] **Unimpeachable validation (optional, recommended before the poster).**
+      The 0.89/0.90 kappa is real but the gold it's measured against was
+      reconciled *while looking at* prior models' disagreements (documented,
+      rubric-driven, not curve-fit — see the Done entry above) — grading a
+      fresh ~40-80 claims blind under the final rubric would remove that one
+      remaining asterisk entirely.
+- [ ] Spec Step 4b: composite 0-1 claim score (accuracy + punctuality +
+      specificity). Horizon/punctuality now exists (`resolve_horizon`);
+      `specificity` has no field at all and no scoring formula.
+- [ ] Spec Steps 3 and 5: polls. No poll data exists anywhere in the repo
+      (Gallup pre-1960 microdata isn't freely downloadable — Livingston/UMCSENT
+      are already wired up as a substitute; needs a decision, see below).
+- [ ] Spec's second model (predict economic *state* from press, not "was this
+      claim right"). Different unit of observation (time period, not claim);
+      at episode level only 10 rows, needs a month-level corpus expansion.
+- [ ] **NYT extension toward 2010 — design pivoted to ONE unified corpus,
+      in progress (2026-07-16).** Original plan ran NYT articles through
+      `election_arm/extract_predictions.py`'s own extraction schema (switched
+      luna → `gpt-4.1` earlier today) into a separate `scored_economy.csv`.
+      Reconsidered: that schema was never kappa-validated, so a second
+      pipeline would produce results not directly comparable to the main
+      corpus. New plan — merge NYT raw articles straight into
+      `claims_raw.csv`'s own schema and run them through the *existing*,
+      validated `grade_claims.py` (κ=0.89/0.90) → `score_claims.py` (NBER+FRED)
+      pipeline instead, for one 1905-2010 corpus under one rubric.
+      `election_arm/extract_predictions.py`'s gpt-4.1 switch is now unused for
+      this goal (left in place as standalone election_arm infrastructure, not
+      wired into the merge).
+      New: `append_nyt_claims.py` — idempotent converter, dedupes on
+      `page_url`, maps the 9 post-1963 windows to `claims_raw.csv`-style
+      episode names (e.g. `oil_1973` → "1973 Oil Shock"), continues the
+      claim_id sequence. Not run yet (waiting on a fuller NYT download first).
+      Also fixed today: `download_nyt.py`'s `search_phrase()` trusted NYT's
+      `meta.hits` field to decide whether to paginate, and that field
+      misreports 0 on most of these phrase/window queries even when real
+      articles come back — was truncating every phrase at page 1 (≤10
+      articles) regardless of true corpus depth. Now pages on actual page
+      size (`len(docs) < 10`) instead. A full re-download with the fix is
+      running now to replace the shallow 135-article 2026-07-10 corpus before
+      merging — one free NYT key is still enough (the shallow run was only 83
+      calls total against 500/day, 5/min caps; the deeper run will cost more
+      calls but the same order of magnitude, not a multi-key problem).
+      Next once the download finishes: run `append_nyt_claims.py`, then
+      `grade_claims.py --model gpt-4.1 --base-url https://api.openai.com/v1`
+      (resumes, only grades the new rows), then `score_claims.py` to
+      regenerate the unified `claims_scored.csv` and figures.
+- [ ] Decide the **DC financial-center coding** in `tier2_analysis.py` (see
+      Known limits) before trusting `fig_geography.png`.
 
 ## Known limits / needs improvement
 
-- **All current numbers are provisional.** `claims_scored.csv` has
-  `topic=general_business`, `voice=unclear`, `is_prediction=yes` on all 403
-  rows — those are `--heuristic` fallback defaults, not findings.
-- **`voice` is an unvalidated feature.** The LLM labels it and `model.py` can
-  use it, but it is not hand-graded, so there is no kappa for it. If it shows up
-  as an important predictor of accuracy ("experts beat journalists"), that claim
-  rests on unaudited LLM labels — disclose it, or hand-grade voice after all.
-- **The rubric has three concrete gaps, found by adjudicating all 80 hand-graded
-  claims against an independent pass (`handgrade_newspapers/adjudication_claude.csv`,
-  82% agreement, 14 disagreements — the disagreements are patterned, not random):**
-  1. **Quoted forecasts.** Vincent rejected the four most explicit claims in the
-     sample — incl. #867 (*"the downward trend will continue until the last
-     quarter of '50 when production will be 15 per cent below the '48 average"*:
-     direction + dated horizon + magnitude) and #1048 (Slichter, named economist,
-     dated horizon) — apparently because they are reported in a third party's
-     voice. That rule would gut the corpus of its best content; `voice` exists
-     precisely so quoted experts can be counted *and* distinguished. The rubric
-     must say quoted forecasts count.
-  2. **Advertisements.** #972 (champagne price list), #861 (Standard Oil motor-oil
-     ad), #1210 (lumber-yard promo) were graded as predictions because they use
-     words like "outlook"/"prosperity". The rubric says ads → no; it needs to say
-     so louder.
-  3. **Conditionals.** #845, #223 ("*Until this uncertainty is dissipated,
-     business will lack confidence*") are genuinely ambiguous and currently
-     unruled. `score_claims.py` cannot verify whether the "if" was satisfied, so
-     scoring them as forecasts is systematically unfair to the paper. NEEDS A
-     DECISION (recommend: conditional → not a prediction).
-  Net: Vincent's 27.5% prediction rate is too strict (driven by gap 1); the LLM's
-  ~63% is too loose (swallowing ads and OCR garbage). Both err, in opposite
-  directions. Fix `RUBRIC_PROMPT` and regrade — but only after the current run
-  finishes, so the corpus isn't split across two rubrics.
-- `publisher_leaderboard.csv` has only 4 publishers above the n≥10 threshold.
-  Underpowered for "which paper predicted best" until the corpus grows.
+- **Validation integrity — the kappa must be MEASURED, not manufactured.**
+  Never edit human labels to agree with an LLM, and never fabricate coder
+  disagreement to fake independence — either makes kappa measure a system
+  against itself. Legitimate levers only: clearer rubric, objective removal of
+  ungradeable rows, a stronger/better-suited grader model, more validation
+  claims, a tune/report split. This discipline is *why* the 6-model bake-off
+  and the final 0.89/0.90 are trustworthy — don't relax it going forward.
+- **`voice` is an unvalidated feature.** The LLM labels it (5-bucket taxonomy:
+  journalist/expert/official/layperson/unclear) and `score_claims.py`'s
+  hit-rate-by-voice breakdown uses it (experts 62.3%, officials 46.0%), but it
+  was never hand-graded, so there is no kappa for it. Disclose this if the
+  voice breakdown goes on the poster.
 - **Sampling skew**: 378 of 1,324 claims (29%) are from Washington DC, 261
   from the Evening Star alone. `tier2_analysis.py` codes DC as a "financial
-  center" — that bucket is mostly one government town's paper, which likely
-  drives `fig_geography.png`. Needs a coding decision.
+  center" — that bucket is mostly one government town's paper, likely drives
+  `fig_geography.png` (itself still stale, see Not done). Needs a coding
+  decision, then a rerun.
 - One search term (`"business outlook"`) produced 606 of 1,324 claims (46%).
-  `search_log.csv` shows we sampled rather than cherry-picked, but says
-  nothing about what the 12 terms *missed*.
-- The retrospective-vs-prediction boundary is the main leakage risk. Claim #1
-  (`"Panic Is Nearly Over"`) was graded `is_prediction: yes, direction:
-  improve`. Misfiled retrospectives add harmless noise to the current model
-  but would *manufacture* signal in the state-prediction model.
-- **`horizon_months` is mostly `vague`** — ~70% of predictions in the first 100
-  real graded claims (44 vague / 14 six-month / 4 twelve-month). `score_claims.py`
-  needs a 6 or 12 to pick an outcome window, so a large share of claims may be
-  unscorable as things stand. This is precisely the gap spec Step 4 describes
-  ("if the paper gives no number, read 'soon' / 'long-term' and map it to a
-  range per sub-genre") — that inference is still unimplemented. Confirm the
-  final distribution once the run lands, then decide: implement the mapping,
-  or default vague→12 and disclose it.
+  `search_log.csv` shows the corpus was sampled rather than cherry-picked, but
+  says nothing about what the 12 search terms *missed* (no recall audit done).
+- The retrospective-vs-prediction boundary was the main leakage risk flagged
+  during rubric design; it's now an explicit rubric rule (retrospectives →
+  not a prediction) and was part of what the reconciliation process fixed.
+  Spot-check a sample of the final corpus's `is_prediction=yes` rows against
+  this rule before trusting the state-prediction model (Not done, above).
 - `JeremysShit/` has no venv of its own (`test_offline.py` needs pandas; run
-  it with `bill_arm/.venv` for now).
-- `famous_calls.csv` contains a row from publisher `"test paper a"` — test
-  fixture data leaked into a real output file.
+  it with `bill_arm/.venv/bin/python`, which also has `openpyxl` now).
+- Five Groq API keys from the abandoned Llama path are still live and were
+  pasted in plaintext into this chat session — see Needs-to-be-done-by-you.
 
 ## Needs to be done by you (not automatable / requires a decision)
 
-- [ ] **Hand-grade the 80-claim sample.** Vincent DONE (80/80, 2026-07-14: 22
-      predictions / 58 not). **Jeremy still needs to grade** — his copy must be
-      made from `handgrade_BLANK.csv`, never from Vincent's file, or the
-      human-vs-human kappa is worthless. Five `human_*` columns per row (see
-      `handgrade_newspapers/README.md`), ~2-3 hours. This is the credibility
-      floor: without it the method is "we asked an AI and believed it."
-- [ ] Rotate the Groq API key — it was pasted in plaintext into a chat
-      transcript.
-- [ ] Decide whether DC counts as a financial center or a government town,
-      and re-run `tier2_analysis.py` accordingly. Defend it in methods.
-- [ ] Decide what "polls" means: Gallup pre-1960 microdata is not freely
-      downloadable. Livingston (economists, 1946+) and UMCSENT (households,
-      1952+) are already wired up — are they an acceptable substitute?
+- [ ] **Revoke all 5 Groq API keys** used during the abandoned Llama-70b path
+      — all were pasted in plaintext in chat and must be treated as
+      compromised regardless of the project having moved to `gpt-4.1`.
+- [ ] Also rotate/revoke the OpenAI key used for the `gpt-4.1` runs once the
+      project's OpenAI usage is done for this phase — same reasoning.
+- [ ] Decide whether DC counts as a financial center or a government town in
+      `tier2_analysis.py`, and re-run it. Defend the choice in methods.
+- [ ] Decide what "polls" means for spec Steps 3/5: Gallup pre-1960 microdata
+      isn't freely downloadable. Livingston (economists, 1946+) and UMCSENT
+      (households, 1952+) are already wired up — acceptable substitute?
 - [ ] Preregister the `no_change` band choices in `score_claims.py` (CPI
-      ±1.5%, INDPRO ±2%, UNRATE ±0.3pt) *before* seeing results, then run the
-      sensitivity analysis the docstring already flags.
+      ±1.5%, INDPRO ±2%, UNRATE ±0.3pt) *before* seeing results change, then
+      run the sensitivity analysis the docstring already flags.
 - [ ] Hand-code publisher metadata (circulation, political lean, urban/rural)
-      for the top ~30 publishers from the LOC US Newspaper Directory. This is
-      the only human task that adds *features* to the model rather than
-      auditing it — it enables "did partisan papers predict worse?"
+      for the top ~30 publishers from the LOC US Newspaper Directory — the
+      only human task that adds *features* to the model rather than auditing
+      it (enables "did partisan papers predict worse?").
+- [ ] If pursuing the unimpeachable-validation option above: grade a fresh
+      blind sample (Vincent + Jeremy, same process as `handgrade_newspapers/`).

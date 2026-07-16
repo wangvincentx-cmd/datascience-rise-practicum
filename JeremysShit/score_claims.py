@@ -130,6 +130,43 @@ HEURISTIC_WORSE = re.compile(r"\b(panic|depression|hard times|collapse|slump|wor
 HEURISTIC_BETTER = re.compile(r"\b(prosperity|recover\w*|revival|improve\w*|better|"
                               r"bright|confiden\w*|boom)", re.I)
 
+# --- Horizon inference (project spec Step 4) -------------------------------
+# The grader labels each claim's horizon 6, 12, or "vague". A "vague" claim
+# ("prosperity is right around the corner", "recovery will take years") states
+# no number, and scoring it over a blanket 12-month window can wrongly flip a
+# hit to a miss. Instead of defaulting, read the TIME LANGUAGE in the quote and
+# map it to a horizon. This only changes the OUTCOME WINDOW a vague claim is
+# checked over -- it is a documented modeling ASSUMPTION, so it is
+# sensitivity-testable via --horizon-scale (e.g. 0.5 / 2.0 to widen/narrow the
+# inferred windows and confirm the headline result is not an artifact of it).
+# Claims with a numeric horizon from the grader are never touched.
+SHORT_HORIZON = re.compile(
+    r"\b(soon|shortly|immediat\w+|at once|right away|near future|coming months|"
+    r"next few months|before long|within (?:a few )?months|"
+    r"this (?:spring|summer|fall|autumn|winter)|by (?:spring|summer|fall|winter))\b",
+    re.I)
+LONG_HORIZON = re.compile(
+    r"\b(long[- ]?run|long[- ]?term|for years|coming years|years to come|"
+    r"eventually|ultimately|in (?:the )?time|decade|for some time|"
+    r"permanent\w*|lasting)\b", re.I)
+HORIZON_SHORT_M, HORIZON_DEFAULT_M, HORIZON_LONG_M = 6, 12, 24
+
+
+def resolve_horizon(row, scale=1.0):
+    """Return (months, basis). Numeric grader horizons are authoritative;
+    vague ones are inferred from time-language, else the neutral 12-mo default."""
+    h = str(row.get("horizon_months", "")).strip()
+    if h in ("6", "12", "24"):
+        return int(h), "stated"
+    q = str(row.get("quote", ""))
+    if LONG_HORIZON.search(q):
+        m, why = HORIZON_LONG_M, "inferred_long"
+    elif SHORT_HORIZON.search(q):
+        m, why = HORIZON_SHORT_M, "inferred_short"
+    else:
+        m, why = HORIZON_DEFAULT_M, "default_12"
+    return max(1, round(m * scale)), why
+
 
 def heuristic_grade(df):
     """Keyword stand-in for LLM grades so the pipeline runs before an API key exists."""
@@ -166,15 +203,15 @@ def score(args):
 
     out = []
     for _, r in preds.iterrows():
-        months = 6 if str(r.get("horizon_months", "12")).strip() == "6" else 12
+        months, horizon_basis = resolve_horizon(r, args.horizon_scale)
         realized, scorable, basis = realized_direction(
             r["topic"], r.get("price_direction", ""), r.get("unemployment_direction", ""),
             r["date"], months, cpi, indpro, unrate)
         pred = predicted_label(r)
         hit = int(pred == realized) if (scorable and pred) else np.nan
         p = CONF_P.get(str(r.get("confidence", "hedged")), 0.7)
-        out.append({**r, "months": months, "predicted_label": pred,
-                    "realized_label": realized, "basis": basis,
+        out.append({**r, "months": months, "horizon_basis": horizon_basis,
+                    "predicted_label": pred, "realized_label": realized, "basis": basis,
                     "hit": hit, "brier": (p - hit) ** 2 if hit == hit else np.nan})
     scored = pd.DataFrame(out)
     scored.to_csv("claims_scored.csv", index=False)
@@ -362,5 +399,8 @@ if __name__ == "__main__":
     ap.add_argument("--min-claims", type=int, default=10)
     ap.add_argument("--heuristic", action="store_true",
                     help="score ungraded claims with keyword rules (pipeline test only)")
+    ap.add_argument("--horizon-scale", type=float, default=1.0,
+                    help="multiply INFERRED (vague-claim) horizons for sensitivity "
+                         "testing, e.g. 0.5 or 2.0; stated 6/12-mo horizons unaffected")
     args = ap.parse_args()
     score(args)

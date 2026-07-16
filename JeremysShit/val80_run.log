@@ -1,0 +1,16 @@
+Grading 80 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 4s
+    rate limited, waiting 918s
+Resuming: 13 claims already graded in claims_graded_val80_deleaked.csv
+Grading 67 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+Resuming: 17 claims already graded in claims_graded_val80_deleaked.csv
+Grading 63 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 506s
+Resuming: 30 claims already graded in claims_graded_val80_deleaked.csv
+Grading 50 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+  25/50 graded
+  50/50 graded
+
+Done: 80 graded -> claims_graded_val80_deleaked.csv  (34 judged real predictions)
+Human validation sample (6 rows) -> validation_sample.csv
+Two graders: fill the human_* columns independently, then run --kappa on each.

@@ -1,5 +1,8 @@
 publisher,n,hit_rate,brier
-"the milwaukee leader (milwaukee, wis.) 1911-1938",10,0.6,0.25
-"evening star (washington, d.c.) 1854-1972",77,0.519,0.282
-the washington times (washington [d.c.]) 1902-1939,40,0.375,0.34
-"toledo union journal (toledo, ohio) 1942-current",10,0.2,0.41
+"the key west citizen (key west, fla.) 1879-current",18,0.778,0.206
+"the tri-county news (grand rapids, ohio) 1915-1949",15,0.6,0.277
+the washington times (washington [d.c.]) 1902-1939,39,0.564,0.301
+"the omaha guide (omaha, neb.) 1927-19??",16,0.562,0.295
+"evening star (washington, d.c.) 1854-1972",116,0.543,0.325
+"toledo union journal (toledo, ohio) 1942-current",13,0.462,0.392
+"the frontier (o'neill city, holt county, neb.) 1880-1965",20,0.4,0.43
