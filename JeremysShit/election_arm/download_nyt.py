@@ -59,10 +59,27 @@ ELECTION_PHRASES = [
     '"seen winning"', '"is likely to win"',
 ]
 
+# Broadened 2026-07-16 to mirror the LOC scraper's terms (newspaper_scraper.py)
+# so the pre/post-1963 corpora sample the SAME construct, not different ones.
+# The original 9 were all rare crisis-sentiment exact phrases ("recession is
+# coming", "hard times ahead") and yielded only ~30 predictions for 1963-2010;
+# LOC's top term was the neutral "business outlook" (606 claims, 46% of that
+# corpus). This list keeps LOC's proven terms, adds their modern-vocabulary
+# equivalents (economic outlook/forecast/recovery/downturn/slowdown), and
+# retains a couple of directional forecast phrases. grade_claims.py's rubric
+# filters the non-forecasts, so favoring recall here is safe.
 ECONOMY_PHRASES = [
-    '"recession is coming"', '"recession likely"', '"recovery expected"',
-    '"economy will improve"', '"downturn ahead"', '"worst is over"',
-    '"depression is coming"', '"prosperity will return"', '"hard times ahead"',
+    # neutral economic-outlook terms (the high-yield LOC core)
+    '"business outlook"', '"economic outlook"', '"business conditions"',
+    '"economic forecast"',
+    # downturn side (LOC "business recession"/"business slump" + modern vocab)
+    '"business recession"', '"recession fears"', '"economic downturn"',
+    '"economic slowdown"', '"business slump"',
+    # recovery side (LOC "return of prosperity"/"business revival" + modern)
+    '"economic recovery"', '"recovery expected"', '"return of prosperity"',
+    '"business revival"',
+    # explicit forecast framing / directional phrases
+    '"economists expect"', '"worst is over"', '"hard times ahead"',
 ]
 
 REQUEST_DELAY = 12.0

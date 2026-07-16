@@ -474,3 +474,101 @@ timestamp,source,arm,window,phrase,total_hits,pages_fetched
 2026-07-16T10:58:43,nyt,economy,gulf_1990,"""recession is coming""",0,1
 2026-07-16T10:58:56,nyt,economy,gulf_1990,"""recession likely""",0,1
 2026-07-16T10:59:09,nyt,economy,gulf_1990,"""recovery expected""",0,1
+2026-07-16T13:05:57,nyt,economy,gulf_1990,"""recession is coming""",0,1
+2026-07-16T13:06:10,nyt,economy,gulf_1990,"""recession likely""",0,1
+2026-07-16T13:06:22,nyt,economy,gulf_1990,"""recovery expected""",0,1
+2026-07-16T13:06:35,nyt,economy,gulf_1990,"""economy will improve""",0,1
+2026-07-16T13:06:49,nyt,economy,gulf_1990,"""downturn ahead""",0,1
+2026-07-16T13:07:15,nyt,economy,gulf_1990,"""worst is over""",0,2
+2026-07-16T13:07:28,nyt,economy,gulf_1990,"""depression is coming""",0,1
+2026-07-16T13:07:42,nyt,economy,gulf_1990,"""prosperity will return""",0,1
+2026-07-16T13:07:54,nyt,economy,gulf_1990,"""hard times ahead""",0,1
+2026-07-16T13:08:08,nyt,economy,oil_1973,"""recession is coming""",0,1
+2026-07-16T13:08:20,nyt,economy,oil_1973,"""recession likely""",0,1
+2026-07-16T13:08:33,nyt,economy,oil_1973,"""recovery expected""",0,1
+2026-07-16T13:08:47,nyt,economy,oil_1973,"""economy will improve""",0,1
+2026-07-16T13:09:00,nyt,economy,oil_1973,"""downturn ahead""",0,1
+2026-07-16T13:09:13,nyt,economy,oil_1973,"""worst is over""",0,1
+2026-07-16T13:09:25,nyt,economy,oil_1973,"""depression is coming""",0,1
+2026-07-16T13:09:38,nyt,economy,oil_1973,"""prosperity will return""",0,1
+2026-07-16T13:09:51,nyt,economy,oil_1973,"""hard times ahead""",0,1
+2026-07-16T13:10:06,nyt,economy,volcker_1980,"""recession is coming""",0,1
+2026-07-16T13:10:18,nyt,economy,volcker_1980,"""recession likely""",0,1
+2026-07-16T13:10:31,nyt,economy,volcker_1980,"""recovery expected""",0,1
+2026-07-16T13:10:43,nyt,economy,volcker_1980,"""economy will improve""",0,1
+2026-07-16T13:10:56,nyt,economy,volcker_1980,"""downturn ahead""",0,1
+2026-07-16T13:11:08,nyt,economy,volcker_1980,"""worst is over""",0,1
+2026-07-16T13:11:21,nyt,economy,volcker_1980,"""depression is coming""",0,1
+2026-07-16T13:11:33,nyt,economy,volcker_1980,"""prosperity will return""",0,1
+2026-07-16T13:11:46,nyt,economy,volcker_1980,"""hard times ahead""",0,1
+2026-07-16T13:38:20,nyt,economy,calm_1965,"""business outlook""",0,2
+2026-07-16T13:38:57,nyt,economy,calm_1965,"""economic outlook""",0,3
+2026-07-16T13:39:34,nyt,economy,calm_1965,"""business conditions""",0,3
+2026-07-16T13:39:47,nyt,economy,calm_1965,"""economic forecast""",0,1
+2026-07-16T13:40:12,nyt,economy,calm_1965,"""business recession""",0,2
+2026-07-16T13:40:24,nyt,economy,calm_1965,"""recession fears""",0,1
+2026-07-16T13:40:36,nyt,economy,calm_1965,"""economic downturn""",0,1
+2026-07-16T13:40:49,nyt,economy,calm_1965,"""economic slowdown""",0,1
+2026-07-16T13:41:01,nyt,economy,calm_1965,"""business slump""",0,1
+2026-07-16T13:41:39,nyt,economy,calm_1965,"""economic recovery""",0,3
+2026-07-16T13:41:51,nyt,economy,calm_1965,"""recovery expected""",0,1
+2026-07-16T13:42:04,nyt,economy,calm_1965,"""return of prosperity""",0,1
+2026-07-16T13:42:16,nyt,economy,calm_1965,"""business revival""",0,1
+2026-07-16T13:42:28,nyt,economy,calm_1965,"""economists expect""",0,1
+2026-07-16T13:42:41,nyt,economy,calm_1965,"""worst is over""",0,1
+2026-07-16T13:42:53,nyt,economy,calm_1965,"""hard times ahead""",0,1
+2026-07-16T13:43:18,nyt,economy,calm_1995,"""business outlook""",0,2
+2026-07-16T13:43:55,nyt,economy,calm_1995,"""economic outlook""",0,3
+2026-07-16T13:44:33,nyt,economy,calm_1995,"""business conditions""",0,3
+2026-07-16T13:44:45,nyt,economy,calm_1995,"""economic forecast""",0,1
+2026-07-16T13:44:58,nyt,economy,calm_1995,"""business recession""",0,1
+2026-07-16T13:45:10,nyt,economy,calm_1995,"""recession fears""",0,1
+2026-07-16T13:46:12,nyt,economy,calm_1995,"""economic downturn""",0,5
+2026-07-16T13:48:04,nyt,economy,calm_1995,"""economic slowdown""",0,9
+2026-07-16T13:48:16,nyt,economy,calm_1995,"""business slump""",0,1
+2026-07-16T13:50:21,nyt,economy,calm_1995,"""economic recovery""",0,10
+2026-07-16T13:50:33,nyt,economy,calm_1995,"""recovery expected""",0,1
+2026-07-16T13:50:46,nyt,economy,calm_1995,"""return of prosperity""",0,1
+2026-07-16T13:50:58,nyt,economy,calm_1995,"""business revival""",0,1
+2026-07-16T13:51:23,nyt,economy,calm_1995,"""economists expect""",0,2
+2026-07-16T13:51:36,nyt,economy,calm_1995,"""worst is over""",0,1
+2026-07-16T13:51:48,nyt,economy,calm_1995,"""hard times ahead""",0,1
+2026-07-16T13:52:00,nyt,economy,calm_2005,"""business outlook""",0,1
+2026-07-16T13:52:50,nyt,economy,calm_2005,"""economic outlook""",0,4
+2026-07-16T13:53:27,nyt,economy,calm_2005,"""business conditions""",0,3
+2026-07-16T13:53:40,nyt,economy,calm_2005,"""economic forecast""",0,1
+2026-07-16T13:53:52,nyt,economy,calm_2005,"""business recession""",0,1
+2026-07-16T13:54:05,nyt,economy,calm_2005,"""recession fears""",0,1
+2026-07-16T13:55:07,nyt,economy,calm_2005,"""economic downturn""",0,5
+2026-07-16T13:56:21,nyt,economy,calm_2005,"""economic slowdown""",0,6
+2026-07-16T13:56:34,nyt,economy,calm_2005,"""business slump""",0,1
+2026-07-16T13:58:13,nyt,economy,calm_2005,"""economic recovery""",0,8
+2026-07-16T13:58:26,nyt,economy,calm_2005,"""recovery expected""",0,1
+2026-07-16T13:58:38,nyt,economy,calm_2005,"""return of prosperity""",0,1
+2026-07-16T13:58:51,nyt,economy,calm_2005,"""business revival""",0,1
+2026-07-16T13:59:41,nyt,economy,calm_2005,"""economists expect""",0,4
+2026-07-16T13:59:53,nyt,economy,calm_2005,"""worst is over""",0,1
+2026-07-16T14:00:05,nyt,economy,calm_2005,"""hard times ahead""",0,1
+2026-07-16T14:00:43,nyt,economy,crash_1987,"""business outlook""",0,3
+2026-07-16T14:01:45,nyt,economy,crash_1987,"""economic outlook""",0,5
+2026-07-16T14:02:10,nyt,economy,crash_1987,"""business conditions""",0,2
+2026-07-16T14:02:34,nyt,economy,crash_1987,"""economic forecast""",0,2
+2026-07-16T14:02:47,nyt,economy,crash_1987,"""business recession""",0,1
+2026-07-16T14:02:59,nyt,economy,crash_1987,"""recession fears""",0,1
+2026-07-16T14:04:14,nyt,economy,crash_1987,"""economic downturn""",0,6
+2026-07-16T14:05:04,nyt,economy,crash_1987,"""economic slowdown""",0,4
+2026-07-16T14:05:16,nyt,economy,crash_1987,"""business slump""",0,1
+2026-07-16T14:06:31,nyt,economy,crash_1987,"""economic recovery""",0,6
+2026-07-16T14:06:43,nyt,economy,crash_1987,"""recovery expected""",0,1
+2026-07-16T14:06:56,nyt,economy,crash_1987,"""return of prosperity""",0,1
+2026-07-16T14:07:08,nyt,economy,crash_1987,"""business revival""",0,1
+2026-07-16T14:07:45,nyt,economy,crash_1987,"""economists expect""",0,3
+2026-07-16T14:07:58,nyt,economy,crash_1987,"""worst is over""",0,1
+2026-07-16T14:08:10,nyt,economy,crash_1987,"""hard times ahead""",0,1
+2026-07-16T14:09:00,nyt,economy,dotcom_2001,"""business outlook""",0,4
+2026-07-16T14:11:04,nyt,economy,dotcom_2001,"""economic outlook""",0,10
+2026-07-16T14:11:42,nyt,economy,dotcom_2001,"""business conditions""",0,3
+2026-07-16T14:11:54,nyt,economy,dotcom_2001,"""economic forecast""",0,1
+2026-07-16T14:12:07,nyt,economy,dotcom_2001,"""business recession""",0,1
+2026-07-16T14:12:19,nyt,economy,dotcom_2001,"""recession fears""",0,1
+2026-07-16T14:17:55,nyt,economy,dotcom_2001,"""economic downturn""",0,27

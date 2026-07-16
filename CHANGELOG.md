@@ -279,8 +279,65 @@ Two arms are tracked here: **bill_arm** (primary) and the **economy arm**
       regrade at 09:52). Fresh: `fig_epu_vs_accuracy.png`, `fig_geography.png`,
       `fig_three_way_benchmark.png`, `results_by_region.csv`,
       `model_predictions.csv`, `fig_model_importances.png`.
+- [x] **NYT post-1963 corpus merged and scored end-to-end** (2026-07-16, later
+      session). Ran the logged next step: `append_nyt_claims.py` merged the 156
+      NYT articles into `claims_raw.csv` (now **1,480 rows**, claim_ids
+      1325-1480), then `grade_claims.py --model gpt-4.1` graded ONLY the 156 new
+      rows (30 judged predictions: gfc_2008=10, oil_1973=6, dotcom_2001=5,
+      volcker_1980=4, gulf_1990=2, crash_1987=1, calm_1965=1, calm_1995=1), then
+      `score_claims.py` regenerated the unified 1905-2010 `claims_scored.csv`
+      (**698 predictions**, was 668) and its figures (`fig_leaderboard`,
+      `fig_hit_by_episode`, `fig_optimism_gap`, `fig_calibration_voice_control`
+      at 13:30). Results: NYT now on the publisher leaderboard (n=30, 43.3% hit,
+      the lowest-scoring publisher there); the newspapers-vs-Livingston
+      head-to-head now spans 1946-2008 (newspaper n 182->212 = +30 NYT), still
+      beating economists 61.3% vs 54.4% (CI [54.7,67.5] excludes Livingston).
+      DATA-RECOVERY NOTE: the final gpt-4.1 `claims_graded.csv` (1,324 rows) had
+      been DELETED after the 12:53 run (not on disk/staged/stashed; only
+      `.bak` partials + the 668-row `claims_scored.csv` survived). It was
+      faithfully RECONSTRUCTED (668 predictions pulled from `claims_scored.csv`
+      + 656 non-predictions marked `is_prediction=no` with blank grade fields,
+      per rubric) before grading the NYT rows — byte-consistent with the grade
+      that produced the existing figures, so no LOC regrade was spent. If a
+      cleaner artifact is wanted, a full `--overwrite` regrade of all 1,480 on
+      gpt-4.1 costs ~$3.7.
 
 ## Not done / next up
+
+- [ ] **`tier2_analysis.py` and `model.py` are now STALE vs the unified corpus.**
+      They were last run at 09:58 on the 668-prediction LOC-only corpus; the NYT
+      merge brought it to 698. Rerun both against the current `claims_scored.csv`
+      (then `model_figures.py`) so `fig_epu_vs_accuracy`, `fig_geography`,
+      `fig_three_way_benchmark`, `results_by_region.csv`, `model_predictions.csv`
+      reflect the post-1963 data. (`score_claims.py`'s own figures ARE current,
+      13:30.)
+- [ ] **NYT coverage is severely under-sampled — fix before analyzing post-1963.**
+      Only 30 of 698 predictions (4%) are NYT, covering ~45% of the study span
+      (1963-2010). Cause: `download_nyt.py`'s `ECONOMY_PHRASES` is just 9
+      exact-quoted crisis phrases against a headline/lead-only index (LOC by
+      contrast used broad terms full-text; `"business outlook"` alone = 606 LOC
+      claims). Effect: ~3 predictions/window post-1963 (2008 GFC rests on 10),
+      and post-1963 = NYT-only vs pre-1963's 218 publishers, so era comparisons
+      confound era x source x phrase-recall. Highest-leverage fix: broaden
+      `ECONOMY_PHRASES` (drop quotes / align with LOC terms) and re-run the free
+      download; otherwise report pre/post-1963 separately and frame NYT as a
+      generalization probe, not an equal-weight era.
+      **PAUSED mid-run (2026-07-16 afternoon, by user) — resume checklist in
+      `JeremysShit/CONTINUE_HERE_nyt.md`.** `ECONOMY_PHRASES` broadened from 9
+      rare crisis phrases to 16 LOC-aligned terms (`business outlook`, `economic
+      outlook`, `economic recovery`, `business recession`, etc.); yield exploded
+      (~1,950 articles on disk vs 156 before). At pause: broadened windows done =
+      calm_1965(120), calm_1995(311), calm_2005(269), crash_1987(265),
+      dotcom_2001(881, may be partial); still on OLD narrow counts (re-pull
+      needed) = gfc_2008(53), gulf_1990(22), oil_1973(12), volcker_1980(15).
+      ~155/500 daily NYT queries used. Download is RESUME-SAFE (dedupes on URL).
+      Resume: `cd JeremysShit/election_arm && NYT_API_KEY=<key> python download_nyt.py --arm economy`,
+      then merge/grade/score per `CONTINUE_HERE_nyt.md`.
+      DECISION PENDING before grading: yield is very uneven per window
+      (dotcom_2001=881 vs oil_1973=12) — CAP each window before grading so the
+      crisis/control balance isn't skewed and OpenAI cost stays bounded. Also:
+      NYT returns headline/lead only (no body text), so recall is capped
+      regardless; full-text depth needs library ProQuest, not more NYT calls.
 
 - [ ] **`model_figures.py`'s poster suite is still stale (pre-regrade,
       2026-07-10).** `fig_model_roc.png`, `fig_model_calibration.png`,
@@ -303,8 +360,8 @@ Two arms are tracked here: **bill_arm** (primary) and the **economy arm**
 - [ ] Spec's second model (predict economic *state* from press, not "was this
       claim right"). Different unit of observation (time period, not claim);
       at episode level only 10 rows, needs a month-level corpus expansion.
-- [ ] **NYT extension toward 2010 — design pivoted to ONE unified corpus,
-      in progress (2026-07-16).** Original plan ran NYT articles through
+- [x] **NYT extension toward 2010 — design pivoted to ONE unified corpus,
+      pipeline COMPLETE (2026-07-16); coverage still thin, see below.** Original plan ran NYT articles through
       `election_arm/extract_predictions.py`'s own extraction schema (switched
       luna → `gpt-4.1` earlier today) into a separate `scored_economy.csv`.
       Reconsidered: that schema was never kappa-validated, so a second
@@ -325,15 +382,28 @@ Two arms are tracked here: **bill_arm** (primary) and the **economy arm**
       misreports 0 on most of these phrase/window queries even when real
       articles come back — was truncating every phrase at page 1 (≤10
       articles) regardless of true corpus depth. Now pages on actual page
-      size (`len(docs) < 10`) instead. A full re-download with the fix is
-      running now to replace the shallow 135-article 2026-07-10 corpus before
-      merging — one free NYT key is still enough (the shallow run was only 83
-      calls total against 500/day, 5/min caps; the deeper run will cost more
-      calls but the same order of magnitude, not a multi-key problem).
-      Next once the download finishes: run `append_nyt_claims.py`, then
-      `grade_claims.py --model gpt-4.1 --base-url https://api.openai.com/v1`
-      (resumes, only grades the new rows), then `score_claims.py` to
-      regenerate the unified `claims_scored.csv` and figures.
+      size (`len(docs) < 10`) instead. **Deep re-download COMPLETE
+      (2026-07-16, by a later session).** The earlier 10:46-10:59 run had
+      stalled partway through window 7 of 9 (`gulf_1990`, after 3 of 9
+      phrases); it was resumed (13:07) and the last three windows finished.
+      All 9 post-1963 economy windows are now on disk
+      (`data/raw/nyt_economy_*.jsonl`), **156 articles total**: calm_1965(3),
+      calm_1995(12), calm_2005(5), crash_1987(14), dotcom_2001(20),
+      gfc_2008(53), gulf_1990(22), oil_1973(12), volcker_1980(15). The
+      pagination fix only mattered for the rich windows (gfc_2008 ~10->53,
+      dotcom_2001 ->20); oil_1973 and volcker_1980 were never truncated (every
+      phrase returns <10 docs, so page 1 was already complete; their counts are
+      unchanged and correct). One free NYT key sufficed (well under the
+      500/day, 5/min caps).
+      **MERGE + GRADE + SCORE now DONE** (2026-07-16, later session) — see the
+      "NYT post-1963 corpus merged and scored" entry under "Done so far" above
+      for results (698 predictions, NYT on the leaderboard, head-to-head extended
+      to 2008) and the `claims_graded.csv` reconstruction note. Grader was
+      `gpt-4.1` (bake-off winner), NOT luna. Remaining: rerun the now-stale
+      `tier2_analysis.py`/`model.py`/`model_figures.py`, and — flagged as a real
+      limitation — the NYT corpus is under-sampled (30/698 predictions for ~45%
+      of the span); broaden `download_nyt.py`'s phrase list before analyzing
+      post-1963 (both tracked under "Not done / next up").
 - [ ] Decide the **DC financial-center coding** in `tier2_analysis.py` (see
       Known limits) before trusting `fig_geography.png`.
 
