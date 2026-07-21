@@ -2,5 +2,3 @@ requests
 pandas
 scikit-learn
 xgboost
-openai
-python-dotenv

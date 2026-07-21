@@ -23,11 +23,15 @@ Usage:
     python tier3_robustness.py --second-llm    # 9b (needs Anthropic access)
     python tier3_robustness.py --second-llm --limit 10   # cheap test first
 
-Outputs: printed report; 9b also writes second_llm_grades.csv.
+Outputs: printed report; 9a and 9c also write figures/fig_band_sensitivity.png
+and figures/fig_era_stability.png so the fragility is a citable artifact, not
+just console text someone has to remember to mention; 9b also writes
+second_llm_grades.csv.
 """
 
 import argparse
 import json
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -37,12 +41,31 @@ import score_claims
 from score_claims import fred, livingston_directional, predicted_label, realized_direction
 
 H2H_START, H2H_END = "1946-01-01", "1964-01-01"
+FIGDIR = Path("figures")
 
-# Era definitions copied from the Livingston notebook (section 3), so the
-# script and notebook shift the same boundaries.
-ERAS = {"Postwar boom": (1946, 1965), "Vietnam / stagflation": (1965, 1982),
-        "Great Moderation": (1982, 2000), "Terror / fin. crisis": (2000, 2012),
-        "Polarization / COVID": (2012, 2027)}
+# Era boundaries anchored to actual regime-change events (NBER recession
+# dating, Fed chair transitions) instead of round decade numbers -- the
+# previous version's 1965/2000/2012 boundaries had no citation and, per
+# era_shift_robustness()'s own test, the era ranking isn't stable to small
+# shifts around them, so where the line is drawn actually matters. Sources:
+#   1973: Oct 1973 OPEC oil embargo, the conventional start of the
+#         "stagflation" era in US economic history.
+#   1982: NBER trough of the Nov 1982 "Volcker recession" -- the disinflation
+#         that's conventionally treated as ending the high-inflation era.
+#   2007: NBER peak (Dec 2007), start of the Great Recession -- also the
+#         end of the period Bernanke's own 2004 speech named "the Great
+#         Moderation" (mid-1980s to ~2007).
+#   2014: Janet Yellen became Fed Chair (Feb 2014), start of policy
+#         normalization after the post-GFC recovery.
+# NOTE: this makes the "Terror / fin. crisis" era start in 2007, not 2000 --
+# it no longer spans 9/11 (2001) at all, so the name is now a bit stale;
+# renamed to reflect what it actually covers. This also means these
+# boundaries now DIVERGE from BU_RISE_forecast_analysis_FIXED.ipynb's
+# section 3 (still 1965/2000/2012, uncited) -- reconcile that notebook
+# separately before treating both as consistent.
+ERAS = {"Postwar boom": (1946, 1973), "Vietnam / stagflation": (1973, 1982),
+        "Great Moderation": (1982, 2007), "Financial crisis & recovery": (2007, 2014),
+        "Polarization / COVID": (2014, 2027)}
 
 
 def half_year(dates):
@@ -129,7 +152,7 @@ def rescore_with_bands(scored, scale, cpi, indpro, unrate):
     return pd.Series(hits, index=scored.index)
 
 
-def band_sensitivity(scored):
+def band_sensitivity(scored, plt=None):
     print("\n" + "=" * 70)
     print("ITEM 9a — no-change bands halved / headline / doubled")
     print("=" * 70)
@@ -152,10 +175,30 @@ def band_sensitivity(scored):
     tab = pd.DataFrame(rows).set_index("band_scale").round(3)
     print(tab.to_string())
     spread = tab["newspaper_hit_rate"].max() - tab["newspaper_hit_rate"].min()
+    fragile = spread >= 0.05
     print(f"\nnewspaper hit-rate spread across band choices: {spread:.3f} "
-          f"({'robust — coding choice does not drive the result' if spread < 0.05 else 'SENSITIVE — report all three on the poster'})")
+          f"({'robust — coding choice does not drive the result' if not fragile else 'SENSITIVE — report all three on the poster'})")
     print("(NBER-based claims are unaffected by bands by construction; only "
           "CPI/INDPRO/UNRATE-scored claims move.)")
+
+    if plt:
+        FIGDIR.mkdir(exist_ok=True)
+        fig, ax = plt.subplots(figsize=(8, 4.5))
+        x = np.arange(len(tab))
+        width = 0.25
+        series = [("newspaper_hit_rate", "Newspapers", "steelblue"),
+                  ("crisis_hit_rate", "  (crisis only)", "crimson"),
+                  ("control_hit_rate", "  (control only)", "seagreen")]
+        for i, (col, label, color) in enumerate(series):
+            ax.bar(x + (i - 1) * width, tab[col], width, label=label, color=color, alpha=.85)
+        ax.axhline(0.5, color="gray", ls="--", lw=1)
+        ax.set_xticks(x); ax.set_xticklabels([f"{s}x bands" for s in tab.index])
+        ax.set_ylabel("hit rate"); ax.set_ylim(0, 1); ax.legend(fontsize=8)
+        ax.set_title(f"Hit rate is NOT robust to the no-change band width\n"
+                     f"(spread = {spread:.1%} across 0.5x-2x — "
+                     f"{'this is the honest range to report' if fragile else 'small, but shown for transparency'})")
+        plt.tight_layout(); plt.savefig(FIGDIR / "fig_band_sensitivity.png", dpi=200); plt.close()
+        print(f"Wrote {FIGDIR / 'fig_band_sensitivity.png'}")
 
 
 # ------------------------------------------------------ item 9c: era shifts
@@ -185,7 +228,7 @@ def livingston_errors():
     return pd.concat(frames, ignore_index=True)
 
 
-def era_shift_robustness():
+def era_shift_robustness(plt=None):
     print("\n" + "=" * 70)
     print("ITEM 9c — Livingston era boundaries shifted +/-3 years")
     print("=" * 70)
@@ -210,6 +253,19 @@ def era_shift_robustness():
     if not stable:
         for s, r in rankings.items():
             print(f"  {s:+d}y: {' < '.join(r)}")
+
+    if plt:
+        FIGDIR.mkdir(exist_ok=True)
+        fig, ax = plt.subplots(figsize=(9, 4.5))
+        for name in names:
+            ax.plot(tab.columns, tab.loc[name], marker="o", label=name)
+        ax.set_ylabel("mean |12-month forecast error|")
+        ax.set_xlabel("era boundary shift")
+        ax.legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.0, 1.0))
+        ax.set_title("Livingston forecast error by era" +
+                     ("" if stable else " — ranking is NOT stable to boundary choice"))
+        plt.tight_layout(); plt.savefig(FIGDIR / "fig_era_stability.png", dpi=200); plt.close()
+        print(f"Wrote {FIGDIR / 'fig_era_stability.png'}")
 
 
 # --------------------------------------------------- item 9b: second LLM
@@ -304,11 +360,19 @@ def main():
         second_llm_agreement(args.limit)
         return
 
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("(matplotlib not installed — skipping figures)")
+        plt = None
+
     scored = pd.read_csv("claims_scored.csv", parse_dates=["date"]).dropna(subset=["hit"])
     scored["hit"] = scored["hit"].astype(int)
     head_to_head_dm(scored)
-    band_sensitivity(scored)
-    era_shift_robustness()
+    band_sensitivity(scored, plt)
+    era_shift_robustness(plt)
 
 
 if __name__ == "__main__":

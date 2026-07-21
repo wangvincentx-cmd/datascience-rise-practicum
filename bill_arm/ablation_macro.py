@@ -24,7 +24,7 @@ import argparse
 import numpy as np
 from sklearn.metrics import average_precision_score
 
-from model import (load_features, split_by_congress, fit_and_score,
+from factor_analysis import (load_features, split_by_congress, fit_and_score,
                    bootstrap_pr_auc_delta, CATS, NUMS)
 
 MACRO = ["unemployment_rate", "recession_flag", "gdp_growth_yoy",

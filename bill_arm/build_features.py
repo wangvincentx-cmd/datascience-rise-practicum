@@ -4,8 +4,17 @@ Build the introduction-time structural feature table from data/bills/*.jsonl.
 One row per bill. See Section 7 of the project spec for the schema. Every
 feature here must be knowable on the bill's introduced_date -- nothing from
 download_bills.py is later-dated, so no extra leakage filtering is needed at
-this stage, but sponsor_is_committee_chair is left unset (no committee
-leadership data source wired up; documented as a known gap, not fabricated).
+this stage.
+
+sponsor_is_committee_chair is joined from data/committee_chairs.csv on
+(congress, chamber, primary_committee), comparing the sponsor's last name
+(case-insensitive) to the chair's last name. That table only covers the 10
+highest-bill-volume (chamber, committee) pairs (~60% of bills, see
+data/committee_chairs.csv and CHANGELOG); bills referred to any other
+committee -- or matching congress/chamber/committee but not the chair's
+surname -- get 0. This is an introduction-time-legal feature: who chaired a
+committee on a given date is public record at that date, unlike e.g.
+recession_flag.
 
 Macroeconomic climate columns (unemployment_rate, recession_flag,
 gdp_growth_yoy, cpi_inflation_yoy, consumer_sentiment, initial_claims) are
@@ -83,9 +92,9 @@ def row_from_record(rec, majority_table):
         "number": rec.get("number"),
         "sponsor_party": sponsor_party,
         "sponsor_state": rec.get("sponsor_state"),
+        "sponsor_last_name": rec.get("sponsor_last_name"),
         "sponsor_in_majority": (sponsor_party == majority_party
                                 if sponsor_party and majority_party else None),
-        "sponsor_is_committee_chair": None,  # not implemented: needs committee leadership data
         "n_original_cosponsors": len(cosponsors),
         "bipartisan": bipartisan(cosponsors),
         "frac_cosponsors_majority": frac_cosponsors_majority(cosponsors, majority_party),
@@ -102,6 +111,45 @@ def row_from_record(rec, majority_table):
     }
 
 
+# download_bills_bulk.py's XML parser drops "the" from this committee's name
+# for the 118th Congress only ("Education and Workforce Committee" instead of
+# "Education and the Workforce Committee"); normalize so the chair-table join
+# (which uses the canonical name for every Congress) still matches.
+COMMITTEE_NAME_ALIASES = {
+    "Education and Workforce Committee": "Education and the Workforce Committee",
+}
+
+
+def add_committee_chair_feature(df, chairs_csv="data/committee_chairs.csv"):
+    """sponsor_is_committee_chair: was the bill's sponsor the chair of
+    primary_committee at introduction time? Joined from data/committee_chairs.csv
+    (10 highest-volume (chamber, committee) pairs only, see that file's
+    header comment / CHANGELOG -- everything else defaults to 0, both bills
+    referred elsewhere and true mismatches, so this column undercounts."""
+    if not Path(chairs_csv).exists():
+        df["sponsor_is_committee_chair"] = 0
+        return df
+    chairs = pd.read_csv(chairs_csv)
+    chairs["chair_last_name"] = (chairs["chair_name"]
+                                 .str.split(",").str[0].str.strip().str.upper())
+    chair_lookup = {
+        (row.congress, row.chamber, row.committee): row.chair_last_name
+        for row in chairs.itertuples()
+    }
+    committee_norm = df["primary_committee"].replace(COMMITTEE_NAME_ALIASES)
+    sponsor_last = df["sponsor_last_name"].fillna("").str.upper()
+
+    def is_chair(congress, chamber, committee, sponsor_ln):
+        chair_ln = chair_lookup.get((congress, chamber, committee))
+        return int(chair_ln is not None and sponsor_ln != "" and sponsor_ln == chair_ln)
+
+    df["sponsor_is_committee_chair"] = [
+        is_chair(c, ch, comm, sp)
+        for c, ch, comm, sp in zip(df["congress"], df["chamber"], committee_norm, sponsor_last)
+    ]
+    return df
+
+
 def add_macro_features(df, macro_csv="data/macro_daily.csv"):
     if not Path(macro_csv).exists():
         return df
@@ -112,7 +160,8 @@ def add_macro_features(df, macro_csv="data/macro_daily.csv"):
 
 
 def build_features(bill_files, majority_table_path="data/majority_by_congress.csv",
-                   macro_csv="data/macro_daily.csv"):
+                   macro_csv="data/macro_daily.csv",
+                   chairs_csv="data/committee_chairs.csv"):
     majority_table = load_majority_table(majority_table_path)
     rows = []
     for path in bill_files:
@@ -124,6 +173,7 @@ def build_features(bill_files, majority_table_path="data/majority_by_congress.cs
                 rec = json.loads(line)
                 rows.append(row_from_record(rec, majority_table))
     df = pd.DataFrame(rows)
+    df = add_committee_chair_feature(df, chairs_csv)
     return add_macro_features(df, macro_csv)
 
 
@@ -135,6 +185,8 @@ def main():
     ap.add_argument("--majority-table", default="data/majority_by_congress.csv")
     ap.add_argument("--macro-csv", default="data/macro_daily.csv",
                     help="from build_macro_features.py; skipped if missing")
+    ap.add_argument("--chairs-csv", default="data/committee_chairs.csv",
+                    help="from committee-chair research; skipped if missing (all 0s)")
     ap.add_argument("--out", default="data/features.csv")
     args = ap.parse_args()
 
@@ -149,7 +201,7 @@ def main():
         if not files:
             raise SystemExit(f"No .jsonl files in {bills_dir}. Run download_bills.py first.")
 
-    df = build_features(files, args.majority_table, args.macro_csv)
+    df = build_features(files, args.majority_table, args.macro_csv, args.chairs_csv)
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(args.out, index=False)
 

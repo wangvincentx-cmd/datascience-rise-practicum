@@ -15,5 +15,24 @@ __pycache__/
 cache/
 **/data/raw/
 
-# macOS
+# Incomplete / regenerable grading output (commit the finished version deliberately
+# with `git add -f JeremysShit/claims_graded.csv` once a full run has completed —
+# an in-progress file is a partial corpus and shouldn't be committed by accident)
+JeremysShit/claims_graded_test.csv
+JeremysShit/claims_graded.csv
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Spreadsheet working files — graders edit in Numbers/Excel, but only the
+# exported CSV is the artifact (binary formats can't be diffed or read by kappa.py)
+*.numbers
+*.xlsx
+!JeremysShit/*.xlsx
+
+# Regenerable run logs
+JeremysShit/grade_run.log
+
+# Superseded by handgrade_newspapers/ (regenerated on every grading run)
+JeremysShit/validation_sample.csv

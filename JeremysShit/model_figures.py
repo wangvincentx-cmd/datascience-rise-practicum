@@ -26,7 +26,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.model_selection import LeaveOneGroupOut, cross_val_score
 
-from model import TEST_EPISODES_DEFAULT, build, feature_names, pipeline, FIGDIR
+from model import LOGIT_C, TEST_EPISODES_DEFAULT, build, feature_names, pipeline, FIGDIR
 
 # Reference palette (dataviz skill): series slots in fixed order, ink tokens.
 SURFACE = "#fcfcfb"
@@ -66,7 +66,7 @@ def fit_models(df):
     train = df[~df["episode"].isin(test_eps)]
     test = df[df["episode"].isin(test_eps)]
     fits = {}
-    for name, model in [("Logistic regression", LogisticRegression(max_iter=2000, C=0.5)),
+    for name, model in [("Logistic regression", LogisticRegression(max_iter=2000, C=LOGIT_C)),
                         ("Gradient boosting", GradientBoostingClassifier(random_state=0))]:
         pipe = pipeline(model)
         pipe.fit(train, train["hit"])
@@ -149,7 +149,7 @@ def fig_proba_dist(test, fits):
 
 
 def fig_loeo(df):
-    pipe = pipeline(LogisticRegression(max_iter=2000, C=0.5))
+    pipe = pipeline(LogisticRegression(max_iter=2000, C=LOGIT_C))
     scores = cross_val_score(pipe, df, df["hit"], groups=df["episode"],
                              cv=LeaveOneGroupOut(), scoring="accuracy")
     eps = sorted(set(df["episode"]))

@@ -13,6 +13,13 @@ realized direction of its topic's series over that window, and compare with the
 predicted direction. Correct = hit. Brier score uses confidence as a crude
 probability (assertive=0.9, hedged=0.7).
 
+Also computes `composite_score` (project spec Step 4b): the mean of accuracy
+(`hit`), punctuality (did the claim commit to a specific timeframe, via
+`resolve_horizon`'s basis), and specificity (`resolve_specificity`, rule-based
+from the quote text -- no added LLM grading pass). See the comment above
+`resolve_specificity` for the exact formula. Only defined where `hit` is (i.e.
+scorable predictions).
+
 Coding choices to sensitivity-test (documented for the methods section):
   - "no_change" bands: CPI +/-1.5%, INDPRO +/-2%, UNRATE +/-0.3 pt
   - When only the NBER chronology is available (pre-1919): window ends in
@@ -57,7 +64,31 @@ for peak, trough in NBER_RECESSIONS:
     for m in pd.period_range(peak, trough, freq="M"):
         RECESSION_MONTHS.add(m)
 
-BANDS = {"CPI": 1.5, "INDPRO": 2.0, "UNRATE": 0.3}
+# No-change thresholds: how big a move counts as the economy actually
+# changing direction, vs. normal noise. tier3_robustness.py's band_sensitivity()
+# showed the reported hit rate swings 12+ points across plausible choices here
+# (see fig_band_sensitivity.png) -- so these need real justification, not a
+# round number picked by feel, or the "justification" is just outcome-shopping
+# with extra steps.
+#   UNRATE: 0.5pt, the Sahm Rule threshold (Sahm 2019; a 0.5-point rise in the
+#   3-month avg unemployment rate vs. its 12-month low is the standard,
+#   externally-validated recession-onset signal -- FRED publishes it as
+#   SAHMREALTIME/SAHMCURRENT). Was 0.3pt with no citation; this is an adapted
+#   use (Sahm's rule is specifically about a rise from a 12-month low, this
+#   project scores any 12-month move in either direction), so treat this as
+#   "anchored to a real standard," not a literal transplant of the rule itself.
+#   CPI: 1.17%, INDPRO: 2.33% -- human-calibrated (calibrate_bands.py,
+#   calibration_sample.csv, 80 historical windows sampled independent of any
+#   claim/outcome, judged 2026-07-16). No external standard like Sahm's Rule
+#   exists for these (checked: BLS's published CPI standard error measures
+#   measurement precision, not economic significance, and would set an
+#   absurdly low ~0.14pt band; no inflation/production regime-shift rule was
+#   found in the literature). CAVEAT: this was a single JOINT judgment
+#   (Vincent + Jeremy graded together), not independently double-coded, so
+#   there's no kappa check the way the grading rubric has -- weaker evidence
+#   than that, disclose accordingly if reported. Was 1.5%/2.0% with no
+#   citation at all before this.
+BANDS = {"CPI": 1.17, "INDPRO": 2.33, "UNRATE": 0.5}
 CONF_P = {"assertive": 0.9, "hedged": 0.7}
 
 
@@ -168,6 +199,60 @@ def resolve_horizon(row, scale=1.0):
     return max(1, round(m * scale)), why
 
 
+# --- Composite claim score (project spec Step 4b) --------------------------
+# A single 0-1 score combining three dimensions of "how good was this
+# prediction," not just whether it happened to be right:
+#   accuracy     - `hit` (already scored above: did the direction match reality).
+#   punctuality  - did the paper commit to a specific, falsifiable timeframe,
+#                  rather than something vague enough to need a default? Reuses
+#                  `resolve_horizon`'s `basis` (spec called this "punctuality";
+#                  see CHANGELOG) rather than adding a second horizon concept:
+#                  "stated" (the grader read an explicit 6/12/24-month horizon
+#                  off the sentence) = 1.0; "inferred_short"/"inferred_long"
+#                  (no number, but time-language let us infer one) = 0.5;
+#                  "default_12" (no time information at all) = 0.0.
+#   specificity  - rule-based, computed straight from the quote text and the
+#                  grader's speaker_name field -- deliberately NOT a new LLM
+#                  grading pass (would mean re-grading the full corpus at real
+#                  API cost for a claim that arguably follows from the text
+#                  already on hand). Mean of three independent 0/1 signals:
+#                    - named_forecaster: attributed to an actual person, not
+#                      anonymous ("Roger Babson predicts..." vs "it is expected")
+#                    - numeric_magnitude: a number attached to the prediction
+#                      (a percent, dollar figure, or count), not just a bare
+#                      direction
+#                    - concrete_time_reference: a specific calendar point named
+#                      (a year or month) -- distinct from punctuality's horizon
+#                      DURATION; this is about naming a point, e.g. "by the
+#                      fall of 1930" is more specific than "before long."
+# Composite = the unweighted mean of the three. Only defined where accuracy is
+# (i.e. `hit` is not NaN) -- a composite score without ground truth on the
+# accuracy leg isn't really scoring the prediction, just its packaging.
+PUNCTUALITY_BY_BASIS = {"stated": 1.0, "inferred_short": 0.5, "inferred_long": 0.5,
+                        "default_12": 0.0}
+NUMERIC_MAGNITUDE = re.compile(r"\d+(?:\.\d+)?\s*(?:%|per\s?cent)|\$\s?[\d,]+", re.I)
+CONCRETE_TIME_REF = re.compile(r"\b(?:19\d\d|20[0-2]\d)\b|\b(?:january|february|march|april|may|"
+                               r"june|july|august|september|october|november|december)\b", re.I)
+
+
+def resolve_specificity(row):
+    """Return (score in [0,1], detail dict of the three 0/1 components)."""
+    speaker = str(row.get("speaker_name", "")).strip().lower()
+    named_forecaster = speaker not in ("", "na", "none", "unclear", "nan")
+    quote = str(row.get("quote", ""))
+    numeric_magnitude = bool(NUMERIC_MAGNITUDE.search(quote))
+    concrete_time_reference = bool(CONCRETE_TIME_REF.search(quote))
+    parts = {"named_forecaster": named_forecaster, "numeric_magnitude": numeric_magnitude,
+             "concrete_time_reference": concrete_time_reference}
+    return sum(parts.values()) / len(parts), parts
+
+
+def composite_score(hit, horizon_basis, specificity):
+    if hit != hit:  # NaN: unscorable, no accuracy leg to anchor the composite
+        return np.nan
+    return (hit + PUNCTUALITY_BY_BASIS.get(horizon_basis, 0.0) + specificity) / 3
+
+
 def heuristic_grade(df):
     """Keyword stand-in for LLM grades so the pipeline runs before an API key exists."""
     df = df.copy()
@@ -210,9 +295,12 @@ def score(args):
         pred = predicted_label(r)
         hit = int(pred == realized) if (scorable and pred) else np.nan
         p = CONF_P.get(str(r.get("confidence", "hedged")), 0.7)
+        specificity, specificity_parts = resolve_specificity(r)
         out.append({**r, "months": months, "horizon_basis": horizon_basis,
                     "predicted_label": pred, "realized_label": realized, "basis": basis,
-                    "hit": hit, "brier": (p - hit) ** 2 if hit == hit else np.nan})
+                    "hit": hit, "brier": (p - hit) ** 2 if hit == hit else np.nan,
+                    "specificity": round(specificity, 3), **specificity_parts,
+                    "composite_score": composite_score(hit, horizon_basis, specificity)})
     scored = pd.DataFrame(out)
     scored.to_csv("claims_scored.csv", index=False)
 
@@ -220,8 +308,15 @@ def score(args):
     print(f"\n{len(scored)} predictions, {len(s)} scorable "
           f"({len(scored) - len(s)} unscorable: pre-1913 prices / pre-1948 employment)")
 
+    print("\n=== Composite score (accuracy + punctuality + specificity, mean of 3) ===")
+    print(f"  mean composite: {s['composite_score'].mean():.3f}  "
+          f"(accuracy leg {s['hit'].mean():.3f}, punctuality leg "
+          f"{s['horizon_basis'].map(PUNCTUALITY_BY_BASIS).mean():.3f}, "
+          f"specificity leg {s['specificity'].mean():.3f})")
+
     by_ep = s.groupby("episode").agg(
         n=("hit", "size"), hit_rate=("hit", "mean"), brier=("brier", "mean"),
+        composite_score=("composite_score", "mean"),
         share_predicting_improve=("predicted_label",
                                   lambda x: (x == "improve").mean())).round(3)
     by_ep.to_csv("results_by_episode.csv")

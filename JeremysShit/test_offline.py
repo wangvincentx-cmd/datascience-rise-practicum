@@ -171,4 +171,50 @@ rng = np.random.default_rng(0)
 rand_pairs = [(str(rng.integers(2)), str(rng.integers(2))) for _ in range(2000)]
 check("random labels -> kappa near 0", abs(cohens_kappa(rand_pairs)) < 0.08)
 
+# ---------- disagreement.py ----------
+print("disagreement:")
+from disagreement import add_disagreement_features, episode_disagreement_rate
+
+da_df = pd.DataFrame([
+    {"episode": "test_ep", "date": "2000-01-01", "direction": "improve", "claim_id": "A"},
+    {"episode": "test_ep", "date": "2000-01-15", "direction": "improve", "claim_id": "B"},
+    {"episode": "test_ep", "date": "2000-01-20", "direction": "no_change", "claim_id": "F"},
+    {"episode": "test_ep", "date": "2000-02-01", "direction": "worsen", "claim_id": "C"},
+    {"episode": "test_ep", "date": "2000-02-15", "direction": "worsen", "claim_id": "D"},
+    {"episode": "test_ep", "date": "2000-06-01", "direction": "improve", "claim_id": "E"},
+])
+da_rate = episode_disagreement_rate(da_df)
+check("episode_disagreement_rate: 3 improve/2 worsen -> minority share 0.4",
+      abs(da_rate["test_ep"] - 0.4) < 1e-9)
+
+da_out = add_disagreement_features(da_df, window_months=3).set_index("claim_id")
+check("first claim in episode (no prior claims) imputed to episode rate",
+      abs(da_out.loc["A", "local_disagreement"] - 0.4) < 1e-9)
+check("second claim sees only claim A (improve) -> full agreement, 0.0",
+      abs(da_out.loc["B", "local_disagreement"] - 0.0) < 1e-9)
+check("no_change claim still gets a local_disagreement computed from context "
+     "(A, B both improve, no worsen -> 0.0), it's just excluded from COUNTING",
+      abs(da_out.loc["F", "local_disagreement"] - 0.0) < 1e-9)
+check("claim C sees A, B (both improve) -> full agreement, 0.0",
+      abs(da_out.loc["C", "local_disagreement"] - 0.0) < 1e-9)
+check("claim D sees A, B (improve) + C (worsen) -> minority share 1/3",
+      abs(da_out.loc["D", "local_disagreement"] - 1 / 3) < 1e-9)
+check("claim E is >3 months after D (backward window empty) -> imputed to "
+     "episode rate, not leaking from claims before the window OR the empty "
+     "window silently becoming 0",
+      abs(da_out.loc["E", "local_disagreement"] - 0.4) < 1e-9)
+
+da_future = pd.DataFrame([
+    {"episode": "fwd_ep", "date": "2000-01-01", "direction": "improve", "claim_id": "X"},
+    {"episode": "fwd_ep", "date": "2000-01-02", "direction": "worsen", "claim_id": "Y"},
+])
+da_future_out = add_disagreement_features(da_future, window_months=3).set_index("claim_id")
+check("backward-only window: claim X must NOT see claim Y, which comes after it "
+     "-- X has no prior claims so it's imputed to the episode rate (0.5 here), "
+     "not contaminated by Y's later, opposite-direction claim",
+      abs(da_future_out.loc["X", "local_disagreement"] - 0.5) < 1e-9)
+check("claim Y correctly sees X (the one claim strictly before it, improve) "
+     "-> full agreement, 0.0",
+      abs(da_future_out.loc["Y", "local_disagreement"] - 0.0) < 1e-9)
+
 print(f"\nALL {PASS} CHECKS PASSED")

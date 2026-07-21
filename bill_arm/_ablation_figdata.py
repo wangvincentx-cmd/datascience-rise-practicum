@@ -3,7 +3,7 @@ data for the presentation figure. Writes /tmp/ablation_figdata.json."""
 import json
 import numpy as np
 from sklearn.metrics import average_precision_score
-from model import (load_features, split_by_congress, fit_and_score,
+from factor_analysis import (load_features, split_by_congress, fit_and_score,
                    feature_names, _unwrap, CATS, NUMS)
 
 MACRO = ["unemployment_rate", "recession_flag", "gdp_growth_yoy",

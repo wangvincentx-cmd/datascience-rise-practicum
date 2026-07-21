@@ -29,7 +29,7 @@ import pandas as pd
 from sklearn.calibration import calibration_curve
 from sklearn.metrics import average_precision_score, precision_recall_curve
 
-from model import (CATS, NUMS, _unwrap, feature_names, fit_and_score,
+from factor_analysis import (CATS, NUMS, _unwrap, feature_names, fit_and_score,
                    load_features, split_by_congress)
 
 # Palette (validated: node scripts/validate_palette.js "#2a78d6,#1baf7a,#e34948" --mode light)

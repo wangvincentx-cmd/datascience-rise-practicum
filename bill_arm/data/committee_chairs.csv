@@ -1,0 +1,111 @@
+congress,chamber,committee,chair_name,chair_party,source_url
+108,House,Ways and Means Committee,"Thomas, Bill",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Ways_and_Means
+109,House,Ways and Means Committee,"Thomas, Bill",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Ways_and_Means
+110,House,Ways and Means Committee,"Rangel, Charles",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Ways_and_Means
+111,House,Ways and Means Committee,"Rangel, Charles",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Ways_and_Means
+112,House,Ways and Means Committee,"Camp, Dave",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Ways_and_Means
+113,House,Ways and Means Committee,"Camp, Dave",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Ways_and_Means
+114,House,Ways and Means Committee,"Brady, Kevin",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Ways_and_Means
+115,House,Ways and Means Committee,"Brady, Kevin",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Ways_and_Means
+116,House,Ways and Means Committee,"Neal, Richard",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Ways_and_Means
+117,House,Ways and Means Committee,"Neal, Richard",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Ways_and_Means
+118,House,Ways and Means Committee,"Smith, Jason",R,https://waysandmeans.house.gov/chairman-smith-opening-statement-118th-congress-organizational-meeting/
+108,House,Judiciary Committee,"Sensenbrenner, James",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_the_Judiciary
+109,House,Judiciary Committee,"Sensenbrenner, James",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_the_Judiciary
+110,House,Judiciary Committee,"Conyers, John",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_the_Judiciary
+111,House,Judiciary Committee,"Conyers, John",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_the_Judiciary
+112,House,Judiciary Committee,"Smith, Lamar",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_the_Judiciary
+113,House,Judiciary Committee,"Goodlatte, Bob",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_the_Judiciary
+114,House,Judiciary Committee,"Goodlatte, Bob",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_the_Judiciary
+115,House,Judiciary Committee,"Goodlatte, Bob",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_the_Judiciary
+116,House,Judiciary Committee,"Nadler, Jerry",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_the_Judiciary
+117,House,Judiciary Committee,"Nadler, Jerry",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_the_Judiciary
+118,House,Judiciary Committee,"Jordan, Jim",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_the_Judiciary
+108,House,Energy and Commerce Committee,"Tauzin, Billy",R,https://rollcall.com/2003/10/29/barton-in-line-for-energy-gavel/
+109,House,Energy and Commerce Committee,"Barton, Joe",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Energy_and_Commerce
+110,House,Energy and Commerce Committee,"Dingell, John",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Energy_and_Commerce
+111,House,Energy and Commerce Committee,"Waxman, Henry",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Energy_and_Commerce
+112,House,Energy and Commerce Committee,"Upton, Fred",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Energy_and_Commerce
+113,House,Energy and Commerce Committee,"Upton, Fred",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Energy_and_Commerce
+114,House,Energy and Commerce Committee,"Upton, Fred",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Energy_and_Commerce
+115,House,Energy and Commerce Committee,"Walden, Greg",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Energy_and_Commerce
+116,House,Energy and Commerce Committee,"Pallone, Frank",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Energy_and_Commerce
+117,House,Energy and Commerce Committee,"Pallone, Frank",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Energy_and_Commerce
+118,House,Energy and Commerce Committee,"McMorris Rodgers, Cathy",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Energy_and_Commerce
+108,Senate,Finance Committee,"Grassley, Chuck",R,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Finance
+109,Senate,Finance Committee,"Grassley, Chuck",R,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Finance
+110,Senate,Finance Committee,"Baucus, Max",D,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Finance
+111,Senate,Finance Committee,"Baucus, Max",D,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Finance
+112,Senate,Finance Committee,"Baucus, Max",D,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Finance
+113,Senate,Finance Committee,"Baucus, Max",D,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Finance
+114,Senate,Finance Committee,"Hatch, Orrin",R,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Finance
+115,Senate,Finance Committee,"Hatch, Orrin",R,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Finance
+116,Senate,Finance Committee,"Grassley, Chuck",R,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Finance
+117,Senate,Finance Committee,"Wyden, Ron",D,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Finance
+118,Senate,Finance Committee,"Wyden, Ron",D,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Finance
+108,Senate,"Health, Education, Labor, and Pensions Committee","Gregg, Judd",R,"https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Health,_Education,_Labor_and_Pensions"
+109,Senate,"Health, Education, Labor, and Pensions Committee","Enzi, Mike",R,"https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Health,_Education,_Labor_and_Pensions"
+110,Senate,"Health, Education, Labor, and Pensions Committee","Kennedy, Edward",D,"https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Health,_Education,_Labor_and_Pensions"
+111,Senate,"Health, Education, Labor, and Pensions Committee","Harkin, Tom",D,"https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Health,_Education,_Labor_and_Pensions"
+112,Senate,"Health, Education, Labor, and Pensions Committee","Harkin, Tom",D,"https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Health,_Education,_Labor_and_Pensions"
+113,Senate,"Health, Education, Labor, and Pensions Committee","Harkin, Tom",D,"https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Health,_Education,_Labor_and_Pensions"
+114,Senate,"Health, Education, Labor, and Pensions Committee","Alexander, Lamar",R,"https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Health,_Education,_Labor_and_Pensions"
+115,Senate,"Health, Education, Labor, and Pensions Committee","Alexander, Lamar",R,"https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Health,_Education,_Labor_and_Pensions"
+116,Senate,"Health, Education, Labor, and Pensions Committee","Alexander, Lamar",R,"https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Health,_Education,_Labor_and_Pensions"
+117,Senate,"Health, Education, Labor, and Pensions Committee","Murray, Patty",D,"https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Health,_Education,_Labor_and_Pensions"
+118,Senate,"Health, Education, Labor, and Pensions Committee","Sanders, Bernie",I,"https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_Health,_Education,_Labor_and_Pensions"
+108,House,Education and the Workforce Committee,"McKeon, Buck",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Education_and_the_Workforce
+109,House,Education and the Workforce Committee,"McKeon, Buck",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Education_and_the_Workforce
+110,House,Education and the Workforce Committee,"Miller, George",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Education_and_the_Workforce
+111,House,Education and the Workforce Committee,"Miller, George",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Education_and_the_Workforce
+112,House,Education and the Workforce Committee,"Kline, John",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Education_and_the_Workforce
+113,House,Education and the Workforce Committee,"Kline, John",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Education_and_the_Workforce
+114,House,Education and the Workforce Committee,"Kline, John",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Education_and_the_Workforce
+115,House,Education and the Workforce Committee,"Foxx, Virginia",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Education_and_the_Workforce
+116,House,Education and the Workforce Committee,"Scott, Bobby",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Education_and_the_Workforce
+117,House,Education and the Workforce Committee,"Scott, Bobby",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Education_and_the_Workforce
+118,House,Education and the Workforce Committee,"Foxx, Virginia",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Education_and_the_Workforce
+108,House,Natural Resources Committee,"Pombo, Richard",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Natural_Resources
+109,House,Natural Resources Committee,"Pombo, Richard",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Natural_Resources
+110,House,Natural Resources Committee,"Rahall, Nick",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Natural_Resources
+111,House,Natural Resources Committee,"Rahall, Nick",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Natural_Resources
+112,House,Natural Resources Committee,"Hastings, Doc",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Natural_Resources
+113,House,Natural Resources Committee,"Hastings, Doc",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Natural_Resources
+114,House,Natural Resources Committee,"Bishop, Rob",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Natural_Resources
+115,House,Natural Resources Committee,"Bishop, Rob",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Natural_Resources
+116,House,Natural Resources Committee,"Grijalva, Raul",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Natural_Resources
+117,House,Natural Resources Committee,"Grijalva, Raul",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Natural_Resources
+118,House,Natural Resources Committee,"Westerman, Bruce",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Natural_Resources
+108,Senate,Judiciary Committee,"Hatch, Orrin",R,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_the_Judiciary
+109,Senate,Judiciary Committee,"Specter, Arlen",R,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_the_Judiciary
+110,Senate,Judiciary Committee,"Leahy, Patrick",D,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_the_Judiciary
+111,Senate,Judiciary Committee,"Leahy, Patrick",D,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_the_Judiciary
+112,Senate,Judiciary Committee,"Leahy, Patrick",D,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_the_Judiciary
+113,Senate,Judiciary Committee,"Leahy, Patrick",D,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_the_Judiciary
+114,Senate,Judiciary Committee,"Grassley, Chuck",R,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_the_Judiciary
+115,Senate,Judiciary Committee,"Grassley, Chuck",R,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_the_Judiciary
+116,Senate,Judiciary Committee,"Graham, Lindsey",R,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_the_Judiciary
+117,Senate,Judiciary Committee,"Durbin, Dick",D,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_the_Judiciary
+118,Senate,Judiciary Committee,"Durbin, Dick",D,https://en.wikipedia.org/wiki/United_States_Senate_Committee_on_the_Judiciary
+108,House,Transportation and Infrastructure Committee,"Young, Don",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Transportation_and_Infrastructure
+109,House,Transportation and Infrastructure Committee,"Young, Don",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Transportation_and_Infrastructure
+110,House,Transportation and Infrastructure Committee,"Oberstar, Jim",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Transportation_and_Infrastructure
+111,House,Transportation and Infrastructure Committee,"Oberstar, Jim",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Transportation_and_Infrastructure
+112,House,Transportation and Infrastructure Committee,"Mica, John",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Transportation_and_Infrastructure
+113,House,Transportation and Infrastructure Committee,"Shuster, Bill",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Transportation_and_Infrastructure
+114,House,Transportation and Infrastructure Committee,"Shuster, Bill",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Transportation_and_Infrastructure
+115,House,Transportation and Infrastructure Committee,"Shuster, Bill",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Transportation_and_Infrastructure
+116,House,Transportation and Infrastructure Committee,"DeFazio, Peter",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Transportation_and_Infrastructure
+117,House,Transportation and Infrastructure Committee,"DeFazio, Peter",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Transportation_and_Infrastructure
+118,House,Transportation and Infrastructure Committee,"Graves, Sam",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Transportation_and_Infrastructure
+108,House,Financial Services Committee,"Oxley, Michael",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Financial_Services
+109,House,Financial Services Committee,"Oxley, Michael",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Financial_Services
+110,House,Financial Services Committee,"Frank, Barney",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Financial_Services
+111,House,Financial Services Committee,"Frank, Barney",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Financial_Services
+112,House,Financial Services Committee,"Bachus, Spencer",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Financial_Services
+113,House,Financial Services Committee,"Hensarling, Jeb",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Financial_Services
+114,House,Financial Services Committee,"Hensarling, Jeb",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Financial_Services
+115,House,Financial Services Committee,"Hensarling, Jeb",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Financial_Services
+116,House,Financial Services Committee,"Waters, Maxine",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Financial_Services
+117,House,Financial Services Committee,"Waters, Maxine",D,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Financial_Services
+118,House,Financial Services Committee,"McHenry, Patrick",R,https://en.wikipedia.org/wiki/United_States_House_Committee_on_Financial_Services

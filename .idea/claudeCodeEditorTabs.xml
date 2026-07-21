@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ClaudeCodeEditorTabs">
-    <option name="activeSessionId" value="14d73ba1-fa90-41ec-bbf7-23ee220cf104" />
+    <option name="activeSessionId" value="34a8815a-8306-4141-8556-252e975e88b0" />
     <option name="openSessionIds">
       <list>
-        <option value="14d73ba1-fa90-41ec-bbf7-23ee220cf104" />
+        <option value="6045548f-7f1d-4dd6-a490-3d240093e04e" />
+        <option value="34a8815a-8306-4141-8556-252e975e88b0" />
       </list>
     </option>
     <option name="sessionPaths">
       <map>
-        <entry key="14d73ba1-fa90-41ec-bbf7-23ee220cf104" value="/sessions/new" />
+        <entry key="34a8815a-8306-4141-8556-252e975e88b0" value="/sessions/d3ca47b4-503a-43b4-8540-06c50f9c1d90" />
+        <entry key="6045548f-7f1d-4dd6-a490-3d240093e04e" value="/sessions/421c8610-415e-48d5-9b89-0c58df4f6c87" />
       </map>
     </option>
     <option name="sessionTitles">
       <map>
-        <entry key="14d73ba1-fa90-41ec-bbf7-23ee220cf104" value="Claude Code" />
+        <entry key="34a8815a-8306-4141-8556-252e975e88b0" value="explain to me all archeticture for models used" />
+        <entry key="6045548f-7f1d-4dd6-a490-3d240093e04e" value="main working chat" />
       </map>
     </option>
   </component>

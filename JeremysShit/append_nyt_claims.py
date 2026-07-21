@@ -21,12 +21,23 @@ Usage:
 import argparse
 import csv
 import json
+import random
 from pathlib import Path
 
 CLAIMS_RAW = Path("claims_raw.csv")
 NYT_RAW_DIR = Path("election_arm/data/raw")
 FIELDS = ["claim_id", "episode", "kind", "publisher", "state", "date",
           "search_term", "page_url", "quote"]
+
+# The 10 LOC-era episodes (1905-1958) run 87-212 raw claims each, avg ~147.
+# Capping each NYT window to the same scale keeps every episode -- and both
+# eras -- comparably weighted in the pooled corpus, instead of dotcom_2001's
+# 861 candidates swamping oil_1973's dozen. There's no clean 1:1 crisis/control
+# pairing to match against instead (13 crisis windows share only 6 calm
+# baselines across the full corpus), so a flat per-window cap at the LOC
+# episodes' own scale is the least arbitrary choice available.
+PER_WINDOW_CAP = 150
+SAMPLE_SEED = 0
 
 # window_id -> (episode display name, kind) -- kind/naming matches the
 # existing "YYYY Name" / "YYYY Calm (control)" convention in claims_raw.csv.
@@ -47,45 +58,58 @@ def load_existing():
     rows = []
     seen_urls = set()
     max_id = 0
+    episode_counts = {}
     if CLAIMS_RAW.exists():
         with open(CLAIMS_RAW, newline="", encoding="utf-8") as f:
             for row in csv.DictReader(f):
                 rows.append(row)
                 seen_urls.add(row["page_url"])
                 max_id = max(max_id, int(row["claim_id"]))
-    return rows, seen_urls, max_id
+                episode_counts[row["episode"]] = episode_counts.get(row["episode"], 0) + 1
+    return rows, seen_urls, max_id, episode_counts
 
 
-def nyt_rows(seen_urls, next_id):
+def nyt_rows(seen_urls, next_id, episode_counts, cap=PER_WINDOW_CAP):
     new_rows = []
     per_window = {}
+    rng = random.Random(SAMPLE_SEED)
     for window_id, (episode, kind) in WINDOWS.items():
         path = NYT_RAW_DIR / f"nyt_economy_{window_id}.jsonl"
         if not path.exists():
             continue
-        added = 0
-        with open(path, encoding="utf-8") as f:
-            for line in f:
-                rec = json.loads(line)
-                url = rec.get("page_id")
-                quote = (rec.get("ocr_text") or "").strip()
-                if not url or not quote or url in seen_urls:
-                    continue
-                new_rows.append({
-                    "claim_id": next_id,
-                    "episode": episode,
-                    "kind": kind,
-                    "publisher": "the new york times",
-                    "state": "",
-                    "date": rec.get("date", ""),
-                    "search_term": rec.get("matched_phrase", ""),
-                    "page_url": url,
-                    "quote": quote,
-                })
-                seen_urls.add(url)
-                next_id += 1
-                added += 1
-        per_window[window_id] = added
+        candidates = []
+        for line in path.read_text(encoding="utf-8").splitlines():
+            rec = json.loads(line)
+            url = rec.get("page_id")
+            quote = (rec.get("ocr_text") or "").strip()
+            if not url or not quote or url in seen_urls:
+                continue
+            candidates.append(rec)
+            seen_urls.add(url)  # dedupe within this file too
+
+        # Cap applies to this episode's TOTAL merged count (already-merged +
+        # new), so a window already partially merged doesn't blow past the
+        # cap on a later resume.
+        room = cap - episode_counts.get(episode, 0) if cap is not None else len(candidates)
+        room = max(room, 0)
+        if len(candidates) > room:
+            candidates = rng.sample(candidates, room)
+
+        for rec in candidates:
+            new_rows.append({
+                "claim_id": next_id,
+                "episode": episode,
+                "kind": kind,
+                "publisher": "the new york times",
+                "state": "",
+                "date": rec.get("date", ""),
+                "search_term": rec.get("matched_phrase", ""),
+                "page_url": rec.get("page_id"),
+                "quote": (rec.get("ocr_text") or "").strip(),
+            })
+            next_id += 1
+        per_window[window_id] = len(candidates)
+        episode_counts[episode] = episode_counts.get(episode, 0) + len(candidates)
     return new_rows, per_window
 
 
@@ -93,10 +117,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true",
                     help="report what would be appended, write nothing")
+    ap.add_argument("--cap", type=int, default=PER_WINDOW_CAP,
+                    help=f"max claims per NYT episode, matched to the LOC "
+                         f"episodes' own 87-212 scale (default {PER_WINDOW_CAP}); "
+                         f"0 or negative disables capping")
     args = ap.parse_args()
+    cap = args.cap if args.cap and args.cap > 0 else None
 
-    existing_rows, seen_urls, max_id = load_existing()
-    new_rows, per_window = nyt_rows(seen_urls, max_id + 1)
+    existing_rows, seen_urls, max_id, episode_counts = load_existing()
+    new_rows, per_window = nyt_rows(seen_urls, max_id + 1, episode_counts, cap=cap)
 
     print(f"claims_raw.csv currently has {len(existing_rows)} rows (max claim_id {max_id})")
     for wid, n in per_window.items():

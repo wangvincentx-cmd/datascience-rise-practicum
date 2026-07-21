@@ -5,12 +5,20 @@ Tier 2 analyses: uncertainty, geography, and a household-sentiment benchmark.
    (newspaper-based, monthly, 1900-2014, policyuncertainty.com). Tests the team's
    third goal directly: did predictions fail when policy uncertainty was high?
 
-2. GEOGRAPHY — hit rate by Census region and by financial-center states
-   (NY/IL/MA/PA/DC). Did papers near the money predict better?
+2. GEOGRAPHY — hit rate by Census region, financial-center states (NY/IL/MA/PA),
+   and DC as its own political-hub bucket. Did papers near the money predict
+   better?
 
-3. MICHIGAN — University of Michigan Consumer Sentiment (via FRED UMCSENT,
-   1952- ). Households' implied directional call (sentiment rising = "improve")
-   scored against realized industrial production, giving a third benchmark:
+3. MICHIGAN — "Michigan" is shorthand for the University of Michigan Survey
+   Research Center's Surveys of Consumers (FRED series UMCSENT, 1952- ), the
+   same index referenced when people say "consumer sentiment" in financial
+   news. It is a NATIONAL survey of US households (nationally representative
+   random-digit-dial sample) -- the name refers to the institution that
+   administers it, not to Michigan residents or Michigan the state. Already
+   answers "all of America's households"; there's no separate more-national
+   version to switch to.
+   Households' implied directional call (sentiment rising = "improve") scored
+   against realized industrial production, giving a third benchmark:
    newspapers vs. expert economists vs. ordinary households.
    Caveat to state on the poster: sentiment is an *implied* forecast, not a
    stated one — it's the closest thing to a continuous household poll.
@@ -49,7 +57,8 @@ REGIONS = {
              "wyoming", "alaska", "california", "hawaii", "oregon", "washington"],
 }
 STATE_TO_REGION = {s: r for r, states in REGIONS.items() for s in states}
-FIN_CENTERS = {"new york", "illinois", "massachusetts", "pennsylvania", "district of columbia"}
+FIN_CENTERS = {"new york", "illinois", "massachusetts", "pennsylvania"}
+POLITICAL_HUBS = {"district of columbia"}
 
 
 def epu_series():
@@ -118,8 +127,10 @@ def geography_analysis(s, plt):
     s = s.copy()
     s["state"] = s["state"].fillna("").str.lower().str.strip()
     s["region"] = s["state"].map(STATE_TO_REGION).fillna("unknown")
-    s["fin_center"] = np.where(s["state"].isin(FIN_CENTERS),
-                               "financial-center state", "elsewhere")
+    s["fin_center"] = np.select(
+        [s["state"].isin(FIN_CENTERS), s["state"].isin(POLITICAL_HUBS)],
+        ["financial-center state", "political hub (DC)"],
+        default="elsewhere")
     reg = s[s["region"] != "unknown"].groupby("region").agg(
         n=("hit", "size"), hit_rate=("hit", "mean")).round(3)
     fin = s.groupby("fin_center").agg(n=("hit", "size"), hit_rate=("hit", "mean")).round(3)
@@ -133,9 +144,10 @@ def geography_analysis(s, plt):
         axes[0].axhline(0.5, color="crimson", ls="--", lw=1)
         for i, (n, hr) in enumerate(zip(reg["n"], reg["hit_rate"])):
             axes[0].text(i, hr + 0.02, f"n={n}", ha="center", fontsize=8)
-        fin["hit_rate"].plot(kind="bar", ax=axes[1], color=["darkgoldenrod", "steelblue"],
-                             alpha=.85, rot=0)
-        axes[1].set_title("Financial-center states (NY/IL/MA/PA/DC) vs. elsewhere")
+        fin["hit_rate"].plot(kind="bar", ax=axes[1],
+                             color=["steelblue", "darkgoldenrod", "seagreen"],
+                             alpha=.85, rot=15)
+        axes[1].set_title("Financial-center states (NY/IL/MA/PA) vs. DC vs. elsewhere")
         axes[1].set_ylim(0, 1); axes[1].axhline(0.5, color="crimson", ls="--", lw=1)
         for i, (n, hr) in enumerate(zip(fin["n"], fin["hit_rate"])):
             axes[1].text(i, hr + 0.02, f"n={n}", ha="center", fontsize=8)
@@ -178,14 +190,17 @@ def three_way_benchmark(s, plt):
     m5363 = mich[(mich["period"] >= pd.Period("1953-01", "M")) &
                  (mich["period"] <= pd.Period("1963-12", "M"))]
     if len(m5363):
-        rows.append(("Michigan households (1953-63)", m5363["hit"].mean(), len(m5363)))
-    rows.append(("Michigan households (1953-2010)",
+        rows.append(("US households, Michigan SRC survey (1953-63)", m5363["hit"].mean(), len(m5363)))
+    rows.append(("US households, Michigan SRC survey (1953-2010)",
                  mich[mich["period"] <= pd.Period("2010-12", "M")]["hit"].mean(),
                  len(mich[mich["period"] <= pd.Period("2010-12", "M")])))
     tab = pd.DataFrame(rows, columns=["forecaster", "hit_rate", "n"]).set_index("forecaster").round(3)
     print(tab.to_string())
-    print("(Michigan = implied direction from sentiment changes — proxy, not stated forecast;"
-          "\n overlapping-window observations are serially correlated, so n overstates precision)")
+    print("(\"Michigan SRC\" = University of Michigan Survey Research Center's Surveys of"
+          "\n Consumers (UMCSENT) -- a NATIONAL survey of US households, not Michigan-specific;"
+          "\n named for the administering institution. Sentiment change is an implied direction,"
+          "\n not a stated forecast; overlapping-window observations are serially correlated,"
+          "\n so n overstates precision.)")
 
     if plt:
         fig, ax = plt.subplots(figsize=(8.5, 4.5))

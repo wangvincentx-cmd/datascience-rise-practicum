@@ -572,3 +572,116 @@ timestamp,source,arm,window,phrase,total_hits,pages_fetched
 2026-07-16T14:12:07,nyt,economy,dotcom_2001,"""business recession""",0,1
 2026-07-16T14:12:19,nyt,economy,dotcom_2001,"""recession fears""",0,1
 2026-07-16T14:17:55,nyt,economy,dotcom_2001,"""economic downturn""",0,27
+2026-07-16T14:34:10,nyt,economy,gfc_2008,"""business outlook""",0,3
+2026-07-16T14:36:24,nyt,economy,gfc_2008,"""business outlook""",0,3
+2026-07-16T14:39:31,nyt,economy,gfc_2008,"""economic outlook""",0,16
+2026-07-16T14:41:10,nyt,economy,gfc_2008,"""business conditions""",0,8
+2026-07-16T14:41:26,nyt,economy,gfc_2008,"""economic forecast""",0,1
+2026-07-16T14:41:39,nyt,economy,gfc_2008,"""business recession""",0,1
+2026-07-16T14:42:17,nyt,economy,gfc_2008,"""recession fears""",0,3
+2026-07-16T14:45:25,nyt,economy,gfc_2008,"""economic downturn""",0,16
+2026-07-16T14:48:33,nyt,economy,gfc_2008,"""economic slowdown""",0,16
+2026-07-16T14:48:45,nyt,economy,gfc_2008,"""business slump""",0,1
+2026-07-16T14:51:55,nyt,economy,gfc_2008,"""economic recovery""",0,16
+2026-07-16T14:52:08,nyt,economy,gfc_2008,"""recovery expected""",0,1
+2026-07-16T14:52:20,nyt,economy,gfc_2008,"""return of prosperity""",0,1
+2026-07-16T14:52:33,nyt,economy,gfc_2008,"""business revival""",0,1
+2026-07-16T14:55:42,nyt,economy,gfc_2008,"""economists expect""",0,16
+2026-07-16T14:56:19,nyt,economy,gfc_2008,"""worst is over""",0,3
+2026-07-16T14:56:44,nyt,economy,gfc_2008,"""hard times ahead""",0,2
+2026-07-16T14:56:57,nyt,economy,gulf_1990,"""business outlook""",0,1
+2026-07-16T14:58:13,nyt,economy,gulf_1990,"""economic outlook""",0,6
+2026-07-16T14:58:51,nyt,economy,gulf_1990,"""business conditions""",0,3
+2026-07-16T14:59:16,nyt,economy,gulf_1990,"""economic forecast""",0,2
+2026-07-16T14:59:29,nyt,economy,gulf_1990,"""business recession""",0,1
+2026-07-16T15:00:07,nyt,economy,gulf_1990,"""recession fears""",0,3
+2026-07-16T15:03:18,nyt,economy,gulf_1990,"""economic downturn""",0,16
+2026-07-16T15:05:12,nyt,economy,gulf_1990,"""economic slowdown""",0,9
+2026-07-16T15:05:25,nyt,economy,gulf_1990,"""business slump""",0,1
+2026-07-16T15:06:27,nyt,economy,gulf_1990,"""economic recovery""",0,5
+2026-07-16T15:06:40,nyt,economy,gulf_1990,"""recovery expected""",0,1
+2026-07-16T15:06:52,nyt,economy,gulf_1990,"""return of prosperity""",0,1
+2026-07-16T15:07:05,nyt,economy,gulf_1990,"""business revival""",0,1
+2026-07-16T15:07:42,nyt,economy,gulf_1990,"""economists expect""",0,3
+2026-07-16T15:08:07,nyt,economy,gulf_1990,"""worst is over""",0,2
+2026-07-16T15:08:20,nyt,economy,gulf_1990,"""hard times ahead""",0,1
+2026-07-16T15:08:45,nyt,economy,oil_1973,"""business outlook""",0,2
+2026-07-16T15:09:47,nyt,economy,oil_1973,"""economic outlook""",0,5
+2026-07-16T15:10:12,nyt,economy,oil_1973,"""business conditions""",0,2
+2026-07-16T15:10:25,nyt,economy,oil_1973,"""economic forecast""",0,1
+2026-07-16T15:10:37,nyt,economy,oil_1973,"""business recession""",0,1
+2026-07-16T15:10:50,nyt,economy,oil_1973,"""recession fears""",0,1
+2026-07-16T15:11:15,nyt,economy,oil_1973,"""economic downturn""",0,2
+2026-07-16T15:12:30,nyt,economy,oil_1973,"""economic slowdown""",0,6
+2026-07-16T15:12:43,nyt,economy,oil_1973,"""business slump""",0,1
+2026-07-16T15:13:08,nyt,economy,oil_1973,"""economic recovery""",0,2
+2026-07-16T15:13:20,nyt,economy,oil_1973,"""recovery expected""",0,1
+2026-07-16T15:13:32,nyt,economy,oil_1973,"""return of prosperity""",0,1
+2026-07-16T15:13:45,nyt,economy,oil_1973,"""business revival""",0,1
+2026-07-16T15:14:10,nyt,economy,oil_1973,"""economists expect""",0,2
+2026-07-16T15:14:23,nyt,economy,oil_1973,"""worst is over""",0,1
+2026-07-16T15:14:35,nyt,economy,oil_1973,"""hard times ahead""",0,1
+2026-07-16T15:14:48,nyt,economy,volcker_1980,"""business outlook""",0,1
+2026-07-16T15:15:38,nyt,economy,volcker_1980,"""economic outlook""",0,4
+2026-07-16T15:15:50,nyt,economy,volcker_1980,"""business conditions""",0,1
+2026-07-16T15:16:15,nyt,economy,volcker_1980,"""economic forecast""",0,2
+2026-07-16T15:16:28,nyt,economy,volcker_1980,"""business recession""",0,1
+2026-07-16T15:16:53,nyt,economy,volcker_1980,"""recession fears""",0,2
+2026-07-16T15:17:55,nyt,economy,volcker_1980,"""economic downturn""",0,5
+2026-07-16T15:18:32,nyt,economy,volcker_1980,"""economic slowdown""",0,3
+2026-07-16T15:18:45,nyt,economy,volcker_1980,"""business slump""",0,1
+2026-07-16T15:19:22,nyt,economy,volcker_1980,"""economic recovery""",0,3
+2026-07-16T15:19:35,nyt,economy,volcker_1980,"""recovery expected""",0,1
+2026-07-16T15:19:47,nyt,economy,volcker_1980,"""return of prosperity""",0,1
+2026-07-16T15:20:00,nyt,economy,volcker_1980,"""business revival""",0,1
+2026-07-16T15:20:12,nyt,economy,volcker_1980,"""economists expect""",0,1
+2026-07-16T15:20:24,nyt,economy,volcker_1980,"""worst is over""",0,1
+2026-07-16T15:20:37,nyt,economy,volcker_1980,"""hard times ahead""",0,1
+2026-07-18T11:50:13,nyt,economy,gulf_1990,"""business outlook""",0,1
+2026-07-18T11:51:27,nyt,economy,gulf_1990,"""economic outlook""",0,6
+2026-07-18T11:52:05,nyt,economy,gulf_1990,"""business conditions""",0,3
+2026-07-18T11:52:30,nyt,economy,gulf_1990,"""economic forecast""",0,2
+2026-07-18T11:52:42,nyt,economy,gulf_1990,"""business recession""",0,1
+2026-07-18T11:53:19,nyt,economy,gulf_1990,"""recession fears""",0,3
+2026-07-18T11:57:18,nyt,economy,gulf_1990,"""economic downturn""",0,19
+2026-07-18T11:59:24,nyt,economy,gulf_1990,"""economic slowdown""",0,9
+2026-07-18T11:59:36,nyt,economy,gulf_1990,"""business slump""",0,1
+2026-07-18T12:00:39,nyt,economy,gulf_1990,"""economic recovery""",0,5
+2026-07-18T12:00:52,nyt,economy,gulf_1990,"""recovery expected""",0,1
+2026-07-18T12:01:04,nyt,economy,gulf_1990,"""return of prosperity""",0,1
+2026-07-18T12:01:17,nyt,economy,gulf_1990,"""business revival""",0,1
+2026-07-18T12:01:54,nyt,economy,gulf_1990,"""economists expect""",0,3
+2026-07-18T12:02:19,nyt,economy,gulf_1990,"""worst is over""",0,2
+2026-07-18T12:02:31,nyt,economy,gulf_1990,"""hard times ahead""",0,1
+2026-07-18T12:02:57,nyt,economy,oil_1973,"""business outlook""",0,2
+2026-07-18T12:03:59,nyt,economy,oil_1973,"""economic outlook""",0,5
+2026-07-18T12:04:24,nyt,economy,oil_1973,"""business conditions""",0,2
+2026-07-18T12:04:37,nyt,economy,oil_1973,"""economic forecast""",0,1
+2026-07-18T12:04:49,nyt,economy,oil_1973,"""business recession""",0,1
+2026-07-18T12:05:02,nyt,economy,oil_1973,"""recession fears""",0,1
+2026-07-18T12:05:27,nyt,economy,oil_1973,"""economic downturn""",0,2
+2026-07-18T12:06:42,nyt,economy,oil_1973,"""economic slowdown""",0,6
+2026-07-18T12:06:54,nyt,economy,oil_1973,"""business slump""",0,1
+2026-07-18T12:07:20,nyt,economy,oil_1973,"""economic recovery""",0,2
+2026-07-18T12:07:34,nyt,economy,oil_1973,"""recovery expected""",0,1
+2026-07-18T12:07:46,nyt,economy,oil_1973,"""return of prosperity""",0,1
+2026-07-18T12:07:59,nyt,economy,oil_1973,"""business revival""",0,1
+2026-07-18T12:08:24,nyt,economy,oil_1973,"""economists expect""",0,2
+2026-07-18T12:08:38,nyt,economy,oil_1973,"""worst is over""",0,1
+2026-07-18T12:08:51,nyt,economy,oil_1973,"""hard times ahead""",0,1
+2026-07-18T12:09:03,nyt,economy,volcker_1980,"""business outlook""",0,1
+2026-07-18T12:09:53,nyt,economy,volcker_1980,"""economic outlook""",0,4
+2026-07-18T12:10:06,nyt,economy,volcker_1980,"""business conditions""",0,1
+2026-07-18T12:10:31,nyt,economy,volcker_1980,"""economic forecast""",0,2
+2026-07-18T12:10:43,nyt,economy,volcker_1980,"""business recession""",0,1
+2026-07-18T12:11:08,nyt,economy,volcker_1980,"""recession fears""",0,2
+2026-07-18T12:12:11,nyt,economy,volcker_1980,"""economic downturn""",0,5
+2026-07-18T12:12:48,nyt,economy,volcker_1980,"""economic slowdown""",0,3
+2026-07-18T12:13:00,nyt,economy,volcker_1980,"""business slump""",0,1
+2026-07-18T12:13:38,nyt,economy,volcker_1980,"""economic recovery""",0,3
+2026-07-18T12:13:50,nyt,economy,volcker_1980,"""recovery expected""",0,1
+2026-07-18T12:14:03,nyt,economy,volcker_1980,"""return of prosperity""",0,1
+2026-07-18T12:14:15,nyt,economy,volcker_1980,"""business revival""",0,1
+2026-07-18T12:14:28,nyt,economy,volcker_1980,"""economists expect""",0,1
+2026-07-18T12:14:40,nyt,economy,volcker_1980,"""worst is over""",0,1
+2026-07-18T12:14:53,nyt,economy,volcker_1980,"""hard times ahead""",0,1

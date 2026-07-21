@@ -42,10 +42,13 @@ import csv
 import json
 import os
 import random
+import re
 import ssl
 import time
 import urllib.error
 import urllib.request
+
+import requests
 
 USER_AGENT = "BU-RISE-student-research/0.2 (economic prediction accuracy study)"
 
@@ -71,6 +74,51 @@ class DailyCapReached(Exception):
     def __init__(self, wait):
         self.wait = wait
         super().__init__(f"daily request cap hit (provider says retry in {wait/3600:.1f}h)")
+
+
+class AllKeysExhausted(Exception):
+    pass
+
+
+def load_labeled_keys(path, label_pattern):
+    """Parse a plaintext 'Label: sk-...' style notes file (bill_arm/.env is
+    NOT valid shell syntax -- it's human notes with one key per line) and
+    return the values whose label matches label_pattern, in file order."""
+    keys = []
+    if not os.path.exists(path):
+        return keys
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            m = re.match(label_pattern, line.strip())
+            if m:
+                keys.append(m.group(1))
+    return keys
+
+
+class KeyRotator:
+    """Wraps call_llm with automatic rotation across multiple API keys for the
+    SAME provider (e.g. Groq's 5 free-tier keys) -- when one key hits its
+    daily request cap (DailyCapReached), move to the next key and keep going
+    instead of stopping the whole run. Only raises AllKeysExhausted once
+    every key in the list is capped."""
+
+    def __init__(self, keys):
+        if not keys:
+            raise ValueError("KeyRotator needs at least one key")
+        self.keys = keys
+        self.i = 0
+
+    def call(self, prompt, model, base_url, min_tokens=None):
+        while True:
+            try:
+                return call_llm(prompt, model, base_url, self.keys[self.i], min_tokens=min_tokens)
+            except DailyCapReached as e:
+                print(f"    key {self.i + 1}/{len(self.keys)} capped ({e})", flush=True)
+                self.i += 1
+                if self.i >= len(self.keys):
+                    raise AllKeysExhausted(f"all {len(self.keys)} keys exhausted")
+                print(f"    rotating to key {self.i + 1}/{len(self.keys)}", flush=True)
+
 
 try:
     # macOS python.org builds ship without a populated system trust store, so
@@ -235,10 +283,28 @@ def call_llm(prompt, model, base_url, api_key, max_retries=5, min_tokens=None):
             time.sleep(5 * (attempt + 1))
 
 
-def grade(args):
+def build_rotator(args):
+    """Resolve which key(s) to grade with, in priority order: an explicit
+    --groq-keys-file (multi-key rotation), else the single DEEPSEEK_API_KEY /
+    OPENAI_API_KEY env var."""
+    if args.groq_keys_file:
+        keys = load_labeled_keys(args.groq_keys_file, r"^Groq key \d+:\s*(gsk_\S+)")
+        if not keys:
+            raise SystemExit(f"No 'Groq key N: gsk_...' lines found in {args.groq_keys_file}")
+        print(f"Loaded {len(keys)} Groq keys from {args.groq_keys_file} for rotation")
+        return KeyRotator(keys)
     api_key = os.environ.get("DEEPSEEK_API_KEY") or os.environ.get("OPENAI_API_KEY")
     if not api_key:
         raise SystemExit("Set DEEPSEEK_API_KEY (or OPENAI_API_KEY) first.")
+    return KeyRotator([api_key])
+
+
+def grade(args, rotator=None):
+    """Returns True if every todo claim was graded, False if the run stopped
+    early with keys/quota exhausted (caller can decide whether to fall back
+    to another provider for the remainder -- claims_graded.csv already has
+    everything graded so far, safe to resume or hand off)."""
+    rotator = rotator or build_rotator(args)
     with open(args.claims, encoding="utf-8") as f:
         claims = list(csv.DictReader(f))
     if args.limit:
@@ -257,6 +323,7 @@ def grade(args):
     todo = [c for c in claims if c["claim_id"] not in done_ids]
     print(f"Grading {len(todo)} claims with {args.model} at {args.base_url}")
 
+    complete = True
     with open(args.out, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=out_fields)
         writer.writeheader()
@@ -266,13 +333,13 @@ def grade(args):
             prompt = RUBRIC_PROMPT.format(date=row["date"], episode=row["episode"],
                                           quote=row["quote"])
             try:
-                g = call_llm(prompt, args.model, args.base_url, api_key,
-                            min_tokens=args.min_tokens)
-            except DailyCapReached as e:
+                g = rotator.call(prompt, args.model, args.base_url, min_tokens=args.min_tokens)
+            except AllKeysExhausted as e:
                 print(f"\n=== {e} ===")
                 print(f"Stopping cleanly with {len(graded)} claims graded and saved.")
-                print(f"Rerun the same command once the cap resets; it will resume "
-                      f"from claim {i} of {len(todo)} remaining.", flush=True)
+                print(f"Rerun the same command once a cap resets (or with fresh keys); it "
+                      f"will resume from claim {i} of {len(todo)} remaining.", flush=True)
+                complete = False
                 break
             except Exception as e:
                 print(f"  claim {row['claim_id']}: FAILED ({e}) — marked ungraded", flush=True)
@@ -294,7 +361,7 @@ def grade(args):
     preds = [r for r in graded if r["is_prediction"] == "yes"]
     if not preds:
         print("No graded predictions — leaving any existing validation_sample.csv alone.")
-        return
+        return complete
     random.seed(42)
     sample = random.sample(preds, min(len(preds), max(5, int(len(preds) * args.sample_frac))))
     with open("validation_sample.csv", "w", newline="", encoding="utf-8") as f:
@@ -304,6 +371,215 @@ def grade(args):
             w.writerow({**r, **{f"human_{k}": "" for k in GRADE_FIELDS}})
     print(f"Human validation sample ({len(sample)} rows) -> validation_sample.csv")
     print("Two graders: fill the human_* columns independently, then run --kappa on each.")
+    return complete
+
+
+# --- OpenAI Batch API: submit the whole job as one file, poll, retrieve.
+# 50% cheaper than synchronous chat/completions calls, which matters on a
+# fixed prepaid balance -- see run_batch(). Batch-specific, not a generic
+# provider option like --base-url (unlike the synchronous path, the Batch
+# API's request/response envelope isn't something every OpenAI-compatible
+# provider implements the same way, so this targets OpenAI only).
+OPENAI_BATCH_BASE = "https://api.openai.com/v1"
+GROQ_BASE = "https://api.groq.com/openai/v1"
+
+
+def _batch_request_lines(todo, model, min_tokens=None):
+    for row in todo:
+        prompt = RUBRIC_PROMPT.format(date=row["date"], episode=row["episode"], quote=row["quote"])
+        body = {
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "response_format": {"type": "json_object"},
+            "temperature": 0.0,
+            "max_tokens": min_tokens or MAX_TOKENS,
+        }
+        yield json.dumps({"custom_id": row["claim_id"], "method": "POST",
+                          "url": "/v1/chat/completions", "body": body})
+
+
+def submit_batch(api_key, todo, model, min_tokens=None):
+    jsonl = "\n".join(_batch_request_lines(todo, model, min_tokens))
+    headers = {"Authorization": f"Bearer {api_key}"}
+    resp = requests.post(f"{OPENAI_BATCH_BASE}/files", headers=headers,
+                         files={"file": ("batch_input.jsonl", jsonl.encode("utf-8"),
+                                        "application/jsonl")},
+                         data={"purpose": "batch"}, timeout=120)
+    resp.raise_for_status()
+    file_id = resp.json()["id"]
+    resp = requests.post(f"{OPENAI_BATCH_BASE}/batches",
+                         headers={**headers, "Content-Type": "application/json"},
+                         json={"input_file_id": file_id, "endpoint": "/v1/chat/completions",
+                              "completion_window": "24h"}, timeout=60)
+    resp.raise_for_status()
+    return resp.json()
+
+
+def poll_batch(api_key, batch_id, interval=30):
+    headers = {"Authorization": f"Bearer {api_key}"}
+    while True:
+        resp = requests.get(f"{OPENAI_BATCH_BASE}/batches/{batch_id}", headers=headers, timeout=60)
+        resp.raise_for_status()
+        data = resp.json()
+        counts = data.get("request_counts", {}) or {}
+        print(f"  batch {batch_id}: {data['status']}  (completed "
+             f"{counts.get('completed', 0)}/{counts.get('total', 0)}, "
+             f"failed {counts.get('failed', 0)})", flush=True)
+        if data["status"] in ("completed", "failed", "expired", "cancelled"):
+            return data
+        time.sleep(interval)
+
+
+def fetch_file(api_key, file_id):
+    headers = {"Authorization": f"Bearer {api_key}"}
+    resp = requests.get(f"{OPENAI_BATCH_BASE}/files/{file_id}/content", headers=headers, timeout=120)
+    resp.raise_for_status()
+    return resp.text
+
+
+def run_batch(args, api_key):
+    """Grade via the OpenAI Batch API instead of one call per claim -- half
+    the per-token price, and one job instead of hundreds of requests. Trades
+    latency (can take up to 24h, usually far less) for cost; not
+    interactive, meant to be backgrounded.
+
+    Returns True if the whole todo list came back graded, False if the job
+    failed/expired or requests errored out (e.g. the account ran out of
+    balance) -- callers (see auto_grade) can fall back to another provider
+    for whatever's left, since claims_graded.csv already has everything
+    that succeeded and the resume-by-claim_id logic skips it next time."""
+    with open(args.claims, encoding="utf-8") as f:
+        claims = list(csv.DictReader(f))
+    if args.limit:
+        claims = claims[: args.limit]
+    out_fields = list(claims[0].keys()) + GRADE_FIELDS
+
+    graded, done_ids = [], set()
+    if os.path.exists(args.out) and not args.overwrite:
+        with open(args.out, encoding="utf-8") as f:
+            graded = [r for r in csv.DictReader(f) if r.get("is_prediction", "").strip()]
+        done_ids = {r["claim_id"] for r in graded}
+        if done_ids:
+            print(f"Resuming: {len(done_ids)} claims already graded in {args.out}")
+    todo = [c for c in claims if c["claim_id"] not in done_ids]
+    if not todo:
+        print("Nothing left to grade.")
+        return True
+
+    def save():
+        with open(args.out, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=out_fields)
+            writer.writeheader()
+            for row in graded:
+                writer.writerow({k: row.get(k, "") for k in out_fields})
+
+    # OpenAI's Batch API caps ENQUEUED tokens per model per org (hit this for
+    # real 2026-07-18: 2,415 claims at once tripped "Enqueued token limit
+    # reached ... Limit: 900,000 enqueued tokens" and the whole job failed
+    # with 0 graded -- the cap counts every batch still in_progress, not just
+    # this submission, so chunks must run one-at-a-time, not concurrently.
+    # ~960 prompt tokens + up to MAX_TOKENS output reserved per claim (see
+    # module docstring's per-call estimate); chunk_size defaults conservative
+    # enough to leave real headroom under 900k even if a future model raises
+    # the per-call estimate.
+    chunks = [todo[i:i + args.batch_chunk_size] for i in range(0, len(todo), args.batch_chunk_size)]
+    print(f"Submitting {len(todo)} claims to the OpenAI Batch API ({args.openai_model}) in "
+         f"{len(chunks)} chunk(s) of up to {args.batch_chunk_size}...")
+
+    for ci, chunk in enumerate(chunks, 1):
+        print(f"--- chunk {ci}/{len(chunks)}: {len(chunk)} claims ---", flush=True)
+        for attempt in range(3):
+            try:
+                batch = submit_batch(api_key, chunk, args.openai_model, args.min_tokens)
+                break
+            except requests.exceptions.HTTPError as e:
+                body = e.response.text[:500] if e.response is not None else str(e)
+                print(f"Batch submission failed: {e}\n{body}")
+                save()
+                return False
+        print(f"  batch id {batch['id']}, status {batch['status']}")
+        result = poll_batch(api_key, batch["id"], interval=args.poll_interval)
+
+        # A chunk-level "token_limit_exceeded" means a still-in_progress batch
+        # (ours or another job in the same org) hasn't cleared yet -- worth one
+        # retry after a short wait before concluding the account is out of
+        # money and handing off to the Groq fallback.
+        err_codes = {e.get("code") for e in (result.get("errors") or {}).get("data", [])}
+        if result["status"] == "failed" and err_codes == {"token_limit_exceeded"} and attempt == 0:
+            print("  enqueued-token limit hit; waiting 60s for other in_progress "
+                 "batches to clear, then retrying this chunk once", flush=True)
+            time.sleep(60)
+            try:
+                batch = submit_batch(api_key, chunk, args.openai_model, args.min_tokens)
+                result = poll_batch(api_key, batch["id"], interval=args.poll_interval)
+            except requests.exceptions.HTTPError as e:
+                print(f"  retry failed: {e}")
+
+        by_id = {row["claim_id"]: row for row in chunk}
+        n_ok = 0
+        if result.get("output_file_id"):
+            for line in fetch_file(api_key, result["output_file_id"]).splitlines():
+                if not line.strip():
+                    continue
+                rec = json.loads(line)
+                row = by_id.get(rec["custom_id"])
+                if row is None:
+                    continue
+                body = (rec.get("response") or {}).get("body") or {}
+                try:
+                    g = json.loads(body["choices"][0]["message"]["content"])
+                except Exception:
+                    g = {}
+                for k in GRADE_FIELDS:
+                    row[k] = str(g.get(k, ""))
+                graded.append(row)
+                n_ok += 1
+        if result.get("error_file_id"):
+            err_text = fetch_file(api_key, result["error_file_id"])
+            err_lines = [l for l in err_text.splitlines() if l.strip()]
+            print(f"  {len(err_lines)} request(s) errored in this chunk (often an "
+                 f"insufficient-balance signal) -- first: "
+                 f"{err_lines[0][:300] if err_lines else ''}")
+        if result.get("errors") and not result.get("output_file_id"):
+            print(f"  batch-level error: {result['errors']}")
+        save()
+
+        chunk_complete = result["status"] == "completed" and n_ok >= len(chunk)
+        print(f"  chunk {ci}/{len(chunks)} {result['status']}: {n_ok}/{len(chunk)} graded "
+             f"({len(graded)} total so far -> {args.out})")
+        if not chunk_complete:
+            print("Chunk did not fully complete -- stopping the OpenAI phase here; "
+                 "remaining claims stay ungraded for a fallback provider (--auto) or a rerun.")
+            return False
+
+    print(f"\nAll {len(chunks)} chunk(s) complete -> {args.out} ({len(graded)} total graded)")
+    return True
+
+
+def auto_grade(args):
+    """User's explicit cost plan: grade with the OpenAI key (batched, 50%
+    cheaper) until the account balance runs out, then automatically switch
+    to rotating across the Groq free-tier keys for whatever's left."""
+    openai_key = os.environ.get("OPENAI_API_KEY")
+    if not openai_key:
+        raise SystemExit("Set OPENAI_API_KEY first (or pass --groq-keys-file with --batch off "
+                         "to skip straight to Groq).")
+    print(f"=== Phase 1: OpenAI Batch API ({args.openai_model}) until the account runs out ===")
+    if run_batch(args, openai_key):
+        print("\nAll claims graded via OpenAI batch -- done.")
+        return
+    print("\n=== Phase 2: OpenAI batch didn't finish everything -- rotating Groq keys for "
+         "the remainder ===")
+    keys = load_labeled_keys(args.groq_keys_file, r"^Groq key \d+:\s*(gsk_\S+)")
+    if not keys:
+        raise SystemExit(f"No 'Groq key N: gsk_...' lines found in {args.groq_keys_file} -- "
+                         f"can't run the Groq fallback phase.")
+    print(f"Loaded {len(keys)} Groq keys from {args.groq_keys_file} for rotation")
+    groq_args = argparse.Namespace(**vars(args))
+    groq_args.model = args.groq_model
+    groq_args.base_url = GROQ_BASE
+    groq_args.sleep = args.groq_sleep
+    grade(groq_args, rotator=KeyRotator(keys))
 
 
 def cohens_kappa(pairs):
@@ -347,8 +623,41 @@ if __name__ == "__main__":
     ap.add_argument("--sample-frac", type=float, default=0.2)
     ap.add_argument("--kappa", metavar="FILLED_CSV",
                     help="compute model-vs-human Cohen's kappa from a filled validation sample")
+    ap.add_argument("--batch", action="store_true",
+                    help="grade via the OpenAI Batch API (needs OPENAI_API_KEY) instead of "
+                         "one call per claim -- 50%% cheaper, async, meant to be backgrounded")
+    ap.add_argument("--auto", action="store_true",
+                    help="OpenAI batch first (needs OPENAI_API_KEY), then automatically "
+                         "rotate --groq-keys-file's keys for whatever's left once the OpenAI "
+                         "account runs out")
+    ap.add_argument("--openai-model", default="gpt-4.1",
+                    help="model for --batch/--auto's OpenAI phase -- gpt-4.1 is this project's "
+                         "already-validated grader choice (see CHANGELOG bake-off)")
+    ap.add_argument("--groq-model", default="llama-3.3-70b-versatile",
+                    help="model for --auto's Groq fallback phase")
+    ap.add_argument("--groq-sleep", type=float, default=2.5,
+                    help="seconds between calls in --auto's Groq phase (free-tier rpm cap)")
+    ap.add_argument("--groq-keys-file",
+                    default=os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                         "..", "bill_arm", ".env"),
+                    help="notes file with 'Groq key N: gsk_...' lines, for multi-key rotation "
+                         "via --groq-keys-file directly or --auto's fallback phase")
+    ap.add_argument("--poll-interval", type=float, default=30,
+                    help="seconds between batch status checks (--batch/--auto)")
+    ap.add_argument("--batch-chunk-size", type=int, default=600,
+                    help="claims per OpenAI Batch API submission (--batch/--auto) -- org-level "
+                         "enqueued-token caps (e.g. 900k for gpt-4.1) mean one giant batch can "
+                         "fail outright; chunks run sequentially so only one is in_progress at "
+                         "a time")
     args = ap.parse_args()
     if args.kappa:
         kappa_report(args.kappa)
+    elif args.auto:
+        auto_grade(args)
+    elif args.batch:
+        api_key = os.environ.get("OPENAI_API_KEY")
+        if not api_key:
+            raise SystemExit("Set OPENAI_API_KEY first for --batch.")
+        run_batch(args, api_key)
     else:
         grade(args)

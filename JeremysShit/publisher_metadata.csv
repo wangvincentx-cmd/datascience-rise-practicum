@@ -1,0 +1,31 @@
+rank,publisher,claim_count,city,state,urban_rural,political_lean,lean_confidence,approx_circulation,circulation_source,notes
+1,the new york times,259,New York,NY,urban,Independent,high,~100k (1900) rising to ~340k (1920s),estimate_from_history,"Ochs era; sober/moderate tone, leaned Democratic some periods"
+2,"evening star (washington, d.c.)",122,Washington,DC,urban,Independent,high,"~40,000+ (early 1900s)",loc.gov_essay,Local-focused paper of record; turned conservative by mid-1960s
+3,the washington times,40,Washington,DC,urban,Independent,high,"~40,000+ (early 1900s)",loc.gov_essay,1902-1939 evening/Sunday paper; Hearst-owned after 1917; not today's Wash. Times
+4,the omaha guide,26,Omaha,NE,urban,None stated,med,unverified,none,African American weekly 1927-1958; Black press of era often GOP-leaning but no stated party
+5,the frontier,23,O'Neill,NE,rural,Republican,high,"small weekly, unverified",loc.gov_catalog,Holt County; explicitly Republican per LC record
+6,the key west citizen,19,Key West,FL,small_city,Democratic,high,unverified,loc.gov_essay,Self-classified Democratic since inception; AP member
+7,the tri-county news,15,UNKNOWN,UNKNOWN,rural_likely,UNKNOWN,low,unverified,none,Ambiguous title (multiple states); needs disambiguation before use
+8,the wilmington morning star,14,Wilmington,NC,small_city,Democratic,high,unverified,NCpedia,"Unabashedly Democratic until WWII, then independent"
+9,the milwaukee leader,13,Milwaukee,WI,urban,Socialist,high,"~31,874 daily (1911)",Encyclopedia_of_Milwaukee,Victor Berger's Socialist daily; lost mailing privileges in WWI
+10,toledo union journal,13,Toledo,OH,urban,Labor/left,high,"union base ~26,500 (Local 12)",loc.gov_essay,"UAW-CIO Local 12 paper, founded 1942; pro-labor"
+11,the washington daily news,12,Washington,DC,urban,Independent,med,unverified,none,Scripps-Howard tabloid; moderate/liberal lean typical of chain
+12,the waterbury democrat,10,Waterbury,CT,small_city,Democratic,med,unverified,none,Party inferred from title; verify against Ayer's
+13,the new york herald,9,New York,NY,urban,Independent,high,"100,000+ (19th c.)",Britannica,"Bennett paper; pro-business, pro-South leaning; merged into Herald Tribune 1924"
+14,the nome nugget,9,Nome,AK,rural,Independent,med,small (frontier weekly),Wikipedia,"Alaska's oldest paper; small local weekly, no clear party"
+15,marion progress,8,Marion,NC,rural,UNKNOWN,low,unverified,none,Likely Marion NC (McDowell County); party unverified
+16,the western news,8,UNKNOWN,UNKNOWN,rural_likely,UNKNOWN,low,unverified,none,Ambiguous title (e.g. Libby MT and others); needs disambiguation
+17,the daily alaska empire,8,Juneau,AK,small_city,Democratic,low,small,estimate_from_history,"Juneau, territorial capital; founder J.F.A. Strong was a Democrat; verify"
+18,detroit evening times,8,Detroit,MI,urban,Independent,med,large,estimate_from_history,Hearst paper; populist/independent lean typical of Hearst dailies
+19,the salt lake tribune,7,Salt Lake City,UT,urban,Independent,high,mid-large,Wikipedia,Anti-LDS; backed Liberal then American Party; non-Mormon Republican-leaning
+20,the east hartford gazette,7,East Hartford,CT,suburban,UNKNOWN,low,unverified,none,Small suburban paper; party unverified
+21,the montgomery advertiser,6,Montgomery,AL,urban,Democratic,high,unverified,Encyclopedia_of_Alabama,State capital; long-standing Southern Democratic paper
+22,new-york tribune,6,New York,NY,urban,Republican,high,"~200,000 (1850s); lower by 1900s",loc.gov_essay,Greeley founded (Whig then GOP); leading Republican daily under Whitelaw Reid
+23,newark leader,6,Newark,NJ,urban,UNKNOWN,low,unverified,none,Assumed Newark NJ (could be Newark OH); party unverified
+24,east st. louis daily journal,6,East St. Louis,IL,urban,UNKNOWN,low,unverified,none,Industrial river city; party unverified
+25,the mt. sterling advocate,6,Mount Sterling,KY,rural,UNKNOWN,low,unverified,none,Small KY town; KY dailies often Democratic but unverified
+26,the bismarck tribune,6,Bismarck,ND,small_city,Republican,med,unverified,MediaBiasFactCheck,North Dakota capital; historically Republican-leaning
+27,south bend news-times,5,South Bend,IN,urban,Independent,low,unverified,none,Mid-size Indiana city; party unverified
+28,the people's voice,5,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,low,unverified,none,"Possibly Adam Clayton Powell's Harlem paper (NYC, African American, left) but unconfirmed"
+29,the san francisco call,4,San Francisco,CA,urban,Republican,med,large,estimate_from_history,"Major SF daily; Republican-leaning, later Hearst Call-Bulletin"
+30,the beatrice daily express,4,Beatrice,NE,rural,UNKNOWN,low,unverified,none,Small Gage County town; party unverified

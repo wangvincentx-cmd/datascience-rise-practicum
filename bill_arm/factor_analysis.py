@@ -1,32 +1,23 @@
 """
-Model 1: predict became_law from introduction-time structural features only
-(Section 7). Answers research question 1 -- this reproduces well-trodden
-ground (Nay 2017, GovTrack), so it is the baseline, not the contribution.
+Shared fitting/evaluation machinery for analyzing which introduction-time
+structural factors (sponsor party, cosponsors, committee, macro/political
+climate, etc.) are associated with a bill becoming law -- feature
+importances, calibration, PR curves. Used by make_figures.py, model_figures.py,
+_ablation_figdata.py, and ablation_macro.py to produce factor-analysis
+figures, not to deliver a bill-passage predictor.
 
-Model 2 (only with --modeling-csv): structural + press features (Section 8),
-trained and evaluated on the covered subset only. Section 9's core
-experiment: does adding press features raise PR-AUC over structure alone,
-on the SAME covered bills in the same held-out test Congress. Answers
-research question 2. Research question 3 (was the press's own directional
-call accurate) is answered directly from press_predicts_pass vs became_law,
-no model needed.
+(Split out from the former model.py 2026-07-17 when the bill-passage
+prediction project itself -- and the whole press-coverage pipeline that fed
+its Model 2 -- was dropped. This file keeps only the parts the still-wanted
+figure/ablation scripts import: fitting a classifier and reading off which
+features it leans on is still useful for factor analysis even without a
+"run this to predict a bill's fate" deliverable.)
 
 THE SPLIT RULE (do not change to a random split): bills within one Congress
 share the same political environment (which party controls each chamber,
 what's salient that cycle). A random split leaks that context into the test
 set. Always train on earlier Congresses, test on the most recent one or two.
-
-Accuracy is not reported. About 3-4% of bills become law, so a model that
-always predicts "dies" scores ~96% accuracy and is worthless. PR-AUC on the
-passed class is the primary metric; see Section 5.
-
-Usage:
-  python model.py --features data/features.csv --test-congresses 118
-  python model.py --features data/features.csv --modeling-csv data/modeling.csv \\
-      --test-congresses 118
 """
-
-import argparse
 
 import numpy as np
 import pandas as pd
@@ -46,9 +37,24 @@ CATS = ["chamber", "bill_type", "sponsor_party", "sponsor_state", "policy_area",
 NUMS = ["n_original_cosponsors", "bipartisan", "frac_cosponsors_majority",
        "intro_month_in_session", "title_length", "has_companion_bill",
        "sponsor_in_majority"]
-CATS_PRESS = ["press_predicts_pass", "press_confidence"]
-NUMS_PRESS = ["n_articles", "days_intro_to_first_coverage"]
 TEXT_COL = "combined_text"
+
+# Tuned 2026-07-18 via GridSearchCV/cross_val_score with GroupKFold(5),
+# grouped by Congress (not random -- same leakage rule as everywhere else),
+# scoring="average_precision" (PR-AUC, this project's primary metric).
+# Confirmed with a fair apples-to-apples comparison (identical CV for both
+# old and new params), not just a single lucky split:
+#   logistic C: 1.0 (old default) -> 0.3017 PR-AUC; 0.1 (tuned) -> 0.3136
+#   xgboost: n_estimators=300/max_depth=4/lr=0.05 (old) -> mean 0.3775
+#            (per-fold [0.353,0.339,0.357,0.426,0.414]);
+#            n_estimators=500/max_depth=6/lr=0.1 (tuned) -> mean 0.3921
+#            (per-fold [0.371,0.352,0.377,0.440,0.421]) -- tuned beats old
+#            in EVERY fold, not just on average, which is why this was
+#            adopted (unlike the economy arm's gradient-boosting tuning,
+#            which looked like a gain on one comparison but didn't survive
+#            a permutation test -- see CHANGELOG 2026-07-18).
+LOGIT_C = 0.1
+XGB_PARAMS = dict(n_estimators=500, max_depth=6, learning_rate=0.1)
 
 
 def load_features(path):
@@ -61,21 +67,8 @@ def load_features(path):
     for c in CATS:
         df[c] = df[c].fillna("unknown").astype(str)
     for c in ["n_original_cosponsors", "frac_cosponsors_majority",
-             "intro_month_in_session", "title_length"]:
+             "intro_month_in_session", "title_length", "sponsor_is_committee_chair"]:
         df[c] = pd.to_numeric(df[c], errors="coerce").fillna(0)
-    return df
-
-
-def load_modeling_features(path):
-    """Structural features plus press features, from join_dataset.py's output."""
-    df = load_features(path)
-    df["has_national_coverage"] = df["has_national_coverage"].map(
-        {True: 1, "True": 1, False: 0, "False": 0}).fillna(0).astype(int)
-    df["press_predicts_pass"] = df["press_predicts_pass"].fillna("none").astype(str)
-    df["press_confidence"] = df["press_confidence"].fillna("none").astype(str)
-    df["n_articles"] = pd.to_numeric(df["n_articles"], errors="coerce").fillna(0)
-    df["days_intro_to_first_coverage"] = pd.to_numeric(
-        df["days_intro_to_first_coverage"], errors="coerce").fillna(-1)
     return df
 
 
@@ -169,9 +162,8 @@ def report_xgb_importances(pipe, cats, nums, k=20):
 
 def fit_calibrated(pipe, train, max_cv=3):
     """CalibratedClassifierCV needs at least `cv` examples of the minority
-    class. Covered-subset training sets (Section 8.1's small-sample regime)
-    can easily have fewer than 3 positives; degrade to an uncalibrated fit
-    with a warning instead of crashing."""
+    class. Small training sets can easily have fewer than 3 positives;
+    degrade to an uncalibrated fit with a warning instead of crashing."""
     n_pos = int(train.y.sum())
     cv = min(max_cv, n_pos)
     if cv < 2:
@@ -199,16 +191,15 @@ def fit_and_score(train, test, cats, nums, label, max_text_features=2000, verbos
 
     logit = Pipeline([
         ("pre", build_preprocessor(cats, nums, max_text_features)),
-        ("clf", LogisticRegression(max_iter=2000, class_weight="balanced")),
+        ("clf", LogisticRegression(max_iter=2000, class_weight="balanced", C=LOGIT_C)),
     ])
     logit_cal = fit_calibrated(logit, train)
     proba_logit = logit_cal.predict_proba(test)[:, 1]
 
     xgb = Pipeline([
         ("pre", build_preprocessor(cats, nums, max_text_features)),
-        ("clf", XGBClassifier(n_estimators=300, max_depth=4, learning_rate=0.05,
-                              scale_pos_weight=scale_pos_weight, eval_metric="aucpr",
-                              random_state=0)),
+        ("clf", XGBClassifier(scale_pos_weight=scale_pos_weight, eval_metric="aucpr",
+                              random_state=0, **XGB_PARAMS)),
     ])
     xgb_cal = fit_calibrated(xgb, train)
     proba_xgb = xgb_cal.predict_proba(test)[:, 1]
@@ -254,109 +245,3 @@ def bootstrap_pr_auc_delta(y_true, proba_a, proba_b, n_boot=2000, seed=0):
         "ci_high": float(np.percentile(deltas, 97.5)),
         "n_boot_used": len(deltas),
     }
-
-
-def research_q3_hit_rate(df):
-    """Research question 3: among covered bills with a non-neutral press
-    prediction, how often did the press call the outcome correctly."""
-    non_neutral = df[df["press_predicts_pass"].isin(["pass", "fail"])]
-    if non_neutral.empty:
-        return {"n": 0, "hit_rate": float("nan")}
-    hits = (((non_neutral["press_predicts_pass"] == "pass") & (non_neutral["y"] == 1)) |
-           ((non_neutral["press_predicts_pass"] == "fail") & (non_neutral["y"] == 0)))
-    return {"n": len(non_neutral), "hit_rate": float(hits.mean())}
-
-
-def run_model1(df, test_congresses, max_text_features):
-    print("\n" + "=" * 70)
-    print("MODEL 1: structural features only, all bills (research question 1)")
-    print("=" * 70)
-    train, test = split_by_congress(df, test_congresses)
-    if train.empty or test.empty:
-        raise SystemExit("Split leaves an empty side; pick another --test-congresses.")
-    if train.y.sum() == 0:
-        raise SystemExit("No positive examples (became_law) in the training set.")
-    fitted, proba, metrics = fit_and_score(train, test, CATS, NUMS,
-                                           "Model 1 (structural)", max_text_features)
-    return train, test, fitted, proba, metrics
-
-
-def run_press_experiment(modeling_path, test_congresses, max_text_features,
-                         fitted1, test1):
-    print("\n" + "=" * 70)
-    print("PRESS EXPERIMENT: Model 2 (structural + press) vs Model 1, same "
-         "covered test bills (research questions 2-3, Section 9)")
-    print("=" * 70)
-    joined = load_modeling_features(modeling_path)
-    train_j, test_j = split_by_congress(joined, test_congresses)
-    covered_train = train_j[train_j.has_national_coverage == 1]
-    covered_test = test_j[test_j.has_national_coverage == 1]
-    print(f"covered train bills: {len(covered_train)}  covered test bills: {len(covered_test)}")
-
-    if covered_train.empty or covered_test.empty or covered_train.y.sum() == 0:
-        print("Not enough covered bills to run the press experiment on this split. "
-             "Check coverage_report.py's gate before running this.")
-        return
-
-    cats2 = CATS + CATS_PRESS
-    nums2 = NUMS + NUMS_PRESS
-    fitted2, proba2, _ = fit_and_score(covered_train, covered_test, cats2, nums2,
-                                       "Model 2 (structural + press)", max_text_features)
-
-    print("\n--- Model 1 (structural only), scored on the SAME covered test bills ---")
-    proba1_covered = {}
-    for name, pipe in fitted1.items():
-        p = pipe.predict_proba(covered_test)[:, 1]
-        proba1_covered[name] = p
-        report_metrics(f"Model 1 (structural, covered subset): {name}", covered_test.y, p,
-                       verbose=False)
-
-    print("\n--- PR-AUC delta, Model 2 minus Model 1, same covered test bills "
-         "(bootstrap 95% CI) ---")
-    for name in ("logistic_regression", "gradient_boosting"):
-        boot = bootstrap_pr_auc_delta(covered_test.y.values, proba1_covered[name],
-                                      proba2[name])
-        print(f"{name}: delta PR-AUC = {boot['mean_delta']:+.4f}  "
-             f"95% CI [{boot['ci_low']:+.4f}, {boot['ci_high']:+.4f}]  "
-             f"(n_boot={boot['n_boot_used']})")
-
-    print("\n--- Research question 3: press directional accuracy "
-         "(press_predicts_pass vs became_law) ---")
-    overall = research_q3_hit_rate(joined)
-    test_only = research_q3_hit_rate(covered_test)
-    print(f"all covered congresses with a non-neutral call: n={overall['n']}, "
-         f"hit rate={overall['hit_rate']:.4f}")
-    print(f"held-out test congress(es) only:                n={test_only['n']}, "
-         f"hit rate={test_only['hit_rate']:.4f}")
-
-
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--features", default="data/features.csv")
-    ap.add_argument("--modeling-csv", default=None,
-                    help="data/modeling.csv from join_dataset.py; if given, also "
-                        "runs the Model 2 press experiment (Section 9)")
-    ap.add_argument("--test-congresses", default=None,
-                    help="comma-separated congress numbers held out for test; "
-                        "defaults to the single most recent congress in the data")
-    ap.add_argument("--max-text-features", type=int, default=2000)
-    args = ap.parse_args()
-
-    df = load_features(args.features)
-    test_congresses = ([int(c) for c in args.test_congresses.split(",")]
-                       if args.test_congresses else None)
-
-    print("Note: plain accuracy is not reported. ~3-4% of bills become law, so "
-         "a model that always predicts 'dies' scores ~96% accuracy and has zero "
-         "value. See PR-AUC, precision/recall on the passed class, and Brier "
-         "score below.")
-    train, test, fitted1, proba1, metrics1 = run_model1(df, test_congresses,
-                                                         args.max_text_features)
-
-    if args.modeling_csv:
-        run_press_experiment(args.modeling_csv, test_congresses,
-                            args.max_text_features, fitted1, test)
-
-
-if __name__ == "__main__":
-    main()

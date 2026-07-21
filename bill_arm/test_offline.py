@@ -1,9 +1,15 @@
-"""Offline verification for the whole bill-passage pipeline. Runs the ACTUAL
-pipeline functions against mock responses shaped like the real Congress.gov
-and NYT APIs, and a fake LLM client, no network or API key needed.
+"""Offline verification for the bill-ingestion + factor-analysis pipeline.
+Runs the ACTUAL pipeline functions against mock responses shaped like the
+real Congress.gov API, no network or API key needed.
+
+(The bill-passage prediction model and the whole NYT press-coverage pipeline
+that fed its Model 2 were dropped 2026-07-17 -- see CHANGELOG. This file
+only covers what's left: bill ingestion, structural feature building, and
+the shared factor-analysis fitting utilities the figure scripts still use.)
 
 Run before spending any API budget:  python test_offline.py
 """
+import os
 import sys
 from unittest.mock import patch
 
@@ -11,10 +17,7 @@ import numpy as np
 import pandas as pd
 
 import build_features
-import coverage_report
 import download_bills
-import extract_press
-import link_coverage
 
 FAIL = []
 
@@ -215,295 +218,20 @@ with tempfile.TemporaryDirectory() as d:
            "intro_month_in_session", "title_length", "has_companion_bill",
            "title_text", "introduced_text", "became_law"}.issubset(df.columns))
 
-print("\n[6] link_coverage.py: query building, search window, pagination")
-
-bill_for_query = {"title": "A bill to provide health care access for veterans in rural areas",
-                  "sponsor_last_name": "Smith", "policy_area": "Health"}
-queries = link_coverage.build_queries(bill_for_query, include_broad=True)
-check("build_queries includes the full title first",
-      queries[0] == bill_for_query["title"])
-check("build_queries includes a stopword-stripped key-noun query",
-      queries[1] != queries[0]
-      and "veterans" in queries[1].lower().split()
-      and "provide" not in queries[1].lower().split()
-      and "for" not in queries[1].lower().split())
-check("build_queries includes sponsor+policy when include_broad=True",
-      "Smith Health" in queries)
-check("build_queries dedupes",
-      len(queries) == len(set(queries)))
-
-no_broad = link_coverage.build_queries(bill_for_query, include_broad=False)
-check("build_queries omits sponsor+policy when include_broad=False",
-      "Smith Health" not in no_broad)
-
-empty_title_bill = {"title": "", "sponsor_last_name": None, "policy_area": None}
-check("build_queries returns [] for a bill with no usable fields",
-      link_coverage.build_queries(empty_title_bill) == [])
-
-begin, end = link_coverage.search_window("2023-02-02")
-check("search_window: begin is 7 days before introduction",
-      begin == "20230126")
-check("search_window: end is 180 days after introduction with no final action",
-      end == "20230801")
-
-begin2, end2 = link_coverage.search_window("2023-02-02", latest_action_date="2023-03-01")
-check("search_window: end is capped at latest_action_date if sooner",
-      end2 == "20230301")
-
-begin3, end3 = link_coverage.search_window("2023-02-02", latest_action_date="2023-01-15")
-check("search_window: end never falls before begin even with an early final action",
-      end3 >= begin3)
-
-LC_DOC = {"web_url": "https://nyt.com/2023/a", "headline": {"main": "Bill Advances"},
-         "abstract": "It advances.", "lead_paragraph": "The bill advances in committee.",
-         "snippet": "It advances.", "pub_date": "2023-02-10T00:00:00Z",
-         "section_name": "Politics", "type_of_material": "News"}
-LC_PAGE0 = {"response": {"meta": {"hits": 1}, "docs": [LC_DOC]}}
-LC_EMPTY = {"response": {"meta": {"hits": 1}, "docs": []}}
-_lc_calls = {"n": 0}
-
-
-def fake_lc_get_json(params):
-    _lc_calls["n"] += 1
-    return LC_PAGE0 if _lc_calls["n"] == 1 else LC_EMPTY
-
-
-with patch.object(link_coverage, "get_json", side_effect=fake_lc_get_json), \
-     patch.object(link_coverage.time, "sleep", lambda s: None):
-    docs = list(link_coverage.search_query("KEY", "health care veterans",
-                                           "20230126", "20230801", max_pages=3))
-    check("search_query yields docs and stops when a page is empty", len(docs) == 1)
-
-text = link_coverage.combine_text(LC_DOC)
-check("link_coverage.combine_text merges headline+lead, dedupes",
-      "Bill Advances" in text and text.count("It advances.") == 1)
-
-print("\n[7] link_coverage.py: search log resume-safety")
-with tempfile.TemporaryDirectory() as d:
-    log_path = Path(d) / "press_search_log.csv"
-    with patch.object(link_coverage, "Path", side_effect=lambda p: (
-        log_path if p == "data/press_search_log.csv" else Path(p))):
-        link_coverage.log_search(118, "hr", "815", "veterans health", 3)
-        link_coverage.log_search(118, "hr", "815", "veterans health", 3)  # simulate rerun
-    searched = link_coverage.load_searched(log_path)
-    check("load_searched reads back a logged (congress, bill_type, number, query)",
-          (118, "hr", "815", "veterans health") in searched)
-
 # ---------------------------------------------------------------------------
-print("\n[8] extract_press.py: LLM extraction with a fake LLM client")
-
-
-class FakeMessage:
-    def __init__(self, content):
-        self.content = content
-
-
-class FakeChoice:
-    def __init__(self, content):
-        self.message = FakeMessage(content)
-
-
-class FakeCompletionResponse:
-    def __init__(self, content):
-        self.choices = [FakeChoice(content)]
-
-
-class FakeLLMClient:
-    """Stands in for extract_press.LLMPool -- exposes .create() directly."""
-    def __init__(self, text):
-        self._text = text
-
-    def create(self, **kw):
-        return FakeCompletionResponse(self._text)
-
-
-ep_bill = {"congress": 118, "bill_type": "hr", "number": "815",
-          "title": "A bill to provide health care access for veterans",
-          "sponsor_party": "D", "sponsor_state": "CA", "policy_area": "Health",
-          "introduced_date": "2023-02-02"}
-ep_article = {"headline": "Veterans Health Bill Set to Pass", "pub_date": "2023-02-10",
-             "section": "Politics",
-             "snippet_text": "The bill is expected to become law by summer."}
-
-match_reply = ('{"about_this_bill": true, "prediction": "pass", "confidence": "firm"}')
-result = extract_press.extract_from_article(FakeLLMClient(match_reply), ep_bill, ep_article)
-check("extract_from_article parses a clean match",
-      result == {"about_this_bill": True, "prediction": "pass", "confidence": "firm"})
-
-fenced_reply = ('```json\n{"about_this_bill": false, "prediction": null, '
-               '"confidence": null}\n```')
-result2 = extract_press.extract_from_article(FakeLLMClient(fenced_reply), ep_bill, ep_article)
-check("extract_from_article strips markdown fences",
-      result2 == {"about_this_bill": False, "prediction": None, "confidence": None})
-
-bad_reply = ('{"about_this_bill": true, "prediction": "definitely-yes", "confidence": "firm"}')
-result3 = extract_press.extract_from_article(FakeLLMClient(bad_reply), ep_bill, ep_article)
-check("extract_from_article rejects an out-of-schema prediction value",
-      result3["prediction"] is None)
-
-malformed = extract_press.extract_from_article(FakeLLMClient("not json"), ep_bill, ep_article)
-check("extract_from_article returns None for a malformed reply", malformed is None)
-
-# note: if the LLM incorrectly says about_this_bill=false but still fills in a
-# prediction, extract_from_article must not leak it through as a signal.
-leaky_reply = ('{"about_this_bill": false, "prediction": "pass", "confidence": "firm"}')
-result4 = extract_press.extract_from_article(FakeLLMClient(leaky_reply), ep_bill, ep_article)
-check("extract_from_article nulls out prediction/confidence when about_this_bill is false",
-      result4["prediction"] is None and result4["confidence"] is None)
-
-print("\n[9] extract_press.py: bill-level aggregation")
-
-agg_bills = [
-    {"congress": 118, "bill_type": "hr", "number": "1", "introduced_date": "2023-01-10"},
-    {"congress": 118, "bill_type": "hr", "number": "2", "introduced_date": "2023-01-10"},
-    {"congress": 118, "bill_type": "hr", "number": "3", "introduced_date": "2023-01-10"},
-]
-labeled = [
-    {"bill_type": "hr", "number": "1", "about_this_bill": True, "prediction": "pass",
-     "confidence": "firm", "pub_date": "2023-01-20"},
-    {"bill_type": "hr", "number": "1", "about_this_bill": True, "prediction": "pass",
-     "confidence": "hedged", "pub_date": "2023-01-15"},
-    {"bill_type": "hr", "number": "2", "about_this_bill": True, "prediction": "neutral",
-     "confidence": None, "pub_date": "2023-01-25"},
-    {"bill_type": "hr", "number": "2", "about_this_bill": False, "prediction": "pass",
-     "confidence": "firm", "pub_date": "2023-01-25"},  # must be excluded: not about the bill
-]
-agg = extract_press.aggregate_bill_features(labeled, agg_bills)
-row1 = agg[agg.number == "1"].iloc[0]
-row2 = agg[agg.number == "2"].iloc[0]
-row3 = agg[agg.number == "3"].iloc[0]
-
-check("aggregate: bill 1 has coverage with 2 articles",
-      row1.has_national_coverage and row1.n_articles == 2)
-check("aggregate: bill 1 press_predicts_pass is 'pass' (2-0 vote)",
-      row1.press_predicts_pass == "pass")
-check("aggregate: bill 1 press_confidence prefers firm over hedged",
-      row1.press_confidence == "firm")
-check("aggregate: bill 1 days_intro_to_first_coverage uses the EARLIEST article",
-      row1.days_intro_to_first_coverage == 5)
-check("aggregate: bill 2 excludes the article where about_this_bill is False",
-      row2.n_articles == 1 and row2.press_predicts_pass == "neutral")
-check("aggregate: bill 3 with zero coverage gets 'none' and no coverage flag",
-      not row3.has_national_coverage and row3.press_predicts_pass == "none"
-      and pd.isna(row3.days_intro_to_first_coverage))
-
-mixed_labeled = [
-    {"bill_type": "hr", "number": "1", "about_this_bill": True, "prediction": "pass",
-     "confidence": "firm", "pub_date": "2023-01-20"},
-    {"bill_type": "hr", "number": "1", "about_this_bill": True, "prediction": "fail",
-     "confidence": "firm", "pub_date": "2023-01-21"},
-]
-mixed_agg = extract_press.aggregate_bill_features(mixed_labeled, agg_bills[:1])
-check("aggregate: a 1-1 pass/fail split is reported as 'mixed', not silently picked",
-      mixed_agg.iloc[0].press_predicts_pass == "mixed")
-
-# ---------------------------------------------------------------------------
-print("\n[10] coverage_report.py: decision gate math")
-
-gate_df = pd.DataFrame([
-    {"has_national_coverage": True, "press_predicts_pass": "pass"},
-    {"has_national_coverage": True, "press_predicts_pass": "fail"},
-    {"has_national_coverage": True, "press_predicts_pass": "neutral"},
-    {"has_national_coverage": False, "press_predicts_pass": "none"},
-])
-counts = coverage_report.compute_counts(gate_df)
-check("compute_counts: total bills counted",
-      counts["total"] == 4)
-check("compute_counts: covered bills counted (has_national_coverage True)",
-      counts["n_covered"] == 3)
-check("compute_counts: non-neutral (pass/fail) subset counted",
-      counts["n_non_neutral"] == 2)
-check("compute_counts: gate fails below the underpowered threshold",
-      counts["gate_pass"] is False)
-
-big_df = pd.concat([gate_df[gate_df.press_predicts_pass.isin(["pass", "fail"])]] * 200,
-                   ignore_index=True)
-big_counts = coverage_report.compute_counts(big_df)
-check("compute_counts: gate passes at/above the underpowered threshold",
-      big_counts["gate_pass"] is True and big_counts["n_non_neutral"] >= 300)
-
-# ---------------------------------------------------------------------------
-print("\n[11] join_dataset.py: structural + press merge")
-import join_dataset
-
-with tempfile.TemporaryDirectory() as d:
-    prev_cwd = Path.cwd()
-    import os
-    os.chdir(d)
-    try:
-        Path("data").mkdir()
-        pd.DataFrame([
-            {"congress": 117, "bill_type": "hr", "number": "1", "became_law": False},
-            {"congress": 118, "bill_type": "hr", "number": "1", "became_law": True},
-            {"congress": 118, "bill_type": "hr", "number": "2", "became_law": False},
-        ]).to_csv("data/features.csv", index=False)
-        pd.DataFrame([
-            {"congress": 118, "bill_type": "hr", "number": "1",
-             "has_national_coverage": True, "n_articles": 2,
-             "press_predicts_pass": "pass", "press_confidence": "firm",
-             "days_intro_to_first_coverage": 3},
-            {"congress": 118, "bill_type": "hr", "number": "2",
-             "has_national_coverage": False, "n_articles": 0,
-             "press_predicts_pass": "none", "press_confidence": None,
-             "days_intro_to_first_coverage": None},
-        ]).to_csv("data/press_features_118.csv", index=False)
-
-        merged, joined_congresses = join_dataset.join("data/features.csv", [118])
-        check("join_dataset: only the congress with a press file is included",
-              joined_congresses == [118] and set(merged["congress"]) == {118})
-        check("join_dataset: keeps uncovered bills too (does not drop them)",
-              len(merged) == 2)
-        check("join_dataset: press columns attached to the right bill",
-              merged.loc[merged.number.astype(str) == "1", "press_predicts_pass"].iloc[0]
-              == "pass")
-
-        # dtype-mismatch regression: if features.csv's "number" column infers as
-        # int64 but the press file (e.g. via an unrelated NaN elsewhere) infers
-        # as float64, a naive merge silently drops every row instead of erroring.
-        pd.DataFrame([
-            {"congress": 118, "bill_type": "hr", "number": 1.0,  # float64, not int
-             "has_national_coverage": True, "n_articles": 1,
-             "press_predicts_pass": "pass", "press_confidence": "firm",
-             "days_intro_to_first_coverage": 3},
-        ]).to_csv("data/press_features_118.csv", index=False)
-        merged2, _ = join_dataset.join("data/features.csv", [118])
-        check("join_dataset: survives int-vs-float dtype mismatch on the merge key "
-             "without silently dropping rows",
-              len(merged2) == 1 and merged2.iloc[0]["press_predicts_pass"] == "pass")
-    finally:
-        os.chdir(prev_cwd)
-
-# ---------------------------------------------------------------------------
-print("\n[12] model.py: research question 3 hit rate + bootstrap delta + small-sample fallback")
-import model
-
-q3_df = pd.DataFrame([
-    {"press_predicts_pass": "pass", "y": 1},   # hit
-    {"press_predicts_pass": "pass", "y": 0},   # miss
-    {"press_predicts_pass": "fail", "y": 0},   # hit
-    {"press_predicts_pass": "fail", "y": 1},   # miss
-    {"press_predicts_pass": "neutral", "y": 1},  # excluded
-])
-q3 = model.research_q3_hit_rate(q3_df)
-check("research_q3_hit_rate excludes neutral calls from n",
-      q3["n"] == 4)
-check("research_q3_hit_rate: 2 of 4 non-neutral calls were correct",
-      abs(q3["hit_rate"] - 0.5) < 1e-9)
-
-empty_q3 = model.research_q3_hit_rate(pd.DataFrame([{"press_predicts_pass": "neutral", "y": 1}]))
-check("research_q3_hit_rate returns n=0 and nan when nothing is non-neutral",
-      empty_q3["n"] == 0 and np.isnan(empty_q3["hit_rate"]))
+print("\n[6] factor_analysis.py: bootstrap PR-AUC delta + small-sample calibration fallback")
+import factor_analysis
 
 y_true = np.array([0] * 90 + [1] * 10)
 proba_bad = np.full(100, 0.1)          # uninformative
 proba_good = np.where(y_true == 1, 0.9, 0.05)  # near-perfect
-boot = model.bootstrap_pr_auc_delta(y_true, proba_bad, proba_good, n_boot=300, seed=0)
+boot = factor_analysis.bootstrap_pr_auc_delta(y_true, proba_bad, proba_good, n_boot=300, seed=0)
 check("bootstrap_pr_auc_delta: a clearly better model shows a positive delta",
       boot["mean_delta"] > 0.3)
 check("bootstrap_pr_auc_delta: CI excludes zero for a large, real effect",
       boot["ci_low"] > 0)
 
-no_signal = model.bootstrap_pr_auc_delta(y_true, proba_bad, proba_bad, n_boot=200, seed=0)
+no_signal = factor_analysis.bootstrap_pr_auc_delta(y_true, proba_bad, proba_bad, n_boot=200, seed=0)
 check("bootstrap_pr_auc_delta: identical models give ~zero delta",
       abs(no_signal["mean_delta"]) < 1e-9)
 
@@ -511,24 +239,23 @@ from sklearn.linear_model import LogisticRegression as _LR
 
 # This is the exact crash caught during smoke-testing: CalibratedClassifierCV
 # with cv=3 raises when a training set has fewer than 3 positive examples,
-# which is the normal case for the covered-subset press experiment
-# (Section 8.1's small-sample regime). fit_calibrated must fall back instead
-# of propagating that crash.
+# which is common on small held-out slices. fit_calibrated must fall back
+# instead of propagating that crash.
 tiny_train = pd.DataFrame({"x": [0.1, 0.2, 0.3, 0.4, 0.5], "y": [0, 0, 0, 0, 1]})
 with patch("builtins.print"):
-    result = model.fit_calibrated(_LR(), tiny_train, max_cv=3)
+    result = factor_analysis.fit_calibrated(_LR(), tiny_train, max_cv=3)
 check("fit_calibrated: 1-positive training set does not raise, "
      "falls back to an uncalibrated estimator",
       not hasattr(result, "calibrated_classifiers_"))
 
 plenty_train = pd.DataFrame({"x": list(range(20)),
                             "y": [0] * 10 + [1] * 10})
-result_plenty = model.fit_calibrated(_LR(), plenty_train, max_cv=3)
+result_plenty = factor_analysis.fit_calibrated(_LR(), plenty_train, max_cv=3)
 check("fit_calibrated: enough positives uses real CalibratedClassifierCV",
       hasattr(result_plenty, "calibrated_classifiers_"))
 
 # ---------------------------------------------------------------------------
-print("\n[13] download_bills_bulk.py: BILLSTATUS XML parsing")
+print("\n[7] download_bills_bulk.py: BILLSTATUS XML parsing")
 import io
 import zipfile
 

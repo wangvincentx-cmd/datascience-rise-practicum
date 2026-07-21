@@ -1,22 +1,22 @@
-# Did the Press See It Coming? Predicting Bill Passage
+# Congressional Bill Factor Analysis
 
-Predicts whether a newly introduced U.S. Congressional bill becomes law,
-using only features known at introduction time, and tests whether national
-newspaper coverage adds predictive signal beyond the bill's structural
-features (sponsor party, majority status, cosponsors, committee, chamber,
-policy area, text).
+Ingests U.S. Congressional bill metadata (108th-118th Congresses, 2003-2024)
+and analyzes which introduction-time structural factors (sponsor party,
+majority status, cosponsors, committee, chamber, policy area, text, and the
+macroeconomic/political climate at introduction) are associated with a bill
+becoming law.
 
-## Research questions
-
-1. Which structural factors most affect whether a bill becomes law. This
-   reproduces well-trodden ground (Nay 2017, PLOS ONE; GovTrack's bill
-   prognosis model) and is the baseline, not the contribution.
-2. Does national newspaper coverage improve prediction of passage over
-   structural features alone -- did the press see it coming better than the
-   sponsor's party and cosponsor count already predict? This is the novel
-   contribution.
-3. Among bills the press did cover, was the direction of the press's
-   prediction (will pass / will fail) accurate?
+**Not a predictive deployment tool.** The bill-passage *prediction* model and
+the NYT press-coverage pipeline that fed its Model 2 comparison were dropped
+2026-07-17 (see CHANGELOG) -- the project was scoped too tightly to the 118th
+Congress's specific political/economic climate to generalize, and the press
+pipeline's coverage was too sparse (~0.4-0.6% of bills) to reach a
+well-powered sample even at full-Congress scale. What's kept here is the
+data-ingestion and factor-analysis machinery: it fits classifiers internally
+(logistic regression, gradient boosting) as the mechanism for reading off
+feature importances/calibration, same reasoning as e.g. permutation
+importance in any factor-analysis workflow -- the deliverable is "which
+factors matter and how much," not a bill-by-bill passage forecast.
 
 ## Setup
 
@@ -24,49 +24,26 @@ policy area, text).
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 export CONGRESS_API_KEY=your_key      # https://api.congress.gov/sign-up (or DEMO_KEY, ~40 req/hr)
-export NYT_API_KEY=your_key           # https://developer.nytimes.com/, enable Article Search API
-export GEMINI_API_KEY=your_key        # https://aistudio.google.com/apikey (free tier)
 ```
 
-`link_coverage.py` and `extract_press.py` also auto-load a `bill_arm/.env` file
-(via `python-dotenv`) if present, as an alternative to `export`. `.env` is
-git-ignored -- never commit it.
-
-Run `python test_offline.py` first. It runs the real parsing, aggregation,
-and modeling functions against mocked API responses -- no network or API
-keys needed. It must pass before spending any API budget.
+Run `python test_offline.py` first. It runs the real parsing, feature-
+derivation, and factor-analysis fitting functions against mocked API
+responses -- no network or API keys needed.
 
 ## Pipeline and build order
 
 ```
-download_bills_bulk.py  govinfo BILLSTATUS bulk ingester -> data/bills/{congress}.jsonl  (preferred)
-download_bills.py    Congress.gov API ingester     -> data/bills/{congress}.jsonl  (spot-checks, bill text)
-build_macro_features.py  FRED macro indicators (no key) -> data/macro_daily.csv
-build_features.py    structural feature table      -> data/features.csv  (joins macro_daily.csv if present)
-model.py              Model 1 (and Model 2, see below), split by Congress, metrics
-link_coverage.py      NYT search per bill           -> data/press_raw/{congress}.jsonl
-extract_press.py      LLM article-match + prediction -> data/press_labeled/{congress}.jsonl
-                                                       data/press_features_{congress}.csv
-coverage_report.py    Section 8.1 decision gate
-join_dataset.py        structural + press merge      -> data/modeling.csv
-test_offline.py        mock-response tests, run this first
+download_bills_bulk.py   govinfo BILLSTATUS bulk ingester -> data/bills/{congress}.jsonl  (preferred)
+download_bills.py        Congress.gov API ingester         -> data/bills/{congress}.jsonl  (spot-checks, bill text)
+build_macro_features.py  FRED macro indicators (no key)    -> data/macro_daily.csv
+build_features.py        structural feature table          -> data/features.csv  (joins macro_daily.csv if present)
+factor_analysis.py       shared fitting/importance/calibration utilities (imported by the figure scripts below, not run directly)
+make_figures.py, model_figures.py, make_ablation_figure.py,
+_ablation_figdata.py, ablation_macro.py, make_timelevel_figure.py,
+time_level_economy.py    figures -> figures/*.png
+test_offline.py          mock-response tests, run this first
 data/majority_by_congress.csv   per-Congress chamber majorities (hardcoded, 108th-118th)
 ```
-
-Build in stages, cheapest and most certain first:
-
-1. `download_bills.py` -> `build_macro_features.py` -> `build_features.py` ->
-   `model.py` (Model 1). Get an honest structural baseline (now including
-   the macroeconomic climate at introduction) with imbalance-aware metrics
-   before touching the press pipeline.
-2. `link_coverage.py` -> `extract_press.py` -> `coverage_report.py`. Stop at
-   the decision gate and read the covered-subset size before spending more
-   budget. If it's under ~300 covered bills with a non-neutral prediction,
-   the press experiment is underpowered as specified -- see the gate's
-   printed guidance.
-3. Only if the gate passes: `join_dataset.py`, then
-   `python model.py --modeling-csv data/modeling.csv` for the Model 1 vs.
-   Model 2 comparison and research question 3.
 
 Bill ingestion has two paths that emit the identical JSONL schema:
 
@@ -87,22 +64,14 @@ python download_bills_bulk.py --congress 108 ... --congress 118    # full corpus
 python download_bills.py --congress 118 --limit 25                 # API spot-check
 python build_macro_features.py                                     # once; covers 2002-2025
 python build_features.py --congress 118
-python model.py --features data/features.csv --test-congresses 118
-
-python link_coverage.py --congress 118 --limit 25
-python extract_press.py --congress 118 --limit 20
-python coverage_report.py --congress 118
-
-python join_dataset.py --congress 118
-python model.py --features data/features.csv \
-                 --modeling-csv data/modeling.csv --test-congresses 118
+python make_figures.py       # or any of the other figure scripts
 ```
 
-For the real study, scope is the 108th-118th Congresses (2003-2024): modern
-enough for reliable Congress.gov metadata, recent enough to have matching
-NYT coverage. Split by Congress for train/test, never randomly -- bills
-within a Congress share the same political environment, and a random split
-leaks that context into the test set.
+Scope is the 108th-118th Congresses (2003-2024): modern enough for reliable
+Congress.gov metadata. Split by Congress for train/test in any fitting done
+for factor analysis, never randomly -- bills within a Congress share the
+same political environment, and a random split leaks that context into the
+held-out set.
 
 ## The target and why accuracy isn't reported
 
@@ -110,12 +79,13 @@ leaks that context into the test set.
 "Became Private Law", or the bill's `laws` array is non-empty. About 3-4% of
 introduced bills become law. A model that always predicts "dies" scores
 ~96% accuracy and has zero value, so accuracy is never reported here.
-PR-AUC on the passed class is the primary metric, alongside ROC-AUC,
-precision/recall on the passed class, and a Brier score / calibration curve.
-Both models use class-weighted logistic regression and XGBoost with
-`scale_pos_weight`, and calibrate probabilities via `CalibratedClassifierCV`
-where the training set has enough positive examples (falls back to an
-uncalibrated fit otherwise -- see `model.fit_calibrated`).
+PR-AUC on the passed class is the primary metric when fitting is used for
+factor analysis, alongside ROC-AUC, precision/recall on the passed class,
+and a Brier score / calibration curve. Fitting uses class-weighted logistic
+regression and XGBoost with `scale_pos_weight`, and calibrates probabilities
+via `CalibratedClassifierCV` where the training set has enough positive
+examples (falls back to an uncalibrated fit otherwise -- see
+`factor_analysis.fit_calibrated`).
 
 ## Leakage rules
 
@@ -123,9 +93,7 @@ Only introduction-time information is a legal feature: sponsor identity and
 party, chamber, bill type, policy area, referred committee, *original*
 cosponsors only (`isOriginalCosponsor == True`), introduced date, title and
 introduced text. Later cosponsors, later actions, committee/floor votes, and
-anything dated after introduction are forbidden. Press coverage is windowed
-to `[introduced_date - 7 days, introduced_date + 180 days]` (capped at the
-bill's final action if that came sooner) for the same reason.
+anything dated after introduction are forbidden.
 
 Macroeconomic indicators (`build_macro_features.py`) are joined by
 introduced_date but must respect the same rule: government statistics are
@@ -136,26 +104,16 @@ join -- see the script's docstring for the per-series lag and the USREC
 
 ## Known limits
 
-1. The NYT Article Search API returns headline, abstract, lead paragraph,
-   and snippet only, never full article text, so press recall is limited.
-2. Most bills get no national coverage; the press experiment runs on a
-   small, salient subset, not the full bill population.
-   `coverage_report.py` reports that subset's size -- read it before
-   trusting anything downstream of it.
-3. Article-to-bill linking is done by an LLM call and is fuzzy. Before
-   trusting the press experiment, manually read ~20 of the linker's
-   `about_this_bill: true` calls from `data/press_labeled/{congress}.jsonl`
-   against the source article to check it isn't attaching unrelated
-   coverage; report that manual-check accuracy in the writeup.
-4. The structural model (Model 1) reproduces existing work; the press test
-   (Model 2, research questions 2-3) is the novel piece.
-5. `sponsor_is_committee_chair` is not implemented (no committee-leadership
+1. `sponsor_is_committee_chair` is not implemented (no committee-leadership
    data source wired up) and is always null in the feature table.
-6. `recession_flag` (NBER, via FRED's USREC) is announced 6-21 months after
+2. `recession_flag` (NBER, via FRED's USREC) is announced 6-21 months after
    the fact historically, not in real time. It's included as a coarse,
    backward-looking macro signal, not something a real-time predictor could
    have used at introduction -- disclose this if it shows up as an important
    feature.
+3. Findings from fitted-classifier factor analysis (feature importances,
+   calibration) reflect the 108th-118th Congresses' specific political era
+   and should not be read as universal claims about what makes a bill pass.
 
 ## Prior art
 
