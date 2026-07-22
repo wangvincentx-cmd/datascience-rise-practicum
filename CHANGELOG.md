@@ -479,15 +479,20 @@ reportable until a human fills in `human_narrative` and kappa is computed.)
       (`--episodes "1913 Recession" "1923 Recession" "1926 Recession" --out
       claims_raw_newloc2.csv --log-out search_log_newloc2.csv`), backgrounded
       again, isolated from both the real corpus and the first run's output.
-      **Still NOT merged, graded, or rescored** (neither the 115-claim 1910
-      batch nor whatever this second run produces). Remaining steps once
-      it finishes: verify `search_log_newloc2.csv` actually has rows this
-      time (don't just trust a nonzero claim count), `append_loc_claims.py`
-      for both `claims_raw_newloc.csv` and `claims_raw_newloc2.csv`,
-      `grade_claims.py --model gpt-4.1` (new rows only, small cost),
-      `score_claims.py`, then rerun `regret_scoring.py`'s cluster-permutation
-      test to see whether the added episodes move Result 1's p=0.161 --
-      report the real number either way, not just if it clears 0.05.
+      **Completed cleanly this time** (verified `search_log_newloc2.csv` has
+      real rows, not empty like the first run's failure signature): **351
+      candidate claims from 245 pages** -- 1913 Recession 153, 1923 Recession
+      125, 1926 Recession 73. Survived LOC's usual flakiness
+      (`IncompleteRead`/`HTTP 520` on a few terms) via the scraper's existing
+      retry logic, same as the original full-corpus run.
+      **Combined with the first run's 115-claim 1910 Recession batch: 466
+      candidate claims across all 4 new episodes, still NOT merged, graded,
+      or rescored.** Remaining steps: `append_loc_claims.py` for both
+      `claims_raw_newloc.csv` and `claims_raw_newloc2.csv`, `grade_claims.py
+      --model gpt-4.1` (new rows only, small cost), `score_claims.py`, then
+      rerun `regret_scoring.py`'s cluster-permutation test to see whether the
+      added episodes move Result 1's p=0.161 -- report the real number
+      either way, not just if it clears 0.05.
 
 - [x] **Data cleaning pass (2026-07-19, user: "do some data cleaning...
       outliers... missing data").** Investigated before acting — this
