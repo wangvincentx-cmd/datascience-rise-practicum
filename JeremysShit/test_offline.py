@@ -217,4 +217,80 @@ check("claim Y correctly sees X (the one claim strictly before it, improve) "
      "-> full agreement, 0.0",
       abs(da_future_out.loc["Y", "local_disagreement"] - 0.0) < 1e-9)
 
+# ---------- optimism_timeline.py ----------
+print("optimism_timeline:")
+import optimism_timeline as ot
+
+ot_df = pd.DataFrame([
+    # test_ep, Jan 2000: 3 improve, 1 worsen -> net = (3-1)/4 = 0.5
+    {"episode": "e", "kind": "crisis", "date": "2000-01-05", "predicted_label": "improve"},
+    {"episode": "e", "kind": "crisis", "date": "2000-01-10", "predicted_label": "improve"},
+    {"episode": "e", "kind": "crisis", "date": "2000-01-20", "predicted_label": "improve"},
+    {"episode": "e", "kind": "crisis", "date": "2000-01-25", "predicted_label": "worsen"},
+    # Feb 2000: 1 improve, 1 worsen -> net 0; plus a price 'up' that must be ignored
+    {"episode": "e", "kind": "crisis", "date": "2000-02-05", "predicted_label": "improve"},
+    {"episode": "e", "kind": "crisis", "date": "2000-02-10", "predicted_label": "worsen"},
+    {"episode": "e", "kind": "crisis", "date": "2000-02-15", "predicted_label": "up"},
+])
+oi = ot.optimism_index(ot_df).set_index("period")
+check("optimism_index: Jan net optimism (3 improve,1 worsen) = 0.5",
+      abs(oi.loc[pd.Period("2000-01", "M"), "net_optimism"] - 0.5) < 1e-9)
+check("optimism_index: Feb net optimism (1,1) = 0.0",
+      abs(oi.loc[pd.Period("2000-02", "M"), "net_optimism"] - 0.0) < 1e-9)
+check("optimism_index: price 'up' claim excluded from the count (Feb n=2, not 3)",
+      int(oi.loc[pd.Period("2000-02", "M"), "n"]) == 2)
+
+ip = pd.Series([100.0, 105.0, 103.0, 90.0],
+               index=pd.period_range("2000-01", "2000-04", freq="M"))
+peak, basis = ot.episode_peak_month(pd.Timestamp("2000-01-01"), pd.Timestamp("2000-04-30"), ip)
+check("episode_peak_month: INDPRO argmax picks Feb (105) as the peak",
+      (peak, basis) == (pd.Period("2000-02", "M"), "INDPRO"))
+empty_ip = pd.Series(dtype=float, index=pd.PeriodIndex([], freq="M"))
+peak2, basis2 = ot.episode_peak_month(pd.Timestamp("1907-06-01"),
+                                      pd.Timestamp("1908-06-30"), empty_ip)
+check("episode_peak_month: pre-INDPRO span falls back to the NBER peak (May 1907)",
+      (peak2, basis2) == (pd.Period("1907-05", "M"), "NBER"))
+check("months_to_peak: 3 months before the peak is -3",
+      ot.months_to_peak(pd.Period("2000-02", "M"), pd.Period("2000-05", "M")) == -3)
+check("weighted_slope: perfectly rising points give a positive slope",
+      ot.weighted_slope([-3, -2, -1, 0], [-0.3, -0.2, -0.1, 0.0], [1, 1, 1, 1]) > 0)
+
+# ---------- regret_scoring.py ----------
+print("regret_scoring:")
+import regret_scoring as rs
+
+check("classify_error: improve predicted, improve realized -> hit",
+      rs.classify_error("improve", "improve") == "hit")
+check("classify_error: improve predicted, worsen realized -> optimistic_error",
+      rs.classify_error("improve", "worsen") == "optimistic_error")
+check("classify_error: worsen predicted, improve realized -> pessimistic_error",
+      rs.classify_error("worsen", "improve") == "pessimistic_error")
+check("classify_error: improve predicted, no_change realized is still an optimistic error",
+      rs.classify_error("improve", "no_change") == "optimistic_error")
+check("classify_error: price up/down labels are out of scope -> na",
+      rs.classify_error("up", "down") == "na")
+check("regret: a hit costs nothing regardless of weights/severity",
+      rs.regret("hit", 1.0, 3.0, 1.0) == 0.0)
+check("regret: optimistic error scaled by w_opt and severity (3*0.5=1.5)",
+      abs(rs.regret("optimistic_error", 0.5, 3.0, 1.0) - 1.5) < 1e-9)
+check("regret: pessimistic error uses the smaller w_pess (1*0.5=0.5)",
+      abs(rs.regret("pessimistic_error", 0.5, 3.0, 1.0) - 0.5) < 1e-9)
+
+# ---------- hedging_lexicon.py ----------
+print("hedging_lexicon:")
+import hedging_lexicon as hl
+
+f_hedge = hl.hedging_features("Prosperity may perhaps return, though it seems uncertain.")
+check("hedging_features: hedge-heavy sentence classed 'hedged'", f_hedge["hedge_class"] == "hedged")
+check("hedging_features: counts multiple hedge terms (may, perhaps, seems, uncertain)",
+      f_hedge["hedge_count"] >= 4)
+f_boost = hl.hedging_features("Recovery will certainly come; a boom is inevitable and assured.")
+check("hedging_features: booster-heavy sentence classed 'assertive'",
+      f_boost["hedge_class"] == "assertive")
+check("hedging_features: assertive sentence has negative hedge_score",
+      f_boost["hedge_score"] < 0)
+f_neutral = hl.hedging_features("Corn was harvested across the county last week.")
+check("hedging_features: no markers -> neutral, zero score",
+      f_neutral["hedge_class"] == "neutral" and f_neutral["hedge_score"] == 0)
+
 print(f"\nALL {PASS} CHECKS PASSED")

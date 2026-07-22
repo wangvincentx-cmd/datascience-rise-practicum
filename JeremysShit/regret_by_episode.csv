@@ -1,0 +1,20 @@
+episode,n,hit_rate,optimistic_errors,pessimistic_errors,mean_regret,severity,severity_basis
+1987 Crash,10,0.6,2,2,0.0,0.0,INDPRO
+1965 Calm (control),33,0.788,0,7,0.0,0.0,INDPRO
+1955 Calm (control),41,0.585,10,7,0.004,0.004,INDPRO
+1995 Calm (control),14,0.286,0,10,0.004,0.006,INDPRO
+1925 Calm (control),31,0.903,2,1,0.003,0.015,INDPRO
+1973 Oil Shock,50,0.44,20,8,0.05,0.037,INDPRO
+2005 Calm (control),21,0.048,8,12,0.068,0.04,INDPRO
+1990 Recession,8,0.0,3,5,0.149,0.085,INDPRO
+2001 Dot-com Bust,37,0.081,13,21,0.141,0.087,INDPRO
+1980 Recession,23,0.391,2,12,0.174,0.223,INDPRO
+2008 Financial Crisis,15,0.467,4,4,0.272,0.255,INDPRO
+1948 Recession,94,0.479,17,32,0.244,0.277,INDPRO
+1957 Recession,108,0.667,4,32,0.174,0.426,INDPRO
+1945 Reconversion,109,0.661,17,20,0.399,0.613,INDPRO
+1929 Crash,174,0.103,155,1,2.185,0.816,INDPRO
+1937 Recession,117,0.496,28,31,0.865,0.88,INDPRO
+1920 Depression,221,0.498,99,12,1.398,1.0,INDPRO
+1905 Calm (control),26,0.654,1,8,0.0,,NBER_fallback
+1907 Panic,128,0.891,5,9,0.0,,NBER_fallback

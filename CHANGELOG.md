@@ -224,6 +224,61 @@ git history for full CHANGELOG detail pre-pivot):
 
 ## Done so far
 
+- [x] **Three new analyses built to turn the optimism gap into a thesis
+      (2026-07-22, user: "expand the project," ideas #1/#2/#3). All standalone
+      scripts reading `claims_scored.csv`, same convention as
+      `disagreement_severity.py`; 20 new offline tests, suite now 54/54.**
+      - **`regret_scoring.py` — the standout, well-powered positive result.**
+        Asymmetric error scoring: a miss is tagged by the direction the PAPER
+        predicted (told readers "improve," it didn't = optimistic error).
+        Assumption-free decomposition: **66.1% of CRISIS misses were optimistic
+        vs only 31.8% of CONTROL misses** — papers erred optimistic when it
+        mattered, not in calm times (clean crisis-vs-control placebo split).
+        Overall optimistic-vs-pessimistic error split is lopsided,
+        **binomial p=4.47e-10**. **1929 Crash: 155 optimistic errors vs 1
+        pessimistic** (hit rate 0.103) — the archetype; 1920 Depression 99 vs
+        12. Severity-weighted regret (INDPRO peak-to-trough magnitude,
+        min-max normalized, pre-1919 excluded per the disagreement_severity
+        cross-scale rule) concentrates in the severest crises. The qualitative
+        asymmetry is **weight-invariant** (share optimistic doesn't move with
+        the w_opt:w_pess ratio; only the regret magnitude does — swept 1:1..10:1).
+        Outputs `regret_by_episode.csv`, `figures/fig_regret.png`.
+      - **`hedging_lexicon.py` — an HONEST CORRECTION that OVERTURNS the prior
+        overconfidence finding.** Replaces the LLM `confidence` label (this
+        project's weakest grade, kappa=0.19) with an objective, reproducible
+        Hyland-2005 hedge/booster lexical score (no rater, so no kappa needed).
+        On the objective measure, **assertive claims are NOT less accurate**
+        (assertive 0.516 vs hedged 0.485) — so the earlier "assertive < hedged
+        -> overconfidence" result (which rested on the 0.19-kappa label) **does
+        not survive**. The objective class barely agrees with the LLM confidence
+        label (**kappa=0.27, 62.5%**), and continuous hedge_score vs hit is
+        r=-0.012 (null). Read: the overconfidence story was a label artifact;
+        confident and hedged papers were about equally accurate. Report the
+        objective measure and retire the LLM-confidence calibration claim.
+        Outputs `claims_hedging.csv`, `figures/fig_hedging.png`.
+      - **`optimism_timeline.py` — monthly within-episode optimism index; the
+        peak-alignment idea works but is POWER-LIMITED by event-windowed
+        sampling, disclosed honestly.** net_optimism per (episode, month) among
+        improve/worsen predictions; peak = INDPRO argmax in the claim span (NBER
+        peak pre-1919); test = slope of optimism vs months-to-peak (negative =
+        foresight, flat/positive = complacency). Robust sub-results: within
+        crisis windows papers were strongly net optimistic (**+0.475, ~1.5:1
+        improve:worsen**), statistically indistinguishable from calm controls
+        (+0.446) — persistent optimism regardless of regime; 1929 = +1.0 net
+        optimism right before the peak. BUT claims cluster AT/after each peak
+        (the scrape was windowed on the crisis), so only 4 episodes have >=2
+        run-up months: **pooled run-up slope +0.141/mo, 95% CI [-0.10,+1.15]
+        crosses zero** — directionally complacency, not significant. The
+        error-direction result in `regret_scoring.py` delivers the same
+        "optimism into crises" story far more convincingly; lead with that,
+        treat the timeline as supporting + a documented sampling limitation.
+        Outputs `optimism_by_month.csv`, `figures/fig_optimism_timeline.png`.
+      Net for the poster: **#2 is a new centerpiece** (asymmetric, expensive
+      optimism, huge significance, clean placebo); **#3 is a credibility win**
+      (we checked our own weak finding with an objective measure and it didn't
+      hold); **#1 is supporting** (persistent optimism) with an honest
+      power caveat. None required new scraping, LLM spend, or ProQuest.
+
 - [x] **Data cleaning pass (2026-07-19, user: "do some data cleaning...
       outliers... missing data").** Investigated before acting — this
       corpus doesn't have classic sensor-noise numeric outliers, so a
