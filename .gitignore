@@ -35,3 +35,4 @@ JeremysShit/grade_run.log
 
 # Superseded by handgrade_newspapers/ (regenerated on every grading run)
 JeremysShit/validation_sample.csv
+.claude/settings.json
