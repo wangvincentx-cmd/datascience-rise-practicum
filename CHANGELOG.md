@@ -1163,21 +1163,43 @@ git history for full CHANGELOG detail pre-pivot):
       features deliberately excluded: interaction values are O(features²)
       per sample, and 500 mostly-single-claim word features would be both
       too slow and too sparse to read.
-      EXPLORATORY RESULT, not yet held to this project's usual bar (single
-      episode-based split, not LOEO-cross-validated or permutation-tested —
-      flagging that explicitly rather than overclaiming): the strongest
-      interactions are `direction x year`, `direction x epu`, and notably
-      `president_party x year` / `unified_government x year|epu` — i.e. the
-      political-climate features that were dropped from the shipped model
-      for a null MARGINAL effect (see "Political-climate proxy" entry above)
-      show up here with real interaction strength. Caveat this needs before
-      it's a real finding: `year` and `epu` are themselves correlated (EPU
-      trends over 120 years of history), so part of this could be
-      interaction-with-a-time-trend rather than a genuine political-climate-
-      conditional effect — this script surfaces the lead, it doesn't
-      validate it. Next step if pursued: repeat under LOEO CV and a
-      permutation test on the interaction magnitude itself, same discipline
-      already applied to every other headline number in this arm.
+      Single-split result at the time (since validated under LOEO CV + a
+      permutation test — see the `validate_interactions.py` entry below):
+      the strongest interactions were `direction x year`, `direction x epu`,
+      and `president_party x year` / `unified_government x year|epu` — i.e.
+      political-climate features dropped from the shipped model for a null
+      MARGINAL effect (see "Political-climate proxy" entry above) showing up
+      with real interaction strength.
+- [x] **`validate_interactions.py` built — validated the interaction lead
+      above under LOEO CV + a permutation test** (2026-07-22), closing the
+      "Next step if pursued" this arm's own bar demanded. Method: each of the
+      8 flagged pairs recomputed pooled OUT-OF-FOLD across all 19
+      LeaveOneGroupOut(episode) folds (fit on 18 episodes, SHAP interaction
+      values on the 19th only), then a permutation test (same machinery as
+      `model.py`'s `permutation_test()`: shuffle `hit` globally, rerun the
+      identical LOEO/SHAP pass, 200 shuffles, compare real pooled statistic
+      to the null distribution).
+      **Result: 7 of 8 pairs SIGNIFICANT at p=0.0050** (the maximum possible
+      with 200 shuffles — real value beat every single null shuffle):
+      `direction_worsen x year` (real 0.126 vs null mean 0.004),
+      `direction_improve x epu` (0.098 vs 0.008), `direction_improve x year`
+      (0.157 vs 0.005), `president_party_R x year` (0.032 vs 0.001),
+      `president_party_D x year` (0.021 vs 0.001), `unified_government_False
+      x year` (0.019 vs 0.001), `unified_government_True x year` (0.021 vs
+      0.001). One pair did NOT clear the bar: `unified_government_False x
+      epu` (real 0.006 vs null mean 0.002, p=0.080) — report as not
+      significant, don't fold it into the "political climate interacts with
+      time" claim.
+      **Interpretation, and what this does NOT settle**: this confirms the
+      interaction is a real (non-null) signal in the fitted model, not a
+      single-split fluke — but it does not by itself separate a genuine
+      political-climate-conditional effect from political-climate being a
+      proxy for a time trend (`year` and `epu` are themselves correlated
+      across 120 years of history, same caveat as before). Still just an
+      interaction lead worth reporting with that caveat attached, not grounds
+      to reopen `unified_government`/`president_party` as MARGINAL features
+      in `model.py`'s shipped `CAT`/`NUM` (that decision was about marginal
+      effect, which this doesn't change).
 
 ## Not done / next up
 
@@ -1188,10 +1210,6 @@ git history for full CHANGELOG detail pre-pivot):
       future project rather than folded into this pass, since it needs new
       corpus engineering and a new unit-of-analysis design, not just
       execution of an already-spec'd plan.
-- [ ] **Validate the `model_interactions.py` political-climate x
-      year/epu interaction lead** (see Done) under LOEO cross-validation and
-      a permutation test on the interaction magnitude, before treating it as
-      a real finding rather than a single-split exploratory result.
 
 (Merge-or-hold-out for the 2,536 `claims_graded_expanded.csv` claims — closed
 2026-07-19: user said "remove any duplicates and merge and rerun," merged in,
