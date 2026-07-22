@@ -5,7 +5,9 @@ goals, methods, what's done, what's next, and what needs a human. Update this
 alongside code changes, don't let it drift.
 
 Two arms are tracked here: **bill_arm** (primary) and the **economy arm**
-(`JeremysShit/`). The election arm has its own README and is not tracked here.
+(`JeremysShit/`). The election arm has its own README and is not tracked here
+(status log: `JeremysShit/election_arm/README.md` — most recent entry
+2026-07-22, a `test_offline.py` mock fix).
 
 ---
 
@@ -342,6 +344,150 @@ git history for full CHANGELOG detail pre-pivot):
       turning-point-blindness convergence, the hedging correction, narratives
       as in-progress). Numbers cited are the current committed ones; author
       line + a couple of framing choices are marked as placeholders to confirm.
+
+- [x] **Pre-submission review found the Result-1 headline p-value was
+      anti-conservative; fixed with an episode-level test (2026-07-22).** The
+      claim-level binomial test (p=4.5e-10 on 66% vs 32% optimistic-miss share,
+      crisis vs control) treats every claim as an independent draw, which they
+      aren't -- claims inside one episode share wire-service copy and one
+      macro reality. Added an episode-level check to `regret_scoring.py`
+      (Mann-Whitney U, one optimistic-share number per episode, 13 crisis vs 6
+      control): median 45.9% vs 25.6%, **p=0.15 -- does NOT clear significance**
+      at n=19 episodes. Directionally consistent, not yet confirmed; the
+      asymmetry claim in the abstract is now hedged accordingly (still leads
+      with 1929 as a real, large single-episode result). Also added a Wilson
+      95% CI column to `results_by_episode.csv` (`score_claims.py`) since
+      several episodes have n<20 (1987 n=14, 1990 n=10, 1995 n=15, 2008 n=17).
+      Two smaller citation fixes: abstract said "six-model" bake-off, table has
+      seven; hedging_lexicon.py/abstract cited the original Llama-3.3 run's
+      confidence kappa (0.19) instead of gpt-4.1's own (0.17) -- the model
+      actually used on the scored corpus. **Next step: more crisis episodes
+      (post-1963 ProQuest expansion) before the episode-level test can reach
+      the power to confirm or reject Result 1.**
+
+- [x] **Report scope cleanup (2026-07-22, user: "remove anything not worth
+      reporting").** bill_arm's factor analysis confirmed OUT of scope for
+      this report -- unrelated dataset/question (Congressional bills vs.
+      newspaper economic predictions), no shared narrative, don't cite it here.
+      Within the economy arm: deleted 11 superseded/backup CSVs no longer read
+      by anything (`claims_*_pre_dedup_backup.csv`, `claims_*_pre_expansion_backup.csv`,
+      `claims_graded_expanded.csv`, `claims_raw_expanded.csv`,
+      `claims_graded_newprompt.csv`, `claims_graded_v2.csv`,
+      `search_log_baseline_2026-07-16.csv`) -- all git-tracked, recoverable
+      from history if ever needed. Kept (user's call, not a unilateral one):
+      the confirmed-null analyses (disagreement, geography, political climate)
+      stay in the repo with one Limitations-section line disclosing they were
+      tested and ruled out, rather than being deleted or silently dropped --
+      the point being the shipped feature set reads as filtered, not
+      incomplete. Added the `model_interactions.py`/`validate_interactions.py`
+      finding (7/8 pairs significant, p=0.005) to `EXTENDED_ABSTRACT.md` as
+      Result 4 (was previously validated but never written into the abstract);
+      Narrative Economics renumbered to Result 5. Also kept, not deleted: the
+      seven `claims_graded_val80_*.csv` bake-off files -- they're the raw
+      evidence behind the headline kappa=0.89/0.90 claim, not clutter.
+
+(`narratives_kappa_sample.py` and the full-corpus `narratives.py --batch` run
+it depends on are both done -- see the "Done" entries further down, dated
+2026-07-22, for the finished state: batch pass completed, 80-claim blind
+sample drawn. This still blocks Result 5 in `EXTENDED_ABSTRACT.md` from being
+reportable until a human fills in `human_narrative` and kappa is computed.)
+
+- [x] **Result 1's episode-level test upgraded from one nonparametric check to
+      three converging methods (2026-07-22, user: "give our project substantial
+      claims... actual substance").** Mann-Whitney on episode medians (added
+      earlier today) is valid but low-power -- it collapses each episode to one
+      number regardless of how many claims it has, so a 174-miss episode
+      (1929) counts the same as a 3-miss one. Added to `regret_scoring.py`:
+      (1) `cluster_permutation_test` -- an EXACT randomization test (episode
+      is the resampling unit, so it's valid regardless of cluster count, no
+      asymptotics; the test STATISTIC is pooled claim-level data, so it keeps
+      the power Mann-Whitney throws away). All C(19,6)=27,132 possible
+      crisis/control label assignments enumerated exactly, no Monte Carlo
+      approximation needed at this scale. (2) `cluster_bootstrap_ci` -- a
+      percentile bootstrap (resample episodes with replacement within each
+      kind, 10,000 draws) on the GAP'S SIZE, since "not significant" and "no
+      effect" are different claims and a p-value alone doesn't convey
+      magnitude.
+      **Real result, run against the actual corpus:** exact cluster-permutation
+      gap +34.3pp (crisis 66.1% vs control 31.8% optimistic-miss share), exact
+      one-sided p=0.161 -- close to but consistent with the earlier
+      Mann-Whitney's p=0.146, not a fluke of test choice. Bootstrap 95% CI on
+      the gap: [-1.1pp, +63.9pp] -- barely touches zero; most of the
+      distribution is a large, real-looking effect. **Net: three different
+      valid tests now converge on the same honest conclusion (directionally
+      large, not yet significant at n=19 episodes), which is itself the useful
+      finding -- the non-significance is a genuine power limit, not an
+      artifact of which test was picked.** `EXTENDED_ABSTRACT.md` Result 1 and
+      its Limitations entry updated with the exact numbers. `test_offline.py`
+      still 70/70 (no existing test touched this function).
+
+- [x] **Checked EPU (policy uncertainty) as a possible added finding; declined
+      to report it (2026-07-22).** `tier2_analysis.py` shows hit rate falling
+      monotonically with EPU tercile (58.0% low / 44.6% mid / 43.9% high,
+      point-biserial r=-0.049) -- looked promising, but claims share the same
+      episode-clustering problem just fixed for Result 1 (EPU moves slowly, so
+      claims in one episode mostly share a tercile), and `model.py` already
+      found EPU non-dominant once `direction` is in the model -- likely just
+      re-detecting the crisis/control split, not new information. Not added to
+      the abstract without the same cluster-aware validation Result 1 got.
+      Side effect of running the script: `results_by_region.csv` and 4 figures
+      (`fig_epu_vs_accuracy`, `fig_geography`, `fig_regret`,
+      `fig_three_way_benchmark`) were STALE (roughly half the current claim
+      count -- last generated before this session's corpus updates) and got
+      refreshed to match the current `claims_scored.csv`; real numbers moved
+      (e.g. midwest n 153->280, hit_rate 0.529->0.511) but no reported claim
+      depended on the stale version.
+
+- [ ] **Free power expansion for the optimism-asymmetry test: scraping 4 more
+      LOC-era crisis episodes, IN PROGRESS (started 2026-07-22, user: "do the
+      scrape and expansion").** Result 1's episode-level test is honest but
+      underpowered at 13 crisis vs 6 control episodes (see entry above); LOC's
+      free full-text archive (no API key, no cost) covers more NBER recessions
+      than the 7 already scraped. Added 4 to `newspaper_scraper.py`'s
+      `EPISODES`: **1910 Recession** (NBER 1910-01..1912-01, window
+      1910-06-01..1911-03-31), **1913 Recession** (NBER 1913-01..1914-12,
+      window 1913-06-01..1914-03-31, kept short of Aug 1914 on purpose --
+      same reasoning the project already uses to skip the 1918-19 war
+      recession, wartime claims are a different domain), **1923 Recession**
+      (NBER 1923-05..1924-07, window 1923-09-01..1924-05-31), **1926
+      Recession** (NBER 1926-10..1927-11, window 1927-01-01..1927-09-30).
+      Search terms matched to the existing episodes' vocabulary for that era.
+      **Two overwrite hazards found and fixed BEFORE running anything**:
+      `newspaper_scraper.py`'s `run()` opens both `--out` and a hardcoded
+      `search_log.csv` in write mode -- running the new episodes with
+      defaults would have silently DESTROYED the entire existing 4,730-row
+      corpus and the real search log. Added `--log-out` (defaults to the old
+      hardcoded `search_log.csv` for backward compatibility) and ran this
+      scrape with both `--out claims_raw_newloc.csv --log-out
+      search_log_newloc.csv` -- isolated from the real files. Also had to set
+      `SSL_CERT_FILE` to certifi's bundle to get `urllib` working in this
+      venv at all (system default cert path was missing/stale).
+      Wrote `append_loc_claims.py` (dedupe on `page_url`, continue the
+      `claim_id` sequence, append-only, idempotent -- same pattern as
+      `append_nyt_claims.py` but simpler since the source is already in
+      `claims_raw.csv`'s exact schema) for the merge step once scraping
+      finishes.
+      **First background run did NOT actually cover all 4 episodes.**
+      Checked after the fact: `claims_raw_newloc.csv` has 115 real claims,
+      all of them **1910 Recession** -- zero for 1913/1923/1926. `search_log_
+      newloc.csv` came back completely empty (not even a header row), which
+      is the signature of the process being killed mid-run rather than those
+      three episodes genuinely returning 0 hits (a real 0-hit term still
+      writes a log row). So the run silently died partway through, not a
+      clean completion.
+      **Re-launched 2026-07-22, scoped to only the 3 missing episodes**
+      (`--episodes "1913 Recession" "1923 Recession" "1926 Recession" --out
+      claims_raw_newloc2.csv --log-out search_log_newloc2.csv`), backgrounded
+      again, isolated from both the real corpus and the first run's output.
+      **Still NOT merged, graded, or rescored** (neither the 115-claim 1910
+      batch nor whatever this second run produces). Remaining steps once
+      it finishes: verify `search_log_newloc2.csv` actually has rows this
+      time (don't just trust a nonzero claim count), `append_loc_claims.py`
+      for both `claims_raw_newloc.csv` and `claims_raw_newloc2.csv`,
+      `grade_claims.py --model gpt-4.1` (new rows only, small cost),
+      `score_claims.py`, then rerun `regret_scoring.py`'s cluster-permutation
+      test to see whether the added episodes move Result 1's p=0.161 --
+      report the real number either way, not just if it clears 0.05.
 
 - [x] **Data cleaning pass (2026-07-19, user: "do some data cleaning...
       outliers... missing data").** Investigated before acting — this
@@ -1200,9 +1346,224 @@ git history for full CHANGELOG detail pre-pivot):
       to reopen `unified_government`/`president_party` as MARGINAL features
       in `model.py`'s shipped `CAT`/`NUM` (that decision was about marginal
       effect, which this doesn't change).
+- [x] **Episode-level robustness check on the optimism-gap result — a real
+      correction, not a footnote** (2026-07-22, `regret_scoring.py`). The
+      headline claim-level test (66% vs 32% optimistic misses, binomial
+      p=4.5e-10) treats every claim as an independent draw, which they are
+      not: claims inside one episode share wire-service copy and one macro
+      reality. Re-tested at the EPISODE level (13 crisis vs 6 control, the
+      defensible independent unit): crisis episodes still lean far more
+      optimistic (median optimistic-error share 45.9% vs 25.6%) but **does
+      NOT clear significance** (Mann-Whitney U, one-sided, p=0.15, n=19).
+      **1929 Crash alone remains a real, large result** (155 optimistic
+      errors to 1, 10.6% hit rate) — but the century-wide asymmetry is now
+      reported as directionally consistent and underpowered, not confirmed.
+      More crisis episodes (the pending post-1963 ProQuest expansion) would
+      be the natural way to actually power this test.
+- [x] **Wilson CI added to `results_by_episode.csv`** (`score_claims.py`,
+      2026-07-22) — several episodes have n<20 (1990 Recession n=10, 1987
+      Crash n=14) where a bare point estimate invites over-reading noise as
+      signal; the normal (Wald) interval is unreliable at these n/extreme-
+      rate combinations, Wilson is not.
+- [x] **`confidence` kappa citation corrected**: 0.17, not 0.19**
+      (`hedging_lexicon.py`, 2026-07-22). 0.19 was the original Llama-3.3
+      validation run in `KAPPA_RESULTS.md`; the corpus is actually graded by
+      gpt-4.1 (the bake-off winner), whose own kappa on this field is 0.17 —
+      an even weaker number, strengthening (not weakening) the case for the
+      objective hedging-lexicon replacement. Does not change the "assertive
+      claims are NOT less accurate" finding, only the citation backing it.
+- [x] **`EXTENDED_ABSTRACT.md` revised for the two corrections above, plus a
+      new Result 4** (2026-07-22): the `validate_interactions.py` SHAP-
+      interaction lead (7/8 pairs significant, see entry above) is now
+      Result 4 ("a lead, not a settled effect"); Narrative Economics
+      renumbered to Result 5. Added a "ruled out, not hidden" limitations
+      bullet (forecaster disagreement, publisher geography, political-climate
+      features — all tested, none cleared the permutation-test bar) and an
+      "episode count limits power" bullet tying directly to the Wilson-CI
+      and Mann-Whitney results above. Conclusion softened from "systematically
+      optimistic" to "leaned optimistic... clear and large in specific
+      episodes, directionally consistent century-wide, not yet statistically
+      confirmed at the episode level" — this is a more defensible claim, not
+      a weaker paper.
+- [x] **`election_arm/extract_predictions.py` — OpenAI Batch API support
+      added** (2026-07-22). Ported the submit/poll/fetch pattern from
+      `grade_claims.py`'s `run_batch` (50% cheaper, one job instead of one
+      call per page); adapted for extraction's JSON-ARRAY-of-claims response
+      shape (grade_claims.py's version returns one graded field per claim).
+      New `--window all` merges every downloaded raw file for a source/arm
+      into one job (chunked, default 150 pages/chunk — kept small since a
+      12k-char OCR-page prompt is much heavier per-request than
+      grade_claims.py's short grading prompts) instead of one small,
+      latency-dominated job per window (each pays ~5-10 min of OpenAI
+      validating/finalizing overhead regardless of size, so 28 tiny per-
+      cycle jobs would cost hours vs. ~7 chunks for the whole corpus).
+      `--model` now overridable (default still gpt-4.1, the bake-off
+      winner); user supplied a paid OpenAI key earmarked for gpt-4.1-mini to
+      cut cost further — used for this run, flagged inline that kappa
+      validation matters more with an unvalidated cheaper model. Smoke-
+      tested on 10 real NYT pages before the full run (correct claim
+      parsing + metadata merge, matches existing schema).
+      **Found and fixed a real, pre-existing bug while testing**:
+      `election_arm/test_offline.py`'s extraction mock (`FakeClient`) mimicked
+      the OLD Anthropic-SDK call shape (`messages.create(...)`); the code
+      migrated to calling OpenAI's REST `chat/completions` directly on
+      2026-07-16 and the stale mock was silently falling through to a REAL
+      network call with a bogus key (HTTP 401) instead of testing anything —
+      "run test_offline.py first, no network needed" was quietly false.
+      Replaced with a `requests.post`-level mock. All 21 checks pass again.
+      **Full election corpus (1,209 NYT articles, 28 cycles, 1900-2008)
+      extracted** via `--window all --batch --model gpt-4.1-mini` — all 7
+      chunks completed, 0 failures -> `data/predictions/pred_nyt_elections_
+      all.jsonl` (119 real claims, 1,113 pages with no prediction found).
+      **Stages 3/4/6 run for the first time ever on real (not synthetic)
+      elections data (2026-07-22):**
+      - Stage 3 (`validate_kappa.py sample --arm elections`): 23-claim blind
+        sample drawn -> `data/validation_sample.csv` + hidden
+        `data/validation_llm_key.csv`. **Still needs TWO independent human
+        graders** before kappa can be computed — not automatable.
+      - Stage 4 (`analyze_elections.py`): only 24 of 119 claims are
+        national-scope + scorable (the rest are state-scope, unscored per
+        `SCORE_STATES = False` — needs a state-results file, see Known
+        limits). **Overall national-claim accuracy 58.3% (14/24)** — hedged
+        claims notably MORE accurate than firm ones (71.4% vs 40%, n=14/10),
+        opposite the naive "hedging = uncertainty = worse" prior, though at
+        this n a couple of flipped claims would erase the gap entirely.
+        -> `data/scored_claims.csv`.
+      - Stage 6 (`model.py --arm elections`, default 2/3-1/3 cycle split:
+        train 1904-1944, test 1948-2000): **both models score BELOW the
+        0.571 majority-class baseline** (logistic accuracy 0.429, PR-AUC
+        0.337; gradient boosting accuracy 0.143, PR-AUC 0.369) — at 17
+        train / 7 test claims this is not a real test of anything, just the
+        expected shape of a first pass on a corpus two orders of magnitude
+        smaller than the economy arm's. One feature is worth noting anyway:
+        `word:dewey` is among the strongest predictors of a WRONG call — the
+        model landed on the famous 1948 "Dewey Defeats Truman" miscall
+        without being told to, which at least confirms the pipeline surfaces
+        real historical signal, not noise, even though the aggregate metrics
+        aren't meaningful yet. **Needs the LOC pre-1963 side (never
+        downloaded for elections, NYT-only so far) and more claims per cycle
+        before this model means anything — flag this prominently if these
+        numbers ever leave this repo.**
+- [x] **`narratives.py --batch` added** (2026-07-22) — the full-corpus
+      authoritative LLM narrative pass the module's own docstring called for
+      but never had ("for the full corpus use grade_claims.py's --batch
+      path" — that path didn't exist for narratives specifically). Reuses
+      `grade_claims.py`'s generic `poll_batch`/`fetch_file` (no dependency on
+      its grading-specific prompt), with its own request-building for the
+      single-field `{"narrative": ...}` response. Smoke-tested on 5 real
+      claims (plausible, LLM disagrees with the crude lexical screen on 4/5
+      — expected, the lexical pass is a known-crude preview). **Full
+      1,628-claim corpus completed** via `--batch --model gpt-4.1-mini
+      --batch-chunk-size 800` (3 chunks, 0 failures) -> `claims_narratives_llm_
+      full.csv`. **Result, NOT YET kappa-validated (see next entry) — do not
+      quote on the poster before that**: lexical-vs-LLM raw agreement only
+      18.2% (confirms the lexical screen was a crude preview, as documented).
+      Narrative prevalence is far richer than the lexical pass suggested (only
+      7.6% "none" vs. the lexical screen's 78%). Accuracy varies sharply and
+      **in the opposite direction Shiller's hypothesis would suggest**:
+      `panic_fear` claims have the LOWEST hit rate (34.0%, n=285) of any
+      narrative, `new_era` the HIGHEST (64.7%, n=51); complacent narratives
+      overall hit 52.1% vs 46.3% for everything else. Complacent-narrative
+      share by episode also runs opposite to the classic "complacency spikes
+      right before a crash" story: several CALM controls (1965: 71.4%, 1925:
+      61.8%, 1955: 55.6%) show MORE complacent framing than most crisis
+      episodes, including 1929 Crash itself (38.6%) and 2008 GFC (35.3%).
+      Flagging this prominently because it's surprising and could easily be
+      an LLM-labeling artifact rather than a real pattern — exactly what the
+      kappa check below needs to settle before anyone treats it as a finding.
+- [x] **`narratives_kappa_sample.py` written AND run** (2026-07-22) — the
+      blind human-validation sample/kappa script the Narrative strand still
+      needed, same discipline as `election_arm/validate_kappa.py` (blind
+      sample + separate LLM-answer-key file, human fills `human_narrative`
+      independently, kappa computed only after). `sample` mode run against
+      the completed batch pass above -> `narratives_validation_sample.csv`
+      (80 claims, blind) + `narratives_validation_llm_key.csv` (hidden LLM
+      answers). **`kappa` mode now run** (2026-07-22) — human_narrative
+      filled by two people who discussed disagreements and combined their
+      opinion into one consensus label per claim (same "consensus gold
+      standard" method as the original 80-claim `KAPPA_RESULTS.md` bake-off
+      validation, not two independently-graded files), which is why this is
+      a human-vs-LLM comparison only, not also a human-vs-human one.
+      **Result: kappa = 0.58, raw agreement 68% (n=80)** — Landis-Koch
+      "moderate," just under the 0.6 "substantial" bar this project uses
+      elsewhere. 26 disagreements -> `narratives_validation_disagreements.csv`.
+      Confusion is concentrated at CLOSE, related labels, not random or a
+      polarity flip: `sound_fundamentals` vs `recovery_normalcy` (8 of 26,
+      the single biggest confusion), `temporary_setback` vs `panic_fear` (5),
+      `recovery_normalcy` vs `temporary_setback` (3), `none` vs
+      `recovery_normalcy` (3) — only 1 of 26 is a full optimistic/pessimistic
+      flip (`sound_fundamentals` vs `panic_fear`). **This matters directly
+      for the "Full-corpus LLM pass" result above**: roughly 18 of the 26
+      disagreements cross the complacent/non-complacent boundary (COMPLACENT
+      = new_era + sound_fundamentals + temporary_setback), so the
+      panic_fear-least-accurate / calm-controls-more-complacent-than-crises
+      finding is validated to a MODERATE degree — real signal, not random —
+      but should be reported with that kappa attached, not as a clean,
+      settled result. A finer-grained taxonomy (e.g. splitting
+      `sound_fundamentals` from `recovery_normalcy` more explicitly in the
+      prompt) is the natural next step if this strand gets more investment.
+- [x] **`bill_arm/.env` given canonical `OPENAI_API_KEY=...` line**
+      (2026-07-22). The file's existing Groq/OpenAI/Pinecone/GDELT entries
+      are human-readable `Label: value` notes (by design, for
+      `grade_claims.py`'s regex-based multi-key loader), not valid
+      `KEY=value` — added a proper line alongside them so standard
+      `os.environ`/`python-dotenv` loading also works, without touching the
+      label lines other scripts already parse directly.
+- [x] **Stale "Known limits" note on the LOC recall-audit fixed** — it said
+      "follow-up scrape in progress," but the follow-up scrape was actually
+      completed 2026-07-18 and merged into the main corpus 2026-07-19 (see
+      "Corpus grown and merged in" above); no scrape is outstanding.
+- [x] **Cleanup: removed now-redundant intermediate/backup CSVs** —
+      `claims_{raw,graded}_expanded.csv`, `claims_{raw,graded,scored}_pre_
+      {dedup,expansion}_backup.csv`, `claims_graded_{newprompt,v2}.csv`,
+      `search_log_baseline_2026-07-16.csv`. All were safety copies or
+      intermediate outputs from the 2026-07-18/19 recall-audit rescrape and
+      dedup-merge, which is complete and already reflected in
+      `claims_raw.csv`/`claims_graded.csv`/`claims_scored.csv` (verified row
+      counts match the documented final numbers above). **Currently staged
+      for deletion but NOT committed** — flagging for a look before this
+      lands in a commit, since git history still has these files' last
+      committed contents (`94a289c`) if anything here turns out to still be
+      needed.
+- [x] **Spot-check: does the regex candidate-sentence extractor
+      (`newspaper_scraper.py`'s `extract_claims`, FUTURE_MARKERS + JUNK
+      filter within ±2 sentences of a search-phrase hit) actually have good
+      recall, or does whole-page LLM extraction find something different?**
+      (2026-07-22). Took one real cached page with 5 regex-found candidates
+      (`sn84026749/1930-07-02`, "business outlook" hits), fed the SAME raw
+      24k-char OCR text to gpt-4.1-mini with an election-arm-style whole-
+      page extraction prompt (find every forward-looking economic/market
+      statement, not anchored to any search phrase). **Result: 7 claims
+      found, ZERO exact-sentence overlap with the regex's 5** — e.g. "worst
+      of the decline in freight traffic is over," "we expect the rally to
+      carry further," "Many sound stocks... should eventually sell much
+      higher" were all present on the page and clearly forward-looking, but
+      never within ±2 sentences of a "business outlook" hit, so the regex
+      window never saw them. This is a sharper problem than the already-
+      documented "phrase lists bound recall": even on a page the phrase
+      search DID correctly find, the regex sentence-window step drops
+      predictions that use different language than the trigger phrase.
+      **n=1 page — anecdotal, not yet a corpus-wide recall estimate.** Next
+      step if pursued: run the same whole-page-LLM-vs-regex comparison
+      across a real sample (10-20 pages, multiple episodes) to get an actual
+      recall-gap number instead of one example.
+      User has H200 GPU access and wants to explore running this
+      (or a full corpus re-extraction) via a local model (e.g. Llama-70B)
+      instead of paid API calls. Noted as a good fit but not set up here:
+      `grade_claims.py` already takes an arbitrary OpenAI-compatible
+      `--base-url` (how it already hits Groq/DeepSeek), so a local vLLM/TGI
+      server would plug in with no code changes — just needs the endpoint
+      stood up on their end.
 
 ## Not done / next up
 
+- [ ] **Scale the regex-vs-LLM recall spot-check to a real sample** (see
+      "Spot-check" entry above) — 10-20 pages across multiple episodes,
+      to get an actual recall-gap estimate instead of the n=1 anecdote.
+      If the gap holds up, whole-page LLM re-extraction over the ~4,300
+      already-cached pages (no new downloads needed) is the natural
+      follow-up, ideally via a local model on the user's H200s rather than
+      paid API calls.
 - [ ] Spec's second model (predict economic *state* from press, not "was this
       claim right"). Different unit of observation (time period, not claim);
       at episode level only 10 rows, needs a month-level corpus expansion.
@@ -1210,12 +1571,56 @@ git history for full CHANGELOG detail pre-pivot):
       future project rather than folded into this pass, since it needs new
       corpus engineering and a new unit-of-analysis design, not just
       execution of an already-spec'd plan.
-
-(Merge-or-hold-out for the 2,536 `claims_graded_expanded.csv` claims — closed
-2026-07-19: user said "remove any duplicates and merge and rerun," merged in,
-see Done.)
+- [ ] **Election arm kappa validation (Stage 3) — the only remaining step.**
+      Stages 2/4/6 are done on real data (see "Full election corpus...
+      extracted" above): 23-claim blind sample sitting in
+      `data/validation_sample.csv`, needs TWO independent human graders to
+      fill in `grader_A`/`grader_B` before `validate_kappa.py kappa --arm
+      elections` can run — cannot be automated (see "Validation integrity"
+      below). Separately, the election arm's LOC (pre-1963) side has never
+      been downloaded — NYT-only so far, only 24/119 claims are national-
+      scope+scorable, and `model.py`'s first real run scored below its own
+      majority-class baseline at this n; more claims per cycle (LOC download
+      + a state-results file for `SCORE_STATES`) matters more than kappa
+      here for getting a meaningful model number.
+(Narrative Economics kappa validation — done, see "kappa mode now run"
+above: kappa=0.58, moderate. Consider a finer-grained taxonomy for
+`sound_fundamentals` vs `recovery_normalcy` specifically, the single biggest
+confusion pair, if this strand gets more investment.)
+- [ ] **Review the staged backup-CSV deletion before it's committed** (see
+      "Cleanup" above) — currently sitting in the index, not yet committed.
+- [ ] **A new LOC subset scrape is in progress elsewhere (confirmed with
+      user — expected, not a stray process), first seen 2026-07-22 ~14:54,
+      not yet merged.** `append_loc_claims.py` — a safer version of the
+      2026-07-18 recall-audit merge workflow: run `newspaper_scraper.py`
+      with `--out`/`--log-out` pointed at separate files instead of
+      overwriting `claims_raw.csv`/`search_log.csv` directly, then merge
+      with dedup-on-`page_url` + continued `claim_id` sequence (idempotent,
+      safe to rerun). Two subset files in flight,
+      `claims_raw_newloc.csv` (115 claims, appears done) and
+      `claims_raw_newloc2.csv` (actively growing row-by-row as of this
+      writing — exact count not tracked here, check the file directly for
+      current size). `claims_raw.csv`/`claims_graded.csv`/
+      `claims_scored.csv` remain untouched — don't run `append_loc_claims.py`
+      on either subset
+      until both settle; merging mid-scrape would lock in a partial corpus.
+- (`results_by_region.csv` and `fig_epu_vs_accuracy.png`/`fig_geography.png`/
+  `fig_three_way_benchmark.png` changed this pass too, but only as a
+  mechanical regeneration from the already-documented `score_claims.py`/
+  `regret_scoring.py` reruns above — not new findings, no action needed.)
 
 ## Known limits / needs improvement
+
+- **`election_arm/data/search_log.csv` gains a few duplicate rows every time
+  `test_offline.py` runs** — the download-side offline tests exercise the
+  real `search_pages`/`search_phrase` functions against mocked HTTP
+  responses, and those functions write to the real search log as a side
+  effect ("no network needed" is true, "no filesystem writes" isn't). Only
+  ever adds identical mock rows (`elections/1948/"will be elected"` and
+  `economy/gfc_2008/"recession likely"`), so it doesn't corrupt the real
+  corpus-transparency exhibit, just adds cosmetic noise. Not fixed — low
+  priority, but if this file goes in front of a reviewer, strip test rows
+  first (`timestamp` values line up with whenever tests were run).
 
 - **Validation integrity — the kappa must be MEASURED, not manufactured.**
   Never edit human labels to agree with an LLM, and never fabricate coder
@@ -1233,12 +1638,17 @@ see Done.)
   the Evening Star alone) — now coded as its own `political hub (DC)` bucket
   rather than folded into financial centers (see Done), but the underlying
   publisher concentration itself is unchanged.
-- One search term (`"business outlook"`) produced 606 of 1,324 claims (46%).
-  **Recall audit done 2026-07-18** (see Done): confirms the corpus was
-  sampled, not cherry-picked, but also found 9/32 term/episode searches
-  fetched under 50% of LOC's own available hits (page-cap truncation, not
-  missed phrasing) — 20,331 hits never fetched. Follow-up scrape in
-  progress (see Not done).
+- One search term (`"business outlook"`) produced 606 of 1,324 claims (46%,
+  original pre-expansion corpus). **Recall audit done 2026-07-18** (see
+  Done): confirms the corpus was sampled, not cherry-picked, but also found
+  9/32 term/episode searches fetched under 50% of LOC's own available hits
+  (page-cap truncation, not missed phrasing) — 20,331 hits never fetched.
+  **Follow-up scrape completed 2026-07-18 and merged 2026-07-19** (see Done,
+  "Corpus grown and merged in"): `--pages-per-term 100` rerun on the 7
+  under-recall crisis episodes added 1,550 genuinely-new claims after
+  dedup, growing `claims_raw.csv`/`claims_graded.csv` 2,644 -> 4,194 rows.
+  This note previously said "in progress" — stale; no further scrape is
+  outstanding.
 - The retrospective-vs-prediction boundary was the main leakage risk flagged
   during rubric design; it's now an explicit rubric rule (retrospectives →
   not a prediction) and was part of what the reconciliation process fixed.
@@ -1262,4 +1672,4 @@ see Done.)
   pasted in plaintext into `CONTINUE_HERE_nyt.md`, committed in `1e201bc`,
   and later stripped from the working copy — but a working-tree edit doesn't
   undo the git-history exposure, and one of the two matched `bill_arm/.env`'s
-  live key. Not yet confirmed done as of 2026-07-21.
+  live key. Not yet confirmed done as of 2026-07-22.

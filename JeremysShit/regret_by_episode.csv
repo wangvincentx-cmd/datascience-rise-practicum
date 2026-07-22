@@ -1,6 +1,6 @@
 episode,n,hit_rate,optimistic_errors,pessimistic_errors,mean_regret,severity,severity_basis
-1987 Crash,10,0.6,2,2,0.0,0.0,INDPRO
 1965 Calm (control),33,0.788,0,7,0.0,0.0,INDPRO
+1987 Crash,10,0.6,2,2,0.0,0.0,INDPRO
 1955 Calm (control),41,0.585,10,7,0.004,0.004,INDPRO
 1995 Calm (control),14,0.286,0,10,0.004,0.006,INDPRO
 1925 Calm (control),31,0.903,2,1,0.003,0.015,INDPRO

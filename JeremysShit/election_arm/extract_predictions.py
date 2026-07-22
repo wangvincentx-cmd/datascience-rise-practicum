@@ -179,7 +179,7 @@ Rules:
 - If direction is genuinely unclear, skip the claim."""
 
 
-def extract_from_page(api_key, record, arm):
+def _prompt_and_context(record, arm):
     prompt = ELECTIONS_PROMPT if arm == "elections" else ECONOMY_PROMPT
     text = record["ocr_text"][:MAX_OCR_CHARS]
     context = (f"Newspaper: {record.get('newspaper_title')}\n"
@@ -187,7 +187,15 @@ def extract_from_page(api_key, record, arm):
                f"Window: {record.get('window')}\n")
     if arm == "elections":
         context += f"Election cycle: {record.get('cycle')}\n"
-    raw = call_llm(prompt, f"{context}\nText:\n{text}", api_key).strip()
+    return prompt, f"{context}\nText:\n{text}"
+
+
+def _parse_claims(raw, record, arm):
+    """Shared by the synchronous path (extract_from_page) and the batch
+    retrieval path (run_batch) -- same JSON-array parsing + metadata merge
+    either way, only how `raw` was obtained (one call vs. a batch result
+    file) differs."""
+    raw = (raw or "").strip()
     raw = raw.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
     try:
         claims = json.loads(raw)
@@ -215,6 +223,175 @@ def extract_from_page(api_key, record, arm):
     return out
 
 
+def extract_from_page(api_key, record, arm):
+    prompt, user_content = _prompt_and_context(record, arm)
+    raw = call_llm(prompt, user_content, api_key)
+    return _parse_claims(raw, record, arm)
+
+
+# --- OpenAI Batch API: submit the whole window as one job, poll, retrieve.
+# 50% cheaper than synchronous chat/completions calls and one job instead of
+# hundreds/thousands of requests -- same rationale and envelope as
+# JeremysShit/grade_claims.py's run_batch (ported here since extraction's
+# per-page prompt returns a JSON ARRAY of claims rather than one graded
+# field, so the request-building and retrieval differ from grade_claims.py's
+# version even though the submit/poll/fetch scaffolding is identical).
+OPENAI_BATCH_BASE = "https://api.openai.com/v1"
+
+
+def _batch_request_lines(records, arm, model):
+    for record in records:
+        prompt, user_content = _prompt_and_context(record, arm)
+        body = {
+            "model": model,
+            "messages": [{"role": "system", "content": prompt},
+                         {"role": "user", "content": user_content}],
+            "temperature": 0.0,
+            "max_tokens": MAX_TOKENS,
+        }
+        yield json.dumps({"custom_id": record["page_id"], "method": "POST",
+                          "url": "/v1/chat/completions", "body": body})
+
+
+def submit_batch(api_key, records, arm, model):
+    jsonl = "\n".join(_batch_request_lines(records, arm, model))
+    headers = {"Authorization": f"Bearer {api_key}"}
+    resp = requests.post(f"{OPENAI_BATCH_BASE}/files", headers=headers,
+                         files={"file": ("batch_input.jsonl", jsonl.encode("utf-8"),
+                                        "application/jsonl")},
+                         data={"purpose": "batch"}, timeout=120)
+    resp.raise_for_status()
+    file_id = resp.json()["id"]
+    resp = requests.post(f"{OPENAI_BATCH_BASE}/batches",
+                         headers={**headers, "Content-Type": "application/json"},
+                         json={"input_file_id": file_id, "endpoint": "/v1/chat/completions",
+                              "completion_window": "24h"}, timeout=60)
+    resp.raise_for_status()
+    return resp.json()
+
+
+def poll_batch(api_key, batch_id, interval=30):
+    headers = {"Authorization": f"Bearer {api_key}"}
+    while True:
+        resp = requests.get(f"{OPENAI_BATCH_BASE}/batches/{batch_id}", headers=headers, timeout=60)
+        resp.raise_for_status()
+        data = resp.json()
+        counts = data.get("request_counts", {}) or {}
+        print(f"  batch {batch_id}: {data['status']}  (completed "
+             f"{counts.get('completed', 0)}/{counts.get('total', 0)}, "
+             f"failed {counts.get('failed', 0)})", flush=True)
+        if data["status"] in ("completed", "failed", "expired", "cancelled"):
+            return data
+        time.sleep(interval)
+
+
+def fetch_file(api_key, file_id):
+    headers = {"Authorization": f"Bearer {api_key}"}
+    resp = requests.get(f"{OPENAI_BATCH_BASE}/files/{file_id}/content", headers=headers, timeout=120)
+    resp.raise_for_status()
+    return resp.text
+
+
+def load_records(source, arm, window):
+    """window == 'all' merges every raw file for this source/arm (e.g. every
+    election cycle's nyt_elections_*.jsonl) so the whole corpus can go through
+    the Batch API as one chunked job instead of one small job per window --
+    each of those pays OpenAI's ~5-10 min validating/finalizing latency, which
+    dominates wall-clock time when windows only have a few dozen pages each."""
+    if window == "all":
+        paths = sorted(Path("data/raw").glob(f"{source}_{arm}_*.jsonl"))
+        if not paths:
+            raise SystemExit(f"No data/raw/{source}_{arm}_*.jsonl files found.")
+        records = []
+        for p in paths:
+            with open(p) as f:
+                records.extend(json.loads(line) for line in f)
+        return records
+    in_path = Path(f"data/raw/{source}_{arm}_{window}.jsonl")
+    if not in_path.exists():
+        raise SystemExit(f"No raw file at {in_path}. Run the {source} "
+                         f"downloader for that arm/window first.")
+    with open(in_path) as f:
+        return [json.loads(line) for line in f]
+
+
+def run_batch(api_key, records, out_path, arm, model, chunk_size, poll_interval, limit=None):
+    """Batch equivalent of the synchronous loop in main(): resume-safe by
+    page_id, chunked (one chunk in_progress at a time -- grade_claims.py's
+    run_batch hit an enqueued-token cap submitting too much at once), each
+    chunk's results parsed with the same _parse_claims as the sync path."""
+    done = load_done_ids(out_path)
+    records = [r for r in records if r["page_id"] not in done]
+    if limit:
+        records = records[:limit]
+    if not records:
+        print("Nothing left to extract.")
+        return
+    by_id = {r["page_id"]: r for r in records}
+
+    chunks = [records[i:i + chunk_size] for i in range(0, len(records), chunk_size)]
+    print(f"Submitting {len(records)} pages to the OpenAI Batch API ({model}) in "
+         f"{len(chunks)} chunk(s) of up to {chunk_size}...")
+
+    with open(out_path, "a") as out:
+        for ci, chunk in enumerate(chunks, 1):
+            print(f"--- chunk {ci}/{len(chunks)}: {len(chunk)} pages ---", flush=True)
+            try:
+                batch = submit_batch(api_key, chunk, arm, model)
+            except requests.exceptions.HTTPError as e:
+                body = e.response.text[:500] if e.response is not None else str(e)
+                print(f"Batch submission failed: {e}\n{body}")
+                return
+            print(f"  batch id {batch['id']}, status {batch['status']}")
+            result = poll_batch(api_key, batch["id"], interval=poll_interval)
+
+            err_codes = {e.get("code") for e in (result.get("errors") or {}).get("data", [])}
+            if result["status"] == "failed" and err_codes == {"token_limit_exceeded"}:
+                print("  enqueued-token limit hit; waiting 60s for other in_progress "
+                     "batches to clear, then retrying this chunk once", flush=True)
+                time.sleep(60)
+                try:
+                    batch = submit_batch(api_key, chunk, arm, model)
+                    result = poll_batch(api_key, batch["id"], interval=poll_interval)
+                except requests.exceptions.HTTPError as e:
+                    print(f"  retry failed: {e}")
+
+            n_ok = 0
+            if result.get("output_file_id"):
+                for line in fetch_file(api_key, result["output_file_id"]).splitlines():
+                    if not line.strip():
+                        continue
+                    rec = json.loads(line)
+                    record = by_id.get(rec["custom_id"])
+                    if record is None:
+                        continue
+                    body = (rec.get("response") or {}).get("body") or {}
+                    try:
+                        content = body["choices"][0]["message"]["content"]
+                    except Exception:
+                        content = ""
+                    claims = _parse_claims(content, record, arm)
+                    if not claims:
+                        out.write(json.dumps({"page_id": record["page_id"],
+                                              "no_predictions": True}) + "\n")
+                    for c in claims:
+                        out.write(json.dumps(c) + "\n")
+                    n_ok += 1
+            out.flush()
+            if result.get("error_file_id"):
+                err_text = fetch_file(api_key, result["error_file_id"])
+                err_lines = [l for l in err_text.splitlines() if l.strip()]
+                print(f"  {len(err_lines)} request(s) errored in this chunk -- first: "
+                     f"{err_lines[0][:300] if err_lines else ''}")
+            print(f"  chunk {ci}/{len(chunks)} {result['status']}: {n_ok}/{len(chunk)} pages "
+                 f"processed -> {out_path}")
+            if result["status"] != "completed" or n_ok < len(chunk):
+                print("Chunk did not fully complete -- stopping here; rerun the same "
+                     "command to resume (page_id-based resume skips completed pages).")
+                return
+    print(f"\nAll {len(chunks)} chunk(s) complete -> {out_path}")
+
+
 def load_done_ids(out_path):
     done = set()
     if out_path.exists():
@@ -228,34 +405,56 @@ def load_done_ids(out_path):
 
 
 def main():
+    global MODEL
     ap = argparse.ArgumentParser()
     ap.add_argument("--source", choices=["loc", "nyt"], required=True)
     ap.add_argument("--arm", choices=["elections", "economy"], required=True)
     ap.add_argument("--window", required=True,
-                    help="elections: the year (e.g. 1948); economy: window_id (e.g. crash_1929)")
+                    help="elections: the year (e.g. 1948) or 'all' for every "
+                         "downloaded cycle in one (chunked) run; economy: window_id "
+                         "(e.g. crash_1929) or 'all'")
     ap.add_argument("--limit", type=int, default=None, help="max pages to process")
     ap.add_argument("--sleep", type=float, default=0.35,
                     help="seconds between calls (matches grade_claims.py's "
                          "validated gpt-4.1 full-corpus run)")
+    ap.add_argument("--model", default=MODEL,
+                    help="chat-completions model for both the sync and --batch paths "
+                         "-- default is gpt-4.1, this project's bake-off-validated "
+                         "grader (see CHANGELOG); pass gpt-4.1-mini for a cheaper run "
+                         "(re-run the Stage 3 kappa check before trusting its labels, "
+                         "since the bake-off validated gpt-4.1, not mini)")
+    ap.add_argument("--batch", action="store_true",
+                    help="extract via the OpenAI Batch API instead of one call per "
+                         "page -- 50%% cheaper, async, meant to be backgrounded")
+    ap.add_argument("--batch-chunk-size", type=int, default=150,
+                    help="pages per Batch API submission (--batch) -- kept small "
+                         "since each page's prompt can run up to ~12k OCR chars, "
+                         "much heavier per-request than grade_claims.py's short "
+                         "claim-grading prompts, so the org enqueued-token cap bites "
+                         "at a much lower page count")
+    ap.add_argument("--poll-interval", type=float, default=30,
+                    help="seconds between batch status checks (--batch)")
     args = ap.parse_args()
+    MODEL = args.model
 
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
         raise SystemExit("Set OPENAI_API_KEY first.")
 
-    in_path = Path(f"data/raw/{args.source}_{args.arm}_{args.window}.jsonl")
-    if not in_path.exists():
-        raise SystemExit(f"No raw file at {in_path}. Run the {args.source} "
-                         f"downloader for that arm/window first.")
+    records = load_records(args.source, args.arm, args.window)
     out_dir = Path("data/predictions")
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"pred_{args.source}_{args.arm}_{args.window}.jsonl"
-    done = load_done_ids(out_path)
 
+    if args.batch:
+        run_batch(api_key, records, out_path, args.arm, args.model,
+                 args.batch_chunk_size, args.poll_interval, args.limit)
+        return
+
+    done = load_done_ids(out_path)
     processed = 0
-    with open(in_path) as f, open(out_path, "a") as out:
-        for line in f:
-            record = json.loads(line)
+    with open(out_path, "a") as out:
+        for record in records:
             if record["page_id"] in done:
                 continue
             try:

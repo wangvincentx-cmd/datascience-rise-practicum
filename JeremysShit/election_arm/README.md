@@ -16,12 +16,20 @@ Integrated and verified against the economy arm in the parent folder.
   exported from `../tier2_analysis.py`). `analyze_economy.py` now merges it and prints
   an accuracy-by-EPU-tercile table; `model.py` picks it up as a feature automatically.
   On the parent arm, EPU was the #2 predictor of claim correctness.
+- **`test_offline.py`'s LLM mock fixed (uncommitted, found 2026-07-22).** Since
+  `extract_predictions.py` moved to calling OpenAI's REST `chat/completions`
+  endpoint directly (`requests.post` + Bearer key, 2026-07-16), the test's old
+  Anthropic-SDK-style `FakeClient(messages.create(...))` mock no longer matched
+  the real call signature and was silently falling through to a live network
+  call (401, no key in the test env) instead of testing anything. Replaced with
+  a `requests.post`-level mock (`FakeResp`/`fake_post`). Needs a commit.
 
 ## Blocked on keys / people
 
 - `download_loc.py` / `download_nyt.py` full runs → need `NYT_API_KEY`; NYT is
   multi-day (500 req/day)
-- `extract_predictions.py` → needs `ANTHROPIC_API_KEY` (test with `--limit 20` first)
+- `extract_predictions.py` → needs `OPENAI_API_KEY` (test with `--limit 20` first;
+  migrated off `ANTHROPIC_API_KEY` on 2026-07-16, see above)
 - κ validation → two human graders after extraction
 
 ## Metric reconciliation (IMPORTANT for the writeup)

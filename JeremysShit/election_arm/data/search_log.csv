@@ -685,3 +685,13 @@ timestamp,source,arm,window,phrase,total_hits,pages_fetched
 2026-07-18T12:14:28,nyt,economy,volcker_1980,"""economists expect""",0,1
 2026-07-18T12:14:40,nyt,economy,volcker_1980,"""worst is over""",0,1
 2026-07-18T12:14:53,nyt,economy,volcker_1980,"""hard times ahead""",0,1
+2026-07-22T13:55:26,loc,elections,1948,will be elected,2,1
+2026-07-22T13:55:26,nyt,economy,gfc_2008,"""recession likely""",2,1
+2026-07-22T13:57:08,loc,elections,1948,will be elected,2,1
+2026-07-22T13:57:08,nyt,economy,gfc_2008,"""recession likely""",2,1
+2026-07-22T14:07:00,loc,elections,1948,will be elected,2,1
+2026-07-22T14:07:00,nyt,economy,gfc_2008,"""recession likely""",2,1
+2026-07-22T14:15:46,loc,elections,1948,will be elected,2,1
+2026-07-22T14:15:46,nyt,economy,gfc_2008,"""recession likely""",2,1
+2026-07-22T14:45:57,loc,elections,1948,will be elected,2,1
+2026-07-22T14:45:57,nyt,economy,gfc_2008,"""recession likely""",2,1

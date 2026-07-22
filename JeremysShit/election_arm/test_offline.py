@@ -100,13 +100,29 @@ with patch.object(download_nyt, "get_json", side_effect=fake_nyt_get), \
 
 # ---------------------------------------------------------------------------
 print("\n[3] extract_predictions.py, both arms")
-class FakeBlock:
-    def __init__(self, t): self.text = t
-class FakeMsg:
-    def __init__(self, t): self.content = [FakeBlock(t)]
-class FakeClient:
-    def __init__(self, t): self._t = t; self.messages = self
-    def create(self, **kw): return FakeMsg(self._t)
+# NOTE: extract_predictions.py was migrated to call OpenAI's REST
+# chat/completions endpoint directly (requests.post + Bearer api_key string),
+# not an SDK client object -- this mock patches requests.post at that level
+# instead of the old Anthropic-style FakeClient(messages.create(...)) mock,
+# which silently fell through to a REAL network call (401) once the code
+# moved on. See extract_predictions.call_llm.
+class FakeResp:
+    def __init__(self, content, status_code=200, finish_reason="stop"):
+        self.status_code = status_code
+        self.ok = status_code == 200
+        self.headers = {}
+        self._payload = {"choices": [{"message": {"content": content},
+                                      "finish_reason": finish_reason}]}
+    def json(self):
+        return self._payload
+    def raise_for_status(self):
+        if not self.ok:
+            raise Exception(f"HTTP {self.status_code}")
+
+def fake_post(reply):
+    def _post(url, json=None, timeout=None, headers=None):
+        return FakeResp(reply)
+    return _post
 
 erec = {"page_id": "p1", "source": "loc", "window": "1948", "cycle": 1948,
         "newspaper_title": "Test Gazette", "date": "1948-10-20",
@@ -114,7 +130,8 @@ erec = {"page_id": "p1", "source": "loc", "window": "1948", "cycle": 1948,
 ereply = ('[{"claim_text":"Truman will be elected","predicted_winner":"Truman",'
           '"scope":"national","state":null,"source_type":"editorial_opinion",'
           '"hedged":false,"attributed_to":null}]')
-eclaims = extract_predictions.extract_from_page(FakeClient(ereply), erec, "elections")
+with patch.object(extract_predictions.requests, "post", side_effect=fake_post(ereply)):
+    eclaims = extract_predictions.extract_from_page("fake-key", erec, "elections")
 check("elections claim parsed + metadata merged",
       len(eclaims) == 1 and eclaims[0]["arm"] == "elections"
       and eclaims[0]["source"] == "loc")
@@ -128,12 +145,14 @@ creply = ("```json\n"
           '"predicted_state_at_horizon":"recession","horizon_months":6,'
           '"voice":"quoted_banker_or_economist","hedged":false,'
           '"attributed_to":"economists"}]\n```')
-cclaims = extract_predictions.extract_from_page(FakeClient(creply), crec, "economy")
+with patch.object(extract_predictions.requests, "post", side_effect=fake_post(creply)):
+    cclaims = extract_predictions.extract_from_page("fake-key", crec, "economy")
 check("economy claim parsed from fenced JSON",
       len(cclaims) == 1 and cclaims[0]["predicted_state_at_horizon"] == "recession"
       and cclaims[0]["window_kind"] == "crisis")
-check("malformed reply yields []",
-      extract_predictions.extract_from_page(FakeClient("not json"), crec, "economy") == [])
+with patch.object(extract_predictions.requests, "post", side_effect=fake_post("not json")):
+    check("malformed reply yields []",
+          extract_predictions.extract_from_page("fake-key", crec, "economy") == [])
 
 # ---------------------------------------------------------------------------
 print("\n[4] NBER scoring (analyze_economy.py)")
