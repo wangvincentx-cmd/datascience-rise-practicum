@@ -311,6 +311,38 @@ git history for full CHANGELOG detail pre-pivot):
       fn so no FRED needed), suite now 62/62. Outputs `spf_scored.csv`,
       `figures/fig_spf_benchmark.png`.
 
+- [x] **Narrative Economics (Shiller) scaffold built; LEXICAL preview run,
+      authoritative LLM pass NOT yet run (2026-07-22, idea #5, the stretch
+      goal).** `narratives.py` codes each claim into one of six perennial
+      economic narratives (new_era / sound_fundamentals / temporary_setback /
+      panic_fear / recovery_normalcy / none), connecting the optimism-gap
+      result to Shiller's *Narrative Economics* (2019) over a far longer span
+      than the SPF-era narrative literature can reach. Two passes, same
+      "objective-first, then LLM" discipline as hedging->grade_claims:
+      (1) `classify_narrative` -- deterministic lexical screen, runs with no
+      API, offline-tested (8 new tests, suite now 70/70); (2)
+      `grade_narratives_llm` (--llm) -- the AUTHORITATIVE gpt-4.1 pass reusing
+      grade_claims.call_llm, flag-gated, NOT run (needs OPENAI_API_KEY + a small
+      spend + a ~40-80-claim human kappa check before it can be trusted, same
+      bar as every other LLM field here).
+      **The lexical preview is deliberately reported as INCONCLUSIVE**: 78% of
+      claims fall to "none" and it captures only 4% complacent narratives in the
+      1929 Crash window -- i.e. a keyword screen cannot see narrative FRAMING
+      (1929's optimism is not phrased with literal "new era" strings), which is
+      exactly why the LLM pass is required, not optional. The preview's
+      "complacent 58.4% vs other 48.3% hit" is on tiny n (new_era n=4) and must
+      not be reported. Outputs `claims_narratives.csv` (lexical, preview only),
+      `figures/fig_narratives.png`. **Next step: run --batch gpt-4.1 over the
+      full corpus + kappa-validate; this is the only one of ideas #1-#5 that
+      still needs API spend.**
+
+- [x] **Extended abstract drafted for the poster (2026-07-22)** --
+      `JeremysShit/EXTENDED_ABSTRACT.md`, pulling the spine together (optimism
+      gap / asymmetric regret as centerpiece, the three-benchmark
+      turning-point-blindness convergence, the hedging correction, narratives
+      as in-progress). Numbers cited are the current committed ones; author
+      line + a couple of framing choices are marked as placeholders to confirm.
+
 - [x] **Data cleaning pass (2026-07-19, user: "do some data cleaning...
       outliers... missing data").** Investigated before acting — this
       corpus doesn't have classic sensor-noise numeric outliers, so a

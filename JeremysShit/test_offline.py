@@ -319,4 +319,30 @@ check("score_spf: predicted improve vs realized improve -> hit=1",
 check("score_spf: mean forecast -1 -> predicted 'worsen', realized improve -> hit=0",
       sc_spf.loc[1, "predicted_label"] == "worsen" and sc_spf.loc[1, "hit"] == 0)
 
+# ---------- narratives.py ----------
+print("narratives:")
+import narratives as nr
+
+check("classify_narrative: 'permanently high plateau' -> new_era",
+      nr.classify_narrative("Stocks have reached a permanently high plateau.") == "new_era")
+check("classify_narrative: 'fundamentally sound' -> sound_fundamentals",
+      nr.classify_narrative("Business is fundamentally sound, bankers say.") == "sound_fundamentals")
+check("classify_narrative: 'temporary readjustment' -> temporary_setback",
+      nr.classify_narrative("This is only a temporary readjustment.") == "temporary_setback")
+check("classify_narrative: 'panic and depression' -> panic_fear",
+      nr.classify_narrative("A panic and depression will engulf the nation.") == "panic_fear")
+check("classify_narrative: 'recovery is underway' -> recovery_normalcy",
+      nr.classify_narrative("Recovery is underway and revival is near.") == "recovery_normalcy")
+check("classify_narrative: no economic story -> none",
+      nr.classify_narrative("The county fair opens on Tuesday.") == "none")
+
+nr_df = pd.DataFrame({"quote": ["Business is fundamentally sound.",
+                                "A crash is coming.",
+                                "The weather was fine."]})
+nr_out = nr.add_narratives(nr_df)
+check("add_narratives: complacent flag true for sound_fundamentals",
+      bool(nr_out.loc[0, "complacent"]) is True)
+check("add_narratives: complacent flag false for panic_fear",
+      bool(nr_out.loc[1, "complacent"]) is False)
+
 print(f"\nALL {PASS} CHECKS PASSED")
