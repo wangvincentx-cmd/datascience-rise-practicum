@@ -336,6 +336,37 @@ git history for full CHANGELOG detail pre-pivot):
       full corpus + kappa-validate; this is the only one of ideas #1-#5 that
       still needs API spend.**
 
+- [x] **Partisan-publisher analysis (2026-07-22, user: put politics back in).**
+      `partisan_analysis.py` -- does a paper's POLITICS colour its economic
+      forecasts? Uses publisher_metadata.csv (hand-researched lean) +
+      political_climate.csv (president's party by year), both already on disk.
+      9 new offline tests, suite now 79/79. Outputs `partisan_by_lean.csv`,
+      `figures/fig_partisan.png`.
+      **REAL DATA-QUALITY BUG FOUND: model.py's publisher-lean join is broken.**
+      claims_scored.csv publisher names carry a "(location) dates" suffix that
+      publisher_metadata.csv's clean names lack, so model.py's exact-string
+      `.map()` matched only **258 of 1,628** predictions -- `political_lean` was
+      "unknown" for 84% of rows. This partly explains why the political features
+      read as null in model.py (mostly MISSING, not merely weak). This script's
+      `short_name()` strips the suffix first, recovering **861 leaned claims**.
+      FOLLOW-UP worth doing: re-run model.py with the fixed join before treating
+      "political features don't predict claim accuracy" as settled.
+      FINDINGS (with the fixed join):
+      - A (by lean): Socialist/left papers were the LEAST optimistic (net
+        optimism +0.30, e.g. the Milwaukee Leader), vs Republican +0.64,
+        Democratic +0.56, Independent +0.32 (~NYT+Evening Star). Directionally
+        sensible (a Socialist daily is not cheerleading capitalism) but
+        era-confounded -- each small partisan paper wrote in a narrow window.
+      - B (partisan alignment -- the sharp test: rosier under your OWN party's
+        president?): **NULL.** aligned net optimism +0.593 vs opposed +0.577
+        (diff +0.016), share-improve 0.80 vs 0.79, **Fisher exact p=1.000**. No
+        evidence papers forecast a better economy under their own party. (Aligned
+        hit rate looked higher, 0.64 vs 0.51, but n is tiny and era-confounded --
+        not claimed.)
+      Honest read: a clean, reportable NULL on the classic partisan-perceptual-
+      bias hypothesis (Bartels 2002 / Gerber-Huber 2010) at newspaper level, plus
+      a genuine bug fix. Politics is now IN the paper as a tested null, not absent.
+
 - [x] **Extended abstract drafted for the poster (2026-07-22)** --
       `JeremysShit/EXTENDED_ABSTRACT.md`, pulling the spine together (optimism
       gap / asymmetric regret as centerpiece, the three-benchmark

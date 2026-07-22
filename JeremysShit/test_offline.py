@@ -345,4 +345,32 @@ check("add_narratives: complacent flag true for sound_fundamentals",
 check("add_narratives: complacent flag false for panic_fear",
       bool(nr_out.loc[1, "complacent"]) is False)
 
+# ---------- partisan_analysis.py ----------
+print("partisan_analysis:")
+import partisan_analysis as pa
+
+check("short_name: strips the (location) dates suffix",
+      pa.short_name("The New York Times (New York, N.Y.) 1900-2020") == "the new york times")
+check("short_name: strips a bare (location) suffix",
+      pa.short_name("Evening Star (Washington, D.C.)") == "evening star")
+check("simplify_lean: Socialist and Labor/left both -> left",
+      pa.simplify_lean("Socialist") == "left" and pa.simplify_lean("Labor/left") == "left")
+check("simplify_lean: Republican/Democratic/Independent pass through",
+      (pa.simplify_lean("Republican"), pa.simplify_lean("Democratic"),
+       pa.simplify_lean("Independent")) == ("republican", "democratic", "independent"))
+check("simplify_lean: 'None stated'/'UNKNOWN'/nan -> unknown",
+      pa.simplify_lean("None stated") == "unknown" and pa.simplify_lean("UNKNOWN") == "unknown"
+      and pa.simplify_lean(float("nan")) == "unknown")
+
+pa_climate = pd.DataFrame([{"start_year": 1953, "end_year": 1961, "president_party": "R"},
+                           {"start_year": 1961, "end_year": 1969, "president_party": "D"}])
+pby = pa.president_party_by_year(pa_climate)
+check("president_party_by_year: 1955 -> R, 1965 -> D", pby[1955] == "R" and pby[1965] == "D")
+check("alignment: Republican paper under a Republican president -> aligned",
+      pa.alignment("republican", "R") == "aligned")
+check("alignment: Democratic paper under a Republican president -> opposed",
+      pa.alignment("democratic", "R") == "opposed")
+check("alignment: independent paper has no alignment -> None",
+      pa.alignment("independent", "R") is None)
+
 print(f"\nALL {PASS} CHECKS PASSED")

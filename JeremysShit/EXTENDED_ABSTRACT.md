@@ -73,7 +73,16 @@ assertive claims are **not** less accurate (0.516 vs hedged 0.485). Confident an
 hedged forecasters were about equally right; the earlier effect was a label
 artifact.
 
-**4. Narrative Economics (in progress).** We code each claim into Shiller's
+**4. Politics did not colour the forecasts.** Using each paper's hand-coded
+political lean and the party controlling the White House, we test the classic
+partisan-perceptual-bias hypothesis (Bartels 2002; Gerber & Huber 2010): did
+papers forecast a rosier economy under their *own* party's president? We find
+**no such effect** (aligned vs. opposed net optimism +0.59 vs. +0.57, Fisher
+*p* = 1.00) — the optimism is broad, not partisan. (Descriptively, Socialist/left
+papers were the least optimistic, but partisan samples are thin and
+era-clustered; read as exploratory.)
+
+**5. Narrative Economics (in progress).** We code each claim into Shiller's
 perennial economic narratives ("new era," "fundamentally sound," "temporary
 setback," …) to test whether *complacent* stories crowd out caution before the
 worst crises. Infrastructure and a human-validation protocol are built; the
