@@ -145,7 +145,7 @@ def load_done_ids(out_path):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--source", choices=["loc", "nyt"], required=True)
+    ap.add_argument("--source", choices=["loc", "nyt", "proquest"], required=True)
     ap.add_argument("--arm", choices=["elections", "economy"], required=True)
     ap.add_argument("--window", required=True,
                     help="elections: the year (e.g. 1948); economy: window_id (e.g. crash_1929)")

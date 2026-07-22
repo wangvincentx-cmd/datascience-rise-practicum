@@ -1,0 +1,2 @@
+window_id,source_papers,start_date,end_date,query,doc_count
+gfc_2008,NYT,2008-09-01,2009-03-31,"(recession OR downturn OR depression OR recovery OR slump) NEAR/10 (predict* OR expect* OR forecast* OR outlook OR likely OR coming OR ahead OR fear*)",529

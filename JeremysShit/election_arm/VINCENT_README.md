@@ -15,8 +15,9 @@ Two arms share one pipeline:
   (the Livingston Survey, 1946 onward).
 
 Data sources: Library of Congress Chronicling America (full OCR, many
-papers, through ~1963) and the NYT Article Search API (headline + lead only,
-one paper, through 2008). No scraping of paywalled archives.
+papers, through ~1963), the NYT Article Search API (headline + lead only,
+one paper, through 2008), and ProQuest TDM Studio (full article body, many
+papers, 1963-2010) via tdm_parse.py. No scraping of paywalled archives.
 
 ## Setup (everyone does this once)
 
@@ -48,6 +49,20 @@ Every query's total hits and pages fetched are logged to data/search_log.csv.
 That file is the "we sampled the corpus, we didn't cherry-pick" exhibit; keep
 it and cite it.
 
+PROQUEST (runs inside the TDM Studio workbench, not on your laptop). ProQuest
+forbids exporting full text, so tdm_parse.py and extract_predictions.py both run
+in the workbench Jupyter VM; only the derived data/predictions/pred_*.jsonl (no
+ocr_text) is exported back out under the 15 MB / 7-day cap. Build one dataset per
+window in the dashboard, then:
+
+    python tdm_parse.py --arm economy --window gfc_2008 \
+        --dataset-dir /home/ec2-user/SageMaker/data/MyDataset --inspect   # verify tags
+    python tdm_parse.py --arm economy --window gfc_2008 \
+        --dataset-dir /home/ec2-user/SageMaker/data/MyDataset             # -> data/raw/proquest_economy_gfc_2008.jsonl
+
+Always --inspect first; ProQuest's XML tag names vary by content type and the
+tag lists at the top of tdm_parse.py may need one added.
+
 After the first real LOC run, confirm OCR text is nonempty:
 
     python -c "import json,glob; f=glob.glob('data/raw/loc_*.jsonl')[0]; r=[json.loads(l) for l in open(f)]; print(f, len(r), 'pages,', sum(1 for x in r if x['ocr_text']), 'with text')"
@@ -56,6 +71,7 @@ STAGE 2 EXTRACT (one Claude call per page; test with --limit first)
 
     python extract_predictions.py --source loc --arm economy --window crash_1929 --limit 20
     python extract_predictions.py --source nyt --arm elections --window 1980
+    python extract_predictions.py --source proquest --arm economy --window gfc_2008   # in the workbench
 
 Uses claude-haiku-4-5 and truncates pages to 12k chars for cost. Check the
 console usage page after a --limit 20 run and extrapolate before full runs.
@@ -130,7 +146,9 @@ equate panic with recession.
 
 1. NYT returns headline + lead only, never full text. Post-1963 recall is
    structurally lower than pre-1963 LOC full-OCR recall. Never compare
-   accuracy across that boundary without saying so.
+   accuracy across that boundary without saying so. ProQuest full text (1963-2010)
+   restores full-body recall for that era, but is a different source again: label
+   results by source (loc / nyt / proquest) and never mix them silently.
 2. Scientific polls barely exist before 1936; the polls-vs-papers split is
    thin early. Betting odds partially fill that role pre-1936.
 3. The phrase lists bound recall: forecasts worded differently are missed.
@@ -161,6 +179,7 @@ Everyone: rerun test_offline.py after touching any script.
 
     download_loc.py           LOC downloader, both arms, search logging
     download_nyt.py           NYT downloader, both arms, search logging
+    tdm_parse.py              ProQuest TDM Studio XML -> raw JSONL (runs in workbench)
     extract_predictions.py    LLM extraction, election + economy schemas
     validate_kappa.py         double-coding sample + Cohen's kappa
     analyze_elections.py      election scoring + tables

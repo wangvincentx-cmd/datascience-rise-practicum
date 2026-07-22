@@ -1,0 +1,938 @@
+predicted_direction,predicted_state_at_horizon,horizon_months,voice,hedged,attributed_to,page_id,source,arm,window,window_kind,cycle,newspaper_title,lccn,date,publisher_state,claim_month,target_month,actual_state,hit,confidence,brier,epu
+worsen,recession,9,quoted_banker_or_economist,False,James Knightley,1929213013,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-24,,2009-01,2009-10,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,Gerard Lyons,1929213013,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-24,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,editorial,False,,1929213168,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-20,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,editorial,True,,1929213168,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-20,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+improve,expansion,6,reported_survey,False,Ms. Linden,1929213168,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-20,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+worsen,recession,6,quoted_banker_or_economist,False,Charles English,1929213168,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-20,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,quoted_banker_or_economist,False,Mr. Arnette,1929213168,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-20,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,other,True,,1929213190,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-03,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+improve,expansion,6,quoted_banker_or_economist,False,Komal Sri-Kumar,1929213193,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-03,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+improve,expansion,6,quoted_banker_or_economist,True,Jeremy Grantham,1929213193,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-03,,2009-01,2009-07,expansion,True,0.7,0.09000000000000002,236.5221
+worsen,recession,6,other,False,Ginia Bellafante,1929213246,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-03,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+improve,expansion,6,quoted_banker_or_economist,False,Martin Feldstein,1929213311,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-07,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+improve,expansion,6,quoted_banker_or_economist,True,Martin Feldstein,1929213311,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-07,,2009-01,2009-07,expansion,True,0.7,0.09000000000000002,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,Ivy Zelman,1929213332,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-20,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,other,True,,1929213332,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-20,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,other,False,,1929213332,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-20,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+improve,expansion,6,other,False,,1929213387,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-07,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+worsen,recession,12,quoted_banker_or_economist,False,Roubini,1929213392,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-03,,2009-01,2010-01,expansion,False,0.9,0.81,236.5221
+improve,expansion,12,quoted_banker_or_economist,True,Wojnilower,1929213392,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-03,,2009-01,2010-01,expansion,True,0.7,0.09000000000000002,236.5221
+improve,expansion,6,reported_survey,True,,1929213392,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-03,,2009-01,2009-07,expansion,True,0.7,0.09000000000000002,236.5221
+improve,expansion,6,quoted_banker_or_economist,True,Barbera,1929213392,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-03,,2009-01,2009-07,expansion,True,0.7,0.09000000000000002,236.5221
+improve,expansion,6,reported_survey,True,,1929213433,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-03,,2009-01,2009-07,expansion,True,0.7,0.09000000000000002,236.5221
+improve,expansion,6,reported_survey,False,,1929213433,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-03,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+worsen,recession,6,editorial,False,,1929213546,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-20,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+improve,expansion,6,editorial,True,,1929213546,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-20,,2009-01,2009-07,expansion,True,0.7,0.09000000000000002,236.5221
+worsen,recession,6,editorial,True,,1929213649,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-05,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,editorial,False,,1929213649,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-05,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+improve,expansion,6,editorial,False,,1929213649,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-05,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+worsen,recession,6,other,True,,1929213718,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-17,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+improve,expansion,6,other,False,,1929213718,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-17,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+worsen,recession,6,other,True,,1929213718,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-17,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,other,False,,1929213819,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-19,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+improve,expansion,6,politician,False,Rahm Emanuel,1929213833,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-19,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+improve,expansion,6,reported_survey,False,,1929214038,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-01,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+worsen,recession,6,quoted_banker_or_economist,False,Steve Ballmer,1929214049,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-23,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,reported_survey,False,,1929214049,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-23,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,other,False,,1929214049,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-23,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,quoted_banker_or_economist,False,Meredith A. Whitney,1929214058,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-13,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,other,False,,1929214058,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-13,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,other,False,,1929214058,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-13,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,quoted_banker_or_economist,False,Meredith A. Whitney,1929214058,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-13,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,12,reported_survey,False,Rod Bourgeois,1929214072,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-09,,2009-01,2010-01,expansion,False,0.9,0.81,236.5221
+worsen,recession,12,other,False,,1929214072,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-09,,2009-01,2010-01,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,reported_survey,False,,1929214152,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-13,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,other,True,,1929214152,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-13,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,,1929214152,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-13,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,Ron Haskins,1929214171,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-02,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,12,quoted_banker_or_economist,True,David Hansell,1929214171,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-02,,2009-02,2010-02,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,reported_survey,False,,1929214209,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-31,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,reported_survey,False,Randy Frederick,1929214209,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-31,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,politician,True,Barack Obama,1929214213,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-09,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+improve,expansion,6,politician,True,Mayor Bloomberg,1929214219,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-26,,2009-01,2009-07,expansion,True,0.7,0.09000000000000002,236.5221
+improve,expansion,6,politician,True,Senator Schumer,1929214219,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-26,,2009-01,2009-07,expansion,True,0.7,0.09000000000000002,236.5221
+worsen,recession,6,quoted_banker_or_economist,False,Ren Jianxin,1929214273,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-31,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,reported_survey,True,,1929214273,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-31,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,quoted_banker_or_economist,False,Mukesh Ambani,1929214273,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-31,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+improve,expansion,6,reported_survey,True,,1929214306,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-01,,2009-01,2009-07,expansion,True,0.7,0.09000000000000002,236.5221
+improve,expansion,12,quoted_banker_or_economist,True,Thomas J. Lee,1929214306,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-01,,2009-01,2010-01,expansion,True,0.7,0.09000000000000002,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,,1929214342,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-21,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,quoted_banker_or_economist,True,Abiel Reinhart,1929214342,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-21,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,editorial,False,,1929214342,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-21,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,editorial,False,,1929214379,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-03,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,editorial,False,,1929214379,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-03,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,editorial,False,,1929214379,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-03,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,quoted_banker_or_economist,True,Aaron Smith,1929214379,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-03,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,editorial,False,,1929214379,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-03,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,quoted_banker_or_economist,True,Peter Schiff,1929214379,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-03,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,editorial,True,,1929214420,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-06,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,government_official,False,Mayor Bloomberg,1929214420,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-06,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+stable,recession,6,quoted_banker_or_economist,True,Pamela Liebman,1929214420,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-06,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+improve,expansion,6,editorial,True,,1929214432,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-28,,2009-01,2009-07,expansion,True,0.7,0.09000000000000002,236.5221
+improve,expansion,6,editorial,True,,1929214432,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-28,,2009-01,2009-07,expansion,True,0.7,0.09000000000000002,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,,1929214434,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-01,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,Bill Martin,1929214434,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-01,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,,1929214434,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-01,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,12,quoted_banker_or_economist,False,,1929214460,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-07,,2009-02,2010-02,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,quoted_banker_or_economist,True,Mark Zandi,1929214460,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-07,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,quoted_banker_or_economist,True,,1929214460,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-07,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+improve,expansion,6,reported_survey,False,,1929214460,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-07,,2009-02,2009-08,expansion,True,0.9,0.009999999999999995,233.6522
+worsen,recession,6,quoted_banker_or_economist,True,,1929214526,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-28,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+improve,expansion,6,other,True,,1929214539,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-31,,2009-01,2009-07,expansion,True,0.7,0.09000000000000002,236.5221
+improve,expansion,24,reported_survey,False,Independent Budget Office,1929214568,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-09,,2009-01,2011-01,expansion,True,0.9,0.009999999999999995,236.5221
+worsen,recession,24,reported_survey,False,Independent Budget Office,1929214568,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-09,,2009-01,2011-01,expansion,False,0.9,0.81,236.5221
+worsen,recession,12,reported_survey,False,Independent Budget Office,1929214568,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-09,,2009-01,2010-01,expansion,False,0.9,0.81,236.5221
+worsen,recession,18,reported_survey,False,Independent Budget Office,1929214568,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-09,,2009-01,2010-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,12,reported_survey,False,Independent Budget Office,1929214568,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-09,,2009-01,2010-01,expansion,False,0.9,0.81,236.5221
+worsen,recession,12,government_official,False,,1929214776,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-22,,2009-01,2010-01,expansion,False,0.9,0.81,236.5221
+worsen,recession,12,reported_survey,True,,1929214776,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-22,,2009-01,2010-01,expansion,False,0.7,0.48999999999999994,236.5221
+improve,expansion,6,politician,False,Barack Obama,1929215446,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-09,,2009-02,2009-08,expansion,True,0.9,0.009999999999999995,233.6522
+worsen,recession,12,quoted_banker_or_economist,True,,1929215510,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-04,,2009-02,2010-02,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,reported_survey,False,Keith Martin,1929215510,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-04,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,editorial,True,,1929215510,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-04,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,editorial,False,,1929215510,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-04,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,government_official,True,,1929215543,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-23,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,government_official,True,,1929215543,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-23,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+improve,expansion,6,quoted_banker_or_economist,True,Michael T. Darda,1929215552,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-17,,2009-02,2009-08,expansion,True,0.7,0.09000000000000002,233.6522
+improve,expansion,6,quoted_banker_or_economist,True,Michael T. Darda,1929215552,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-17,,2009-02,2009-08,expansion,True,0.7,0.09000000000000002,233.6522
+improve,expansion,6,reported_survey,False,,1929215552,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-17,,2009-02,2009-08,expansion,True,0.9,0.009999999999999995,233.6522
+improve,expansion,6,reported_survey,True,,1929215552,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-17,,2009-02,2009-08,expansion,True,0.7,0.09000000000000002,233.6522
+improve,expansion,6,reported_survey,False,,1929215552,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-17,,2009-02,2009-08,expansion,True,0.9,0.009999999999999995,233.6522
+worsen,recession,6,reported_survey,False,,1929215618,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-29,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,Richard Shemtov,1929215618,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-29,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+improve,expansion,24,quoted_banker_or_economist,False,analysts,1929215647,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-10,,2009-01,2011-01,expansion,True,0.9,0.009999999999999995,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,Ryan Detrick,1929215647,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-10,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,12,other,False,,1929215828,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-04,,2009-02,2010-02,expansion,False,0.9,0.81,233.6522
+stable,recession,6,quoted_banker_or_economist,False,George Magliano,1929215828,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-04,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+improve,expansion,6,other,False,,1929215828,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-04,,2009-02,2009-08,expansion,True,0.9,0.009999999999999995,233.6522
+worsen,recession,6,quoted_banker_or_economist,False,Steven Landry,1929215828,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-04,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+improve,expansion,12,reported_survey,False,,1929215911,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-24,,2009-02,2010-02,expansion,True,0.9,0.009999999999999995,233.6522
+improve,expansion,6,reported_survey,True,,1929215911,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-24,,2009-02,2009-08,expansion,True,0.7,0.09000000000000002,233.6522
+improve,expansion,24,reported_survey,False,,1929215911,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-24,,2009-02,2011-02,expansion,True,0.9,0.009999999999999995,233.6522
+worsen,recession,6,quoted_banker_or_economist,True,Charles Collyns,1929215927,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-24,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,quoted_banker_or_economist,False,Dominique Strauss-Kahn,1929215927,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-24,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+stable,recession,6,other,False,,1929215927,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-24,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,quoted_banker_or_economist,False,Robert Brusca,1929215927,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-24,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,quoted_banker_or_economist,False,Joseph Saluzzi,1929215927,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-24,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,editorial,False,,1929215930,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-10,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+stable,recession,6,other,True,,1929215930,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-10,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,editorial,False,,1929215930,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-10,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,quoted_banker_or_economist,False,Stuart G. Hoffman,1929215930,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-10,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,quoted_banker_or_economist,False,,1929215930,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-10,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,18,quoted_banker_or_economist,True,Nicole Gelinas,1929215946,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-16,,2009-02,2010-08,expansion,False,0.7,0.48999999999999994,233.6522
+stable,recession,6,quoted_banker_or_economist,True,Charles Brecher,1929215946,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-16,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+stable,expansion,6,quoted_banker_or_economist,True,Ronnie Lowenstein,1929215946,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-16,,2009-02,2009-08,expansion,True,0.7,0.09000000000000002,233.6522
+worsen,recession,6,reported_survey,False,,1929215955,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-10,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,quoted_banker_or_economist,False,,1929215955,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-10,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,quoted_banker_or_economist,False,Nouriel Roubini,1929216183,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-16,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,reported_survey,False,,1929216183,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-16,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+improve,expansion,6,other,True,Robert I. Toll,1929216191,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-05,,2009-03,2009-09,expansion,True,0.7,0.09000000000000002,201.7767
+worsen,recession,24,reported_survey,True,,1929216220,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-09,,2009-02,2011-02,expansion,False,0.7,0.48999999999999994,233.6522
+improve,expansion,6,quoted_banker_or_economist,False,Edward Atorino,1929216220,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-09,,2009-02,2009-08,expansion,True,0.9,0.009999999999999995,233.6522
+stable,recession,24,quoted_banker_or_economist,True,Mike Simonton,1929216220,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-09,,2009-02,2011-02,expansion,False,0.7,0.48999999999999994,233.6522
+improve,expansion,12,quoted_banker_or_economist,False,Mr. Harte,1929216220,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-09,,2009-02,2010-02,expansion,True,0.9,0.009999999999999995,233.6522
+worsen,recession,6,government_official,True,Federal Reserve,1929216222,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-05,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+worsen,recession,6,reported_survey,True,,1929216222,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-05,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+worsen,recession,6,other,True,,1929216222,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-05,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+worsen,recession,6,reported_survey,True,,1929216222,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-05,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+worsen,recession,6,reported_survey,False,,1929216222,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-05,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,quoted_banker_or_economist,True,Mr. Martin,1929216230,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-04,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,quoted_banker_or_economist,True,Mr. Martin,1929216230,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-04,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,other,False,,1929216230,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-04,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,12,other,True,,1929216230,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-04,,2009-02,2010-02,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,editorial,False,,1929216264,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-29,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,editorial,False,,1929216264,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-29,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,editorial,True,,1929216264,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-29,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+improve,expansion,6,other,True,,1929216316,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-29,,2009-01,2009-07,expansion,True,0.7,0.09000000000000002,236.5221
+improve,expansion,6,quoted_banker_or_economist,True,Ed Yardeni,1929216316,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-29,,2009-01,2009-07,expansion,True,0.7,0.09000000000000002,236.5221
+worsen,recession,12,reported_survey,False,,1929216722,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-14,,2009-02,2010-02,expansion,False,0.9,0.81,233.6522
+worsen,recession,24,reported_survey,False,,1929216722,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-14,,2009-02,2011-02,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,reported_survey,False,,1929216722,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-14,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,3,quoted_banker_or_economist,False,,1929216722,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-14,,2009-02,2009-05,recession,True,0.9,0.009999999999999995,233.6522
+improve,expansion,6,quoted_banker_or_economist,False,Paul Oteliini,1929216740,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-11,,2009-02,2009-08,expansion,True,0.9,0.009999999999999995,233.6522
+worsen,recession,6,reported_survey,True,,1929216740,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-11,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,reported_survey,False,,1929216740,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-11,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+improve,expansion,6,quoted_banker_or_economist,False,Senator Johnny Isakson,1929216917,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-05,,2009-02,2009-08,expansion,True,0.9,0.009999999999999995,233.6522
+worsen,recession,6,quoted_banker_or_economist,False,Adam Posen,1929216917,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-05,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,reported_survey,False,,1929216943,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-14,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+stable,expansion,6,quoted_banker_or_economist,False,Jim Scherr,1929216967,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-12,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+improve,expansion,24,quoted_banker_or_economist,False,Rob Prazmark,1929216967,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-12,,2009-01,2011-01,expansion,True,0.9,0.009999999999999995,236.5221
+stable,recession,6,quoted_banker_or_economist,False,Peter Swinburn,1929216981,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-11,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,editorial,True,,1929216981,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-11,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,quoted_banker_or_economist,False,Morgan Kelly,1929220207,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-28,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,quoted_banker_or_economist,True,Morgan Kelly,1929220207,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-28,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,other,False,Jeffrey R. Immelt,1929220277,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-28,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,quoted_banker_or_economist,False,Joseph Brusuelas,1929220335,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-27,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,12,government_official,False,,1929220335,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-27,,2009-01,2010-01,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,editorial,False,,1929220335,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-27,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+improve,expansion,6,quoted_banker_or_economist,False,Mr. Sylla of N.Y.U.,1929220381,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-27,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+worsen,recession,6,editorial,False,,1929220416,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-27,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+improve,expansion,3,quoted_banker_or_economist,False,Dorothy McArdle,1929221100,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-02,,2009-01,2009-04,recession,False,0.9,0.81,236.5221
+improve,expansion,6,other,False,Toby Potterton,1929221100,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-02,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+improve,expansion,3,quoted_banker_or_economist,False,Dorothy McArdle,1929221100,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-02,,2009-01,2009-04,recession,False,0.9,0.81,236.5221
+worsen,recession,6,other,True,,1929221100,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-02,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,other,False,,1929221116,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-02,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+improve,expansion,6,other,False,,1929221116,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-02,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+improve,expansion,6,other,True,,1929221116,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-02,,2009-01,2009-07,expansion,True,0.7,0.09000000000000002,236.5221
+worsen,recession,6,other,False,,1929221175,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-16,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+improve,expansion,6,quoted_banker_or_economist,True,analysts,1929221193,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-02,,2009-01,2009-07,expansion,True,0.7,0.09000000000000002,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,Brian W. Gould,1929221193,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-02,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,economists,1929221223,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-28,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+stable,recession,6,quoted_banker_or_economist,True,some economists,1929221223,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-28,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+improve,expansion,6,quoted_banker_or_economist,False,Dr. Park,1929221264,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-02,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,Demetrios G. Papademetriou,1929221374,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-15,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+improve,expansion,6,quoted_banker_or_economist,True,Dean Maki,1929221496,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-20,,2009-02,2009-08,expansion,True,0.7,0.09000000000000002,233.6522
+worsen,recession,6,quoted_banker_or_economist,True,,1929221496,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-20,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,editorial,False,,1929221497,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-06,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,editorial,False,,1929221497,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-06,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,12,reported_survey,False,,1929221515,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-14,,2009-01,2010-01,expansion,False,0.9,0.81,236.5221
+worsen,recession,3,reported_survey,False,,1929221515,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-14,,2009-01,2009-04,recession,True,0.9,0.009999999999999995,236.5221
+worsen,recession,6,reported_survey,True,,1929221515,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-14,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,,1929221526,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-14,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,other,True,,1929221526,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-14,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,government_official,True,Mr. Bernanke,1929221526,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-14,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,other,True,,1929221526,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-14,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,12,reported_survey,True,MGIC Investment,1929222512,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-21,,2009-01,2010-01,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,other,False,,1929222657,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-06,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,quoted_banker_or_economist,False,,1929222657,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-06,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+improve,expansion,6,quoted_banker_or_economist,False,Julian Callow,1929222657,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-06,,2009-03,2009-09,expansion,True,0.9,0.009999999999999995,201.7767
+worsen,recession,6,quoted_banker_or_economist,True,Mahmoud Othman,1929222693,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-06,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+worsen,recession,6,other,False,,1929222742,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-02,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,government_official,False,John B. Mattingly,1929224124,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-24,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+improve,expansion,6,quoted_banker_or_economist,True,Jack P. Russo,1929224124,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-24,,2009-03,2009-09,expansion,True,0.7,0.09000000000000002,201.7767
+improve,expansion,6,reported_survey,False,,1929224124,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-24,,2009-03,2009-09,expansion,True,0.9,0.009999999999999995,201.7767
+worsen,recession,12,quoted_banker_or_economist,True,Ben S. Bernanke,1929224145,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-25,,2009-02,2010-02,expansion,False,0.7,0.48999999999999994,233.6522
+improve,expansion,24,politician,False,President Obama,1929224145,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-25,,2009-02,2011-02,expansion,True,0.9,0.009999999999999995,233.6522
+improve,expansion,12,politician,False,President Obama,1929224145,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-25,,2009-02,2010-02,expansion,True,0.9,0.009999999999999995,233.6522
+worsen,recession,24,politician,False,President Obama,1929224145,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-25,,2009-02,2011-02,expansion,False,0.9,0.81,233.6522
+worsen,recession,24,politician,False,President Obama,1929224145,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-25,,2009-02,2011-02,expansion,False,0.9,0.81,233.6522
+worsen,recession,10,quoted_banker_or_economist,False,Ben Bernanke,1929224148,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-25,,2009-02,2009-12,expansion,False,0.9,0.81,233.6522
+stable,recession,6,government_official,False,,1929224148,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-25,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,reported_survey,True,,1929224148,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-25,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,reported_survey,False,,1929224243,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-25,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,24,reported_survey,False,Ann E. Kaplan,1929224243,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-25,,2009-02,2011-02,expansion,False,0.9,0.81,233.6522
+improve,expansion,6,government_official,False,Ben S. Bernanke,1929224244,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-19,,2009-02,2009-08,expansion,True,0.9,0.009999999999999995,233.6522
+worsen,recession,6,government_official,False,Ben S. Bernanke,1929224244,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-19,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,quoted_banker_or_economist,False,Federal Reserve,1929224244,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-19,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+improve,expansion,24,quoted_banker_or_economist,False,Federal Reserve,1929224244,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-19,,2009-02,2011-02,expansion,True,0.9,0.009999999999999995,233.6522
+worsen,recession,6,quoted_banker_or_economist,True,Nariman Behravesh,1929224244,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-19,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,editorial,False,,1929224744,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-12,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,editorial,False,,1929224744,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-12,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,editorial,False,,1929224744,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-12,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,editorial,False,,1929224744,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-12,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+improve,expansion,6,other,False,Craig Brandman,1929224859,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-12,,2009-02,2009-08,expansion,True,0.9,0.009999999999999995,233.6522
+improve,expansion,6,other,False,Peter George,1929224859,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-12,,2009-02,2009-08,expansion,True,0.9,0.009999999999999995,233.6522
+improve,expansion,6,other,False,Charles Burckmyer and Scott Noll,1929224859,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-12,,2009-02,2009-08,expansion,True,0.9,0.009999999999999995,233.6522
+improve,expansion,6,other,True,Peter George,1929224859,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-12,,2009-02,2009-08,expansion,True,0.7,0.09000000000000002,233.6522
+worsen,recession,1,reported_survey,True,,1929224863,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-13,,2009-02,2009-03,recession,True,0.7,0.09000000000000002,233.6522
+worsen,recession,6,quoted_banker_or_economist,True,Michael Feroli,1929224863,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-13,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,quoted_banker_or_economist,False,Dean Baker,1929224863,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-13,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,other,False,,1929224863,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-13,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+improve,expansion,12,quoted_banker_or_economist,False,Mr. Borremans,1929224866,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-13,,2009-02,2010-02,expansion,True,0.9,0.009999999999999995,233.6522
+worsen,recession,6,other,True,Eric Larson,1929224866,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-13,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+improve,expansion,12,other,False,John Beckord,1929224866,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-13,,2009-02,2010-02,expansion,True,0.9,0.009999999999999995,233.6522
+worsen,recession,6,other,False,,1929224866,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-13,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,politician,False,Mr. Obama,1929224867,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-12,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+improve,expansion,6,editorial,False,,1929224867,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-12,,2009-02,2009-08,expansion,True,0.9,0.009999999999999995,233.6522
+worsen,recession,6,quoted_banker_or_economist,False,Senator Olympia J. Snowe,1929224867,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-12,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+improve,expansion,6,quoted_banker_or_economist,True,David Winston,1929224867,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-12,,2009-02,2009-08,expansion,True,0.7,0.09000000000000002,233.6522
+improve,expansion,6,quoted_banker_or_economist,False,Scott Simon,1929224919,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-20,,2009-03,2009-09,expansion,True,0.9,0.009999999999999995,201.7767
+worsen,recession,6,quoted_banker_or_economist,False,Robert J. Barbera,1929224925,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-20,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,quoted_banker_or_economist,False,not specified,1929224925,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-20,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,editorial,False,,1929224995,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-23,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,quoted_banker_or_economist,True,,1929225080,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-23,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+worsen,recession,6,reported_survey,False,International Monetary Fund,1929226110,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-26,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,editorial,True,,1929226110,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-26,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+stable,expansion,6,quoted_banker_or_economist,False,Joseph E. Misanin,1929226364,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-26,,2009-03,2009-09,expansion,True,0.9,0.009999999999999995,201.7767
+worsen,recession,6,quoted_banker_or_economist,False,economists,1929226364,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-26,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+improve,expansion,6,quoted_banker_or_economist,True,Hiroshi Shiraishi,1929226364,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-26,,2009-03,2009-09,expansion,True,0.7,0.09000000000000002,201.7767
+improve,expansion,6,quoted_banker_or_economist,False,Ms. Schaede,1929226364,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-26,,2009-03,2009-09,expansion,True,0.9,0.009999999999999995,201.7767
+improve,expansion,12,other,True,,1929226554,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-17,,2009-03,2010-03,expansion,True,0.7,0.09000000000000002,201.7767
+worsen,recession,6,quoted_banker_or_economist,True,Rebecca Lindland,1929226656,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-04,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+worsen,recession,6,quoted_banker_or_economist,False,Josef Ackermann,1929227665,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-06,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+improve,expansion,12,quoted_banker_or_economist,True,Josef Ackermann,1929227665,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-06,,2009-02,2010-02,expansion,True,0.7,0.09000000000000002,233.6522
+worsen,recession,12,quoted_banker_or_economist,True,Banco Santander,1929227665,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-06,,2009-02,2010-02,expansion,False,0.7,0.48999999999999994,233.6522
+improve,expansion,6,other,False,,1929227740,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-06,,2009-02,2009-08,expansion,True,0.9,0.009999999999999995,233.6522
+worsen,recession,6,quoted_banker_or_economist,True,Rupert Murdoch,1929227740,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-06,,2009-02,2009-08,expansion,False,0.7,0.48999999999999994,233.6522
+worsen,recession,6,quoted_banker_or_economist,False,Rupert Murdoch,1929227740,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-06,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,other,True,,1929227792,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-13,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+improve,expansion,6,other,True,,1929227792,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-13,,2009-03,2009-09,expansion,True,0.7,0.09000000000000002,201.7767
+improve,expansion,12,quoted_banker_or_economist,False,Nick Bloom,1929227792,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-13,,2009-03,2010-03,expansion,True,0.9,0.009999999999999995,201.7767
+improve,expansion,6,government_official,True,,1929227841,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-13,,2009-03,2009-09,expansion,True,0.7,0.09000000000000002,201.7767
+worsen,recession,6,quoted_banker_or_economist,True,Rosalind Wells,1929227859,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-13,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+stable,recession,6,other,True,Mr. Laudicina,1929227859,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-13,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+improve,expansion,6,politician,False,John D. Dingell,1929227859,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-13,,2009-03,2009-09,expansion,True,0.9,0.009999999999999995,201.7767
+worsen,recession,6,other,False,Wayne LaGary,1929227867,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-12,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,editorial,True,,1929227928,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-13,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+worsen,recession,6,editorial,False,,1929227928,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-13,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,reported_survey,False,World Bank,1929227928,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-13,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,editorial,False,,1929227928,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-13,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,reported_survey,False,European Central Bank,1929227928,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-13,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,reported_survey,False,IMF,1929227928,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-13,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,editorial,False,,1929228027,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-30,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+stable,recession,6,other,True,,1929228336,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-11,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,quoted_banker_or_economist,False,David W. Tice,1929228441,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-11,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,Mr. Worah,1929228441,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-11,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+improve,expansion,6,quoted_banker_or_economist,False,Daniel Rice,1929228441,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-11,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+worsen,recession,12,quoted_banker_or_economist,True,Jim Skinner,1929228466,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-11,,2009-01,2010-01,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,12,reported_survey,False,,1929228487,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-11,,2009-01,2010-01,expansion,False,0.9,0.81,236.5221
+improve,expansion,12,quoted_banker_or_economist,False,Josephine Jimenez,1929228487,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-11,,2009-01,2010-01,expansion,True,0.9,0.009999999999999995,236.5221
+improve,expansion,12,quoted_banker_or_economist,False,Mark Mobius,1929228487,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-11,,2009-01,2010-01,expansion,True,0.9,0.009999999999999995,236.5221
+improve,expansion,12,quoted_banker_or_economist,True,Robert Arnott,1929228487,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-11,,2009-01,2010-01,expansion,True,0.7,0.09000000000000002,236.5221
+worsen,recession,6,editorial,False,,1929228553,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-11,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,quoted_banker_or_economist,False,James Margard,1929228606,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-11,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+improve,expansion,6,quoted_banker_or_economist,False,Bob Turner,1929228606,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-11,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+improve,expansion,12,quoted_banker_or_economist,True,James Margard,1929228606,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-11,,2009-01,2010-01,expansion,True,0.7,0.09000000000000002,236.5221
+improve,expansion,12,quoted_banker_or_economist,False,Robert Arnott,1929228606,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-11,,2009-01,2010-01,expansion,True,0.9,0.009999999999999995,236.5221
+worsen,recession,6,other,False,,1929229525,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-07,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,other,False,,1929229525,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-07,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,quoted_banker_or_economist,False,Ivy Zelman,1929229525,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-07,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,other,True,,1929229525,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-07,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+improve,expansion,10,other,True,,1929229708,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-07,,2009-03,2010-01,expansion,True,0.7,0.09000000000000002,201.7767
+improve,expansion,6,quoted_banker_or_economist,True,Robert Barbera,1929229708,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-07,,2009-03,2009-09,expansion,True,0.7,0.09000000000000002,201.7767
+worsen,recession,6,quoted_banker_or_economist,True,Robert E. Hall,1929229708,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-07,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+improve,expansion,6,quoted_banker_or_economist,False,Robert E. Hall,1929229708,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-07,,2009-03,2009-09,expansion,True,0.9,0.009999999999999995,201.7767
+improve,expansion,6,quoted_banker_or_economist,False,Andrew Stettner,1929229708,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-07,,2009-03,2009-09,expansion,True,0.9,0.009999999999999995,201.7767
+worsen,recession,6,reported_survey,True,,1929230016,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-04,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,government_official,False,James Trezise,1929230016,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-04,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,quoted_banker_or_economist,False,Louis R. Chenevert,1929230023,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-11,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,quoted_banker_or_economist,False,Richard H. Anderson and Edward H. Bastian,1929230023,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-11,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+improve,expansion,6,editorial,False,,1929230138,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-18,,2009-03,2009-09,expansion,True,0.9,0.009999999999999995,201.7767
+worsen,recession,6,government_official,False,,1929251246,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-10,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+improve,expansion,6,reported_survey,True,,1929251246,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-10,,2009-03,2009-09,expansion,True,0.7,0.09000000000000002,201.7767
+worsen,recession,6,quoted_banker_or_economist,True,Kenneth Rogoff and Nouriel Roubini,1929251606,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-10,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+worsen,recession,6,quoted_banker_or_economist,True,Nouriel Roubini,1929251606,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-10,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+worsen,recession,6,quoted_banker_or_economist,False,John LaRosa,1929266850,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-08,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+stable,expansion,6,quoted_banker_or_economist,False,Mr. Ray,1929266850,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-08,,2009-03,2009-09,expansion,True,0.9,0.009999999999999995,201.7767
+worsen,recession,6,quoted_banker_or_economist,False,John LaRosa,1929266850,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-08,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+worsen,recession,6,other,False,Harry S. Dent Jr.,1929267766,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-08,,2009-03,2009-09,expansion,False,0.9,0.81,201.7767
+improve,expansion,6,quoted_banker_or_economist,True,Ms. Herman,1929268047,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-08,,2009-03,2009-09,expansion,True,0.7,0.09000000000000002,201.7767
+worsen,recession,6,quoted_banker_or_economist,True,unspecified,1929268047,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-08,,2009-03,2009-09,expansion,False,0.7,0.48999999999999994,201.7767
+improve,expansion,6,quoted_banker_or_economist,False,unspecified,1929268047,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-08,,2009-03,2009-09,expansion,True,0.9,0.009999999999999995,201.7767
+improve,expansion,6,other,False,,1929268047,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-08,,2009-03,2009-09,expansion,True,0.9,0.009999999999999995,201.7767
+worsen,recession,6,government_official,False,Antonio M. Perez,1929490264,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-30,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,,1929490264,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-30,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,editorial,False,,1929490457,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-30,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+improve,expansion,6,quoted_banker_or_economist,False,Alan R. Mulally,1929490620,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-30,,2009-01,2009-07,expansion,True,0.9,0.009999999999999995,236.5221
+improve,expansion,24,quoted_banker_or_economist,False,Alan R. Mulally,1929490620,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-30,,2009-01,2011-01,expansion,True,0.9,0.009999999999999995,236.5221
+worsen,recession,6,other,True,,1929490620,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-30,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,quoted_banker_or_economist,False,Niall Ferguson,1929491001,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-30,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,quoted_banker_or_economist,False,Niall Ferguson,1929491001,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-30,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+worsen,recession,6,quoted_banker_or_economist,True,Steven Roach,1929491001,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-30,,2009-01,2009-07,expansion,False,0.7,0.48999999999999994,236.5221
+worsen,recession,6,reported_survey,False,International Monetary Fund,1929491001,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-01-30,,2009-01,2009-07,expansion,False,0.9,0.81,236.5221
+improve,expansion,6,other,False,,1929969277,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-22,,2009-03,2009-09,expansion,True,0.9,0.009999999999999995,201.7767
+stable,expansion,6,other,False,,1929969277,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-22,,2009-03,2009-09,expansion,True,0.9,0.009999999999999995,201.7767
+improve,expansion,6,other,True,,1929969277,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-22,,2009-03,2009-09,expansion,True,0.7,0.09000000000000002,201.7767
+improve,expansion,6,quoted_banker_or_economist,True,Janies Bianco,1929969997,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-03-22,,2009-03,2009-09,expansion,True,0.7,0.09000000000000002,201.7767
+worsen,recession,6,quoted_banker_or_economist,False,Harry S. Dent,1930247922,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-01,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+worsen,recession,6,quoted_banker_or_economist,False,,1930248124,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-01,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+improve,expansion,6,quoted_banker_or_economist,False,Dr. Pangloss,1930248124,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-01,,2009-02,2009-08,expansion,True,0.9,0.009999999999999995,233.6522
+improve,expansion,6,quoted_banker_or_economist,True,Tyler Cowen,1930248221,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-01,,2009-02,2009-08,expansion,True,0.7,0.09000000000000002,233.6522
+stable,recession,6,editorial,False,,1930248221,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2009-02-01,,2009-02,2009-08,expansion,False,0.9,0.81,233.6522
+improve,expansion,6,quoted_banker_or_economist,False,,1933733218,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-10,,2008-10,2009-04,recession,False,0.9,0.81,297.1825
+improve,expansion,6,government_official,False,Dominique Strauss-Kahn,1933733218,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-10,,2008-10,2009-04,recession,False,0.9,0.81,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Carmen M. Reinhart,1933733218,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-10,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,reported_survey,False,,1933733339,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-10,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Richard Sparks,1933733339,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-10,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,official with the industry watchdog,1933733409,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-10,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Brad Hintz,1933733425,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-10,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,government_official,True,Federal Reserve Open Market Committee,1933733425,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-10,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,editorial,True,,1933733425,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-10,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,,1933734778,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-07,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,executive at Bessemer Trust,1933734801,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,editorial,True,Joe Nocera,1933734801,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+improve,expansion,6,editorial,True,,1933734801,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,politician,False,David Barger and others,1933734856,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-02,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+improve,expansion,12,politician,True,David Barger and others,1933734856,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-02,,2008-10,2009-10,expansion,True,0.7,0.09000000000000002,297.1825
+stable,recession,6,politician,True,David Barger and others,1933734856,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-02,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Robert B. Zoellick,1933735094,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-07,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,reported_survey,True,,1933735198,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Michael T. Darda,1933735198,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+stable,recession,6,other,True,,1933735198,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+improve,expansion,6,politician,True,Mr. Obama,1933735216,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,politician,True,Representative John A. Boehner,1933735216,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,government_official,True,Governor Schwarzenegger,1933735216,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,government_official,False,Mr. Lockyer,1933735216,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,politician,False,Mr. McCain,1933735216,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,False,,1933735251,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,False,,1933735251,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,False,,1933735251,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,False,,1933735251,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,12,quoted_banker_or_economist,True,Robert Barbera,1933735251,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-10,expansion,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,other,False,,1933735251,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-04,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Holger Schmieding,1933735271,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-07,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,3,quoted_banker_or_economist,False,Holger Schmieding,1933735271,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-07,,2008-10,2009-01,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,,1933737940,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-06,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,False,,1933737940,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-06,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Moody's Economy.com,1933737940,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-06,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,9,quoted_banker_or_economist,True,Marisa DiNatale,1933737940,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-06,,2008-10,2009-07,expansion,False,0.7,0.48999999999999994,297.1825
+worsen,recession,24,government_official,False,William C. Thompson Jr.,1933737950,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2010-10,expansion,False,0.9,0.81,297.1825
+worsen,recession,24,government_official,False,William C. Thompson Jr.,1933737950,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2010-10,expansion,False,0.9,0.81,297.1825
+worsen,recession,24,reported_survey,False,Ronnie Lowenstein,1933737950,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2010-10,expansion,False,0.9,0.81,297.1825
+worsen,recession,24,reported_survey,True,Ronnie Lowenstein,1933737950,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2010-10,expansion,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,editorial,False,Federal Reserve Bank of Chicago,1933738081,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-25,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,government_official,True,White House,1933738081,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-25,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,editorial,False,,1933738081,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-25,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Vera de Ladoucette,1933738081,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-25,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,False,,1933738081,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-25,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,12,editorial,False,,1933738086,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-25,,2008-10,2009-10,expansion,False,0.9,0.81,297.1825
+worsen,recession,15,reported_survey,True,Gartner,1933738130,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2010-01,expansion,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,reported_survey,False,World Bank,1933738130,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,True,,1933738130,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,editorial,False,,1933738156,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-25,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,government_official,True,Peer Steinbriick,1933738169,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Jorg Kramer,1933738169,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Mr. Moec,1933738169,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+improve,expansion,6,quoted_banker_or_economist,True,Mr. Moec,1933738169,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Walter Loeb,1933738171,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-06,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,reported_survey,True,Richard Curtin,1933738171,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-06,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Nigel Gault,1933738171,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-06,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Marc D. Stern,1933738178,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-25,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,economists,1933738191,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Nariman Behravesh,1933738191,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,reported_survey,True,Mr. Behravesh,1933738191,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,other,False,,1933738191,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,24,quoted_banker_or_economist,False,New York Building Congress,1933738211,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2010-10,expansion,False,0.9,0.81,297.1825
+worsen,recession,24,quoted_banker_or_economist,False,New York Building Congress,1933738211,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2010-10,expansion,False,0.9,0.81,297.1825
+worsen,recession,24,quoted_banker_or_economist,True,Richard T. Anderson,1933738211,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2010-10,expansion,False,0.7,0.48999999999999994,297.1825
+worsen,recession,24,quoted_banker_or_economist,False,New York Building Congress,1933738211,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2010-10,expansion,False,0.9,0.81,297.1825
+worsen,recession,12,quoted_banker_or_economist,True,Seth W. Pinsky,1933738211,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2009-10,expansion,False,0.7,0.48999999999999994,297.1825
+worsen,recession,24,editorial,True,,1933738251,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2010-10,expansion,False,0.7,0.48999999999999994,297.1825
+worsen,recession,3,other,False,,1933738251,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2009-01,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,reported_survey,False,,1933738263,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+improve,expansion,6,quoted_banker_or_economist,True,Ira Jersey,1933738263,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Bill Gales,1933738263,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,24,quoted_banker_or_economist,False,Julian H. Robertson Jr.,1933738367,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-15,,2008-10,2010-10,expansion,False,0.9,0.81,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,,1933738507,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-25,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+improve,expansion,6,other,False,,1933740116,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-04,,2008-09,2009-03,recession,False,0.9,0.81,275.0569
+stable,recession,6,other,False,Michael C. DiGiovanni,1933740116,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-04,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+improve,expansion,6,quoted_banker_or_economist,True,Ellen Hughes-Cromwick,1933740116,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-04,,2008-09,2009-03,recession,False,0.7,0.48999999999999994,275.0569
+worsen,recession,6,quoted_banker_or_economist,True,George Magliano,1933740116,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-04,,2008-09,2009-03,recession,True,0.7,0.09000000000000002,275.0569
+worsen,recession,6,other,True,,1933743628,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-01,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,other,True,,1933743628,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-01,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+improve,expansion,6,quoted_banker_or_economist,False,Lynn Franco,1933743654,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-01,,2008-10,2009-04,recession,False,0.9,0.81,297.1825
+stable,recession,6,quoted_banker_or_economist,True,Lynn Franco,1933743654,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-01,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Lynn Franco,1933743654,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-01,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,,1933744139,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-01,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,other,False,,1933744139,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-01,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Paul C. Taylor,1933744139,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-01,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Barack Obama and John McCain,1933744529,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-01,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,politician,False,Barack Obama,1933744529,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-01,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,politician,False,John McCain,1933744529,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-01,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,politician,False,John McCain,1933744529,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-01,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,analysts,1933745160,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-22,,2008-09,2009-03,recession,True,0.7,0.09000000000000002,275.0569
+worsen,recession,6,quoted_banker_or_economist,False,Sean J. Egan,1933745160,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-22,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,24,quoted_banker_or_economist,True,analysts,1933745363,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-04,,2008-11,2010-11,expansion,False,0.7,0.48999999999999994,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,,1933745499,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-04,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Emily Kolinski Morris,1933745499,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-04,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Bernard Baumohl,1933745650,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-04,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Daniel J. Meckstroth,1933745650,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-04,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,other,True,,1933748234,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-11,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,other,False,,1933748234,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-11,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,reported_survey,False,International Energy Agency,1933748446,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-11,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+improve,expansion,6,other,True,,1933748446,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-11,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,other,False,,1933748603,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-11,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Nobuhiko Kuramochi,1933748603,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-11,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,government_official,True,Prime Minister Taro Aso,1933748603,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-11,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,,1933748603,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-11,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,other,False,,1933748603,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-11,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+improve,expansion,6,quoted_banker_or_economist,True,Geoffrey Bobroff,1933748812,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-11,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+improve,expansion,6,quoted_banker_or_economist,True,Geoffrey Bobroff,1933748812,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-11,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+improve,expansion,6,quoted_banker_or_economist,True,Geoffrey Bobroff,1933748812,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-11,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,editorial,False,,1933748831,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-11,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,many economists,1933751206,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-21,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,reported_survey,False,,1933751206,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-21,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,True,,1933751206,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-21,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Mustafa El-Labbad,1933751206,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-21,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,reported_survey,False,,1933751206,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-21,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+improve,expansion,2,quoted_banker_or_economist,True,Kimberly Wright-Violich,1933751213,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-11,,2008-11,2009-01,recession,False,0.7,0.48999999999999994,221.9536
+worsen,recession,12,reported_survey,False,,1933751213,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-11,,2008-11,2009-11,expansion,False,0.9,0.81,221.9536
+worsen,recession,12,government_official,True,Vartan Gregorian,1933751213,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-11,,2008-11,2009-11,expansion,False,0.7,0.48999999999999994,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Michael Boylson,1933751249,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-13,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,reported_survey,False,,1933751249,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-13,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+improve,expansion,6,other,False,Jeffrey Hull,1933751249,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-13,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+improve,expansion,6,other,False,Jeffrey Hull,1933751249,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-13,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Ben S. Bernanke,1933751274,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-21,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,reported_survey,False,,1933751274,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-21,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+improve,expansion,6,politician,False,Nancy Pelosi,1933751274,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-21,,2008-10,2009-04,recession,False,0.9,0.81,297.1825
+improve,expansion,6,politician,False,Paul Ryan,1933751274,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-21,,2008-10,2009-04,recession,False,0.9,0.81,297.1825
+stable,stable,6,quoted_banker_or_economist,True,Ben S. Bernanke,1933751274,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-21,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,other,True,,1933751328,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-21,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Stacey Widlitz,1933751342,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-13,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Peter Schiff,1933751342,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-13,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,12,quoted_banker_or_economist,True,Christopher Neczypor,1933751342,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-13,,2008-11,2009-11,expansion,False,0.7,0.48999999999999994,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,many economists,1933751393,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-11,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Erik Hurst,1933751393,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-11,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Vince Cable,1933751446,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-21,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+improve,expansion,6,other,True,India Knight,1933751446,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-21,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,editorial,False,,1933751453,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-08,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,editorial,False,,1933751453,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-08,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+improve,expansion,6,editorial,True,,1933751453,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-08,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,government_official,True,Ben S. Bernanke,1933751668,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-08,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,government_official,True,Ben S. Bernanke,1933751668,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-08,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,National Retail Federation,1933751684,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-13,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,economists,1933751684,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-13,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Intel,1933751684,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-13,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,John Dryden,1933751684,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-13,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Michael Geoghegan,1933751939,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-11,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Richard L. Bond,1933751939,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-11,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,reported_survey,False,,1933751939,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-11,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,editorial,False,,1933757318,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-06,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,editorial,False,,1933757318,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-06,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,editorial,False,,1933757318,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-06,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,editorial,False,,1933757318,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-06,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,editorial,False,,1933757318,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-06,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,reported_survey,False,,1933757404,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-06,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,,1933757404,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-06,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,,1933757404,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-06,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+improve,expansion,6,quoted_banker_or_economist,False,Jan Hatzius,1933757404,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-06,,2008-12,2009-06,recession,False,0.9,0.81,187.5302
+worsen,recession,6,other,True,,1933757579,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-03,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,other,False,,1933757579,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-03,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,other,False,,1933757579,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-03,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+improve,expansion,6,quoted_banker_or_economist,True,Hewlett-Packard,1933757581,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-19,,2008-11,2009-05,recession,False,0.7,0.48999999999999994,221.9536
+worsen,recession,6,reported_survey,True,,1933757581,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-19,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,editorial,True,,1933757581,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-19,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,other,False,James Freydberg,1933757587,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-19,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Roche Schulfer,1933757587,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-19,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,24,quoted_banker_or_economist,False,Roche Schulfer,1933757587,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-19,,2008-11,2010-11,expansion,False,0.9,0.81,221.9536
+improve,expansion,6,quoted_banker_or_economist,False,Carole Shorenstein Hays,1933757587,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-19,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+improve,expansion,6,other,True,,1933757587,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-19,,2008-11,2009-05,recession,False,0.7,0.48999999999999994,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Alan Brown,1933757595,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-06,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+improve,expansion,6,quoted_banker_or_economist,False,Ron Muhlenkamp,1933757595,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-06,,2008-12,2009-06,recession,False,0.9,0.81,187.5302
+improve,expansion,6,quoted_banker_or_economist,True,Ron Muhlenkamp,1933757595,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-06,,2008-12,2009-06,recession,False,0.7,0.48999999999999994,187.5302
+stable,recession,6,other,False,,1933757595,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-06,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,other,True,,1933759269,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-29,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,other,False,,1933759269,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-29,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Geoffrey Dicks,1933759269,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-29,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Richard Doherty,1933760221,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-29,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,editorial,False,,1933760221,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-29,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,editorial,False,,1933760221,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-29,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,,1933760221,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-29,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,other,False,,1933763370,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-05,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,reported_survey,False,,1933763370,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-05,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,quoted_banker_or_economist,False,,1933763370,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-05,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+stable,recession,6,government_official,False,,1933763370,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-05,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,reported_survey,True,,1933763370,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-05,,2008-09,2009-03,recession,True,0.7,0.09000000000000002,275.0569
+worsen,recession,6,quoted_banker_or_economist,True,Larry Lucchino,1933763628,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-17,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,,1933763631,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-02,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Allen Sinai,1933763724,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-02,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,,1933763772,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-02,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,,1933763772,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-02,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,reported_survey,True,,1933763772,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-02,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+improve,expansion,6,quoted_banker_or_economist,False,Lawrence Summers,1933763949,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-24,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Jared Bernstein,1933763949,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-24,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+improve,expansion,6,other,True,,1933763949,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-24,,2008-11,2009-05,recession,False,0.7,0.48999999999999994,221.9536
+worsen,recession,1,quoted_banker_or_economist,False,,1933763964,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-17,,2008-11,2008-12,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,1,quoted_banker_or_economist,False,Hideo Kumano,1933763964,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-17,,2008-11,2008-12,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,,1933763964,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-17,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,12,quoted_banker_or_economist,True,,1933763964,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-17,,2008-11,2009-11,expansion,False,0.7,0.48999999999999994,221.9536
+stable,recession,6,quoted_banker_or_economist,False,,1933763964,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-17,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,reported_survey,False,European Commission,1933764375,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-18,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,other,False,,1933764375,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-18,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,government_official,True,Aleksei Kudrin,1933764375,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-18,,2008-09,2009-03,recession,True,0.7,0.09000000000000002,275.0569
+worsen,recession,6,government_official,True,Hector Sants,1933764375,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-18,,2008-09,2009-03,recession,True,0.7,0.09000000000000002,275.0569
+worsen,recession,6,politician,False,Sheldon Silver,1933764893,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-15,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,government_official,False,David Paterson,1933764893,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-15,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Ken Holland,1933764937,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,Patrick LaForge,1933764937,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,government_official,False,Bill Daly,1933764937,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,Karen Murrell,1933764958,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-13,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,reported_survey,True,,1933764958,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-13,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,reported_survey,True,,1933764958,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-13,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,Brian Gendreau,1933765043,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-17,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,editorial,True,,1933765200,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,12,quoted_banker_or_economist,False,World Bank,1933765200,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-12,expansion,False,0.9,0.81,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,Edward J. Pinto,1933765233,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Howard Glaser,1933765233,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,Jim Fagan,1933765290,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Howard E. Greenberg,1933765290,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+stable,recession,6,quoted_banker_or_economist,False,Robert Weisz,1933765290,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,other,True,,1933765290,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,Warren E. Buffett,1933765463,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-17,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,False,,1933765463,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-17,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,False,,1933765463,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-17,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,government_official,False,senior American official,1933765464,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-15,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+improve,expansion,6,politician,False,Barack Obama,1933765464,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-15,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+worsen,recession,6,reported_survey,False,,1933765586,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-22,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,government_official,True,,1933765586,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-22,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,12,quoted_banker_or_economist,False,World Bank,1933765758,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-12,expansion,False,0.9,0.81,187.5302
+worsen,recession,6,other,True,,1933765758,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Justin Lin,1933765758,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,government_official,False,World Bank,1933765771,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,12,other,True,,1933765771,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-12,expansion,False,0.7,0.48999999999999994,187.5302
+worsen,recession,6,other,True,,1933765771,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-10,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,editorial,True,,1933765779,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-05,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,politician,True,Michael R. Bloomberg,1933765780,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-15,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,other,False,,1933765780,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-15,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+improve,expansion,4,quoted_banker_or_economist,False,Henry Kaufman,1933765886,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-19,,2008-09,2009-01,recession,False,0.9,0.81,275.0569
+worsen,recession,6,reported_survey,False,,1933765895,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-17,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+improve,expansion,6,other,True,,1933765895,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-17,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,editorial,False,,1933765908,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-20,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,editorial,False,,1933765908,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-20,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,politician,True,Mayor Michael R. Bloomberg,1933765965,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-05,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,politician,True,Mayor Michael R. Bloomberg,1933765965,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-05,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,,1933765993,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-20,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+improve,expansion,12,quoted_banker_or_economist,True,Paul Krugman,1933766072,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-22,,2008-12,2009-12,expansion,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Paul Krugman,1933766072,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-22,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Paul Krugman,1933766072,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-22,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,reported_survey,False,,1933766451,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-29,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Joshua Shapiro,1933766451,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-29,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,True,,1933766451,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-29,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,other,False,,1933766451,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-29,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,,1933766463,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-15,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,other,False,,1933766479,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-18,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,"Michael J. Stengel, vice president of Marriott Hotels",1933766479,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-18,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,"Jonathan Tisch, chairman of Loews Hotels",1933766479,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-18,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,other,True,"Michael J. Stengel, vice president of Marriott Hotels",1933766479,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-18,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,government_official,True,"Joseph Spinnato, president of the hotel association",1933766479,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-18,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,,1933766481,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-20,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,editorial,True,,1933766484,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-18,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,other,True,,1933766484,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-18,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+improve,expansion,6,editorial,False,,1933766523,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-15,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+worsen,recession,6,other,True,Nokia,1933766523,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-15,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,other,False,Nokia,1933766523,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-15,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,editorial,False,,1933766523,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-15,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Larry Summers,1933767407,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-26,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Larry Summers,1933767407,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-26,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Larry Summers,1933767407,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-26,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,depression,6,government_official,False,,1933767446,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-26,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Laurence H. Meyer,1933767446,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-26,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,reported_survey,False,,1933767446,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-26,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,12,quoted_banker_or_economist,True,Laurence H. Meyer,1933767446,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-26,,2008-11,2009-11,expansion,False,0.7,0.48999999999999994,221.9536
+improve,expansion,6,quoted_banker_or_economist,True,Tom Kloza,1933767517,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-30,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+improve,expansion,6,quoted_banker_or_economist,True,Michael McNamara,1933767517,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-30,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Ms. Baum,1933767591,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-30,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Ms. Baum,1933767591,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-30,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,John Casesa,1933768176,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-24,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,other,False,,1933768176,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-24,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,other,False,Patti Homan,1933768176,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-24,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,other,False,Woody Bevans,1933768176,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-24,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,other,False,,1933768176,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-24,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,reported_survey,False,,1933768176,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-24,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+improve,expansion,6,quoted_banker_or_economist,False,Boediono,1933768205,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-23,,2008-12,2009-06,recession,False,0.9,0.81,187.5302
+improve,expansion,6,quoted_banker_or_economist,False,Boediono,1933768205,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-23,,2008-12,2009-06,recession,False,0.9,0.81,187.5302
+improve,expansion,6,quoted_banker_or_economist,True,Boediono,1933768205,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-23,,2008-12,2009-06,recession,False,0.7,0.48999999999999994,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,,1933768205,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-23,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Toyota executives,1933768205,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-23,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+improve,expansion,6,quoted_banker_or_economist,False,,1933768211,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-30,,2008-10,2009-04,recession,False,0.9,0.81,297.1825
+improve,expansion,6,government_official,True,Mr. Chambliss,1933768211,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-30,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,other,False,Cathy Blakeney,1933768211,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-30,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Daniel Cohen,1933768286,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-30,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Daniel Cohen,1933768286,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-30,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+improve,expansion,3,quoted_banker_or_economist,False,Henry Paulson,1933768342,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-23,,2008-09,2008-12,recession,False,0.9,0.81,275.0569
+worsen,recession,1,editorial,True,,1933768342,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-23,,2008-09,2008-10,recession,True,0.7,0.09000000000000002,275.0569
+worsen,recession,1,quoted_banker_or_economist,False,Dean Baker,1933768342,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-23,,2008-09,2008-10,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,reported_survey,True,analysts,1933768654,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-23,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,other,True,,1933768654,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-23,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Macroeconomic Advisers,1933768683,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-30,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,reported_survey,True,private forecasters,1933768683,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-30,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Diane Swonk,1933768683,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-30,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,government_official,True,,1933768888,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-30,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,2,other,False,,1933768892,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-30,,2008-10,2008-12,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,analysts,1933768892,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-30,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+improve,expansion,6,editorial,False,,1933768930,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-27,,2008-09,2009-03,recession,False,0.9,0.81,275.0569
+worsen,recession,6,quoted_banker_or_economist,False,Ben S. Bernanke,1933768930,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-27,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,quoted_banker_or_economist,False,Stuart Schweitzer,1933768953,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-21,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,other,True,,1933768953,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-21,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,other,False,,1933768953,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-21,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,other,False,,1933768953,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-21,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Douglas A. Scovanner,1933768953,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-21,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,other,False,,1933768953,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-21,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Stuart Schweitzer,1933768953,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-21,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,other,True,,1933768953,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-21,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+improve,expansion,6,other,False,,1933769066,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-21,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+worsen,recession,6,reported_survey,False,Labor Department,1933769066,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-21,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,12,government_official,False,Federal Reserve,1933769066,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-21,,2008-11,2009-11,expansion,False,0.9,0.81,221.9536
+worsen,recession,6,reported_survey,False,Conference Board,1933769066,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-21,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Wilbur L. Ross Jr.,1933769066,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-21,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Harold Bordwin,1933769066,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-21,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Gian Fulgoni,1933769229,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-18,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Gian Fulgoni,1933769229,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-18,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Franz Wenzel,1933769231,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-18,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+improve,expansion,6,quoted_banker_or_economist,True,,1933769231,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-18,,2008-12,2009-06,recession,False,0.7,0.48999999999999994,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,,1933769231,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-18,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,editorial,False,,1933769352,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-26,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,False,,1933769352,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-26,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+stable,recession,6,other,False,,1933769352,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-26,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,False,Gary J. Dellaverson,1933769401,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-18,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,other,True,Bill Morange,1933769401,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-18,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,Mitsuo Kinoshita,1933769430,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-07,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,other,False,,1933769430,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-07,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,other,False,,1933769430,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-07,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Michael I. Roth,1933769430,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-07,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Gray Newman,1933769525,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-30,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,12,other,True,,1933769525,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-30,,2008-12,2009-12,expansion,False,0.7,0.48999999999999994,187.5302
+worsen,recession,6,other,False,,1933769525,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-30,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,reported_survey,True,,1933769603,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-14,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,other,True,,1933769671,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-07,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+improve,expansion,6,quoted_banker_or_economist,True,,1933769671,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-07,,2008-11,2009-05,recession,False,0.7,0.48999999999999994,221.9536
+improve,expansion,6,other,False,,1933769671,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-07,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+improve,expansion,6,government_official,False,Henry M. Paulson Jr.,1933769699,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-18,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+improve,expansion,6,government_official,False,Henry M. Paulson Jr.,1933769699,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-18,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+improve,expansion,12,quoted_banker_or_economist,True,John C. Bogle,1933769718,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-26,,2008-10,2009-10,expansion,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,reported_survey,True,,1933769718,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-26,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+improve,expansion,6,editorial,False,,1933769744,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-30,,2008-12,2009-06,recession,False,0.9,0.81,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Steve Harrell,1933769744,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-30,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,reported_survey,True,,1933769744,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-30,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Damon Lester,1933769744,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-30,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,12,quoted_banker_or_economist,False,economists,1933769808,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-12,,2008-11,2009-11,expansion,False,0.9,0.81,221.9536
+worsen,recession,12,quoted_banker_or_economist,True,Mark Tan,1933769808,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-12,,2008-11,2009-11,expansion,False,0.7,0.48999999999999994,221.9536
+worsen,recession,6,reported_survey,True,,1933770087,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-07,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,reported_survey,False,,1933770150,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-20,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,government_official,False,European Commission,1933770150,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-20,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,quoted_banker_or_economist,False,,1933770507,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-22,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,,1933770507,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-22,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Gary B. Pruitt,1933770507,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-22,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+improve,expansion,6,quoted_banker_or_economist,False,N. Gregory Mankiw,1933770560,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-26,,2008-10,2009-04,recession,False,0.9,0.81,297.1825
+worsen,recession,6,editorial,False,,1933770560,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-26,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,1,reported_survey,False,,1933771340,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-07,,2008-11,2008-12,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,other,True,,1933771340,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-07,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,,1933771452,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-12,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+stable,expansion,6,other,True,,1933771452,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-12,,2008-11,2009-05,recession,False,0.7,0.48999999999999994,221.9536
+worsen,recession,6,other,False,,1933771452,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-12,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Lawrence Katz,1933771452,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-12,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+improve,expansion,6,politician,False,Senator Harry Reid,1933771454,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-18,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+worsen,recession,6,reported_survey,True,,1933771454,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-18,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,politician,True,Mayor Michael Nutter,1933771515,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-07,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,12,government_official,False,Stephen Agostini,1933771515,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-07,,2008-11,2009-11,expansion,False,0.9,0.81,221.9536
+worsen,recession,24,government_official,False,,1933771515,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-07,,2008-11,2010-11,expansion,False,0.9,0.81,221.9536
+worsen,recession,6,reported_survey,False,,1933771603,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-23,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Robert J. Coen,1933771603,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-23,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,other,True,,1933771620,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-23,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+improve,expansion,6,quoted_banker_or_economist,True,Carmen M. Reinhart,1933771620,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-23,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Edwin M. Truman,1933771620,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-23,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+improve,expansion,6,other,True,"Richard Lindner, AT&T chief financial officer",1933771667,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-23,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,other,True,analysts,1933771667,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-23,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,,1933771892,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-23,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,reported_survey,False,,1933771892,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-23,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,,1933771949,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-23,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Kenneth Lieberthal,1933771949,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-23,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,editorial,True,,1933771992,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-26,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,editorial,True,,1933771992,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-26,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,18,quoted_banker_or_economist,False,David W. Tice,1933772024,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-23,,2008-10,2010-04,expansion,False,0.9,0.81,297.1825
+improve,expansion,6,quoted_banker_or_economist,True,Tim Kochis,1933772024,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-23,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,editorial,False,,1933772072,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-29,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,editorial,False,,1933772072,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-29,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,editorial,False,Paul Krugman,1933773039,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-08,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+improve,expansion,6,editorial,True,Paul Krugman,1933773039,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-08,,2008-09,2009-03,recession,False,0.7,0.48999999999999994,275.0569
+worsen,recession,12,quoted_banker_or_economist,False,UBS analyst,1933773223,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-09,,2008-12,2009-12,expansion,False,0.9,0.81,187.5302
+worsen,recession,6,other,True,,1933773274,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-09,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+improve,expansion,6,editorial,True,,1933773274,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-09,,2008-12,2009-06,recession,False,0.7,0.48999999999999994,187.5302
+worsen,recession,6,editorial,False,,1933773274,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-09,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,other,False,,1933773322,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-09,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+improve,expansion,6,other,True,,1933773322,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-09,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,24,quoted_banker_or_economist,True,Dr. Stewart,1933773402,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-09,,2008-12,2010-12,expansion,False,0.7,0.48999999999999994,187.5302
+worsen,recession,12,quoted_banker_or_economist,True,Dr. Stewart,1933773402,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-09,,2008-12,2009-12,expansion,False,0.7,0.48999999999999994,187.5302
+worsen,recession,24,quoted_banker_or_economist,True,Dr. Stewart,1933773402,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-09,,2008-12,2010-12,expansion,False,0.7,0.48999999999999994,187.5302
+worsen,recession,6,reported_survey,False,,1933773462,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-28,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,False,,1933773672,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-17,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+stable,recession,6,other,True,,1933773672,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-17,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,12,reported_survey,False,IHS Global Insight,1933773672,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-17,,2008-12,2009-12,expansion,False,0.9,0.81,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,"Mr. Kono, BNP Paribas economist",1933773865,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-27,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,"Mr. Ogasawara, Credit Suisse",1933773865,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-27,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,reported_survey,True,emergency doctors,1933774074,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-09,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,reported_survey,False,college of emergency doctors,1933774074,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-09,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,Mr. Wallison,1933774074,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-09,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+improve,expansion,13,quoted_banker_or_economist,False,Franz Wenzel,1933774252,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-27,,2008-11,2009-12,expansion,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,politician,False,John McCain,1933774564,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-17,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,politician,False,Barack Obama,1933774564,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-17,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,politician,False,John McCain,1933774564,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-17,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,politician,False,Barack Obama,1933774564,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-17,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+improve,expansion,6,quoted_banker_or_economist,False,Benjamin Friedman,1933774756,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-17,,2008-09,2009-03,recession,False,0.9,0.81,275.0569
+worsen,recession,6,editorial,False,,1933774756,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-17,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,quoted_banker_or_economist,True,,1933774874,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-04,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+improve,expansion,6,other,True,,1933774874,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-04,,2008-12,2009-06,recession,False,0.7,0.48999999999999994,187.5302
+improve,expansion,6,reported_survey,True,Lawrence Yun,1933774953,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-09,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+stable,recession,6,quoted_banker_or_economist,True,Lawrence Yun,1933774953,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-09,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,reported_survey,False,,1933775029,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-27,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Todd Steinberg,1933775057,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,reported_survey,True,,1933775057,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Todd Steinberg,1933775057,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Paul Krugman,1933775090,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-14,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,12,quoted_banker_or_economist,False,Goldman Sachs,1933775090,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-14,,2008-11,2009-11,expansion,False,0.9,0.81,221.9536
+worsen,recession,6,editorial,False,,1933775090,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-14,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,editorial,False,,1933775090,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-14,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Pete Nordstrom,1933775132,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Burt Tansky,1933775132,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,reported_survey,False,,1933775132,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,editorial,False,,1933775132,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Andrew Jassin,1933775132,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Andrew Jassin,1933775132,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,editorial,True,,1933775132,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+stable,recession,6,quoted_banker_or_economist,True,Burt Tansky,1933775132,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,editorial,True,,1933775132,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,industry executives,1933775160,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-08,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,Johnny Gold,1933775160,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-08,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,editorial,False,,1933775160,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-08,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,reported_survey,True,experts,1933775160,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-08,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,Mark Arzoumanian,1933775160,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-08,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,economists,1933775174,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-08,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,12,quoted_banker_or_economist,False,Jared Bernstein,1933775174,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-08,,2008-12,2009-12,expansion,False,0.9,0.81,187.5302
+worsen,recession,6,other,True,,1933775174,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-08,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+stable,recession,6,quoted_banker_or_economist,True,Chris Varvares,1933775174,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-08,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,,1933775301,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,True,,1933775301,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,,1933775301,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+improve,expansion,6,quoted_banker_or_economist,True,Edward E. Learner,1933775301,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+improve,expansion,6,quoted_banker_or_economist,True,Jack McCabe,1933775301,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Stephen S. Roach,1933775387,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-28,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Stephen S. Roach,1933775387,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-28,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,12,quoted_banker_or_economist,True,Stephen S. Roach,1933775387,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-28,,2008-11,2009-11,expansion,False,0.7,0.48999999999999994,221.9536
+improve,expansion,6,quoted_banker_or_economist,False,Stephen S. Roach,1933775387,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-28,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+worsen,recession,6,government_official,False,Rick Wagoner,1933775589,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-28,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,False,,1933775589,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-28,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+stable,recession,6,reported_survey,True,,1933775589,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-28,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Mike Larson,1933775589,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-28,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,20,quoted_banker_or_economist,False,,1933775664,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-12,,2008-12,2010-08,expansion,False,0.9,0.81,187.5302
+worsen,recession,6,government_official,False,,1933775664,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-12,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,other,False,,1933775664,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-12,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,government_official,False,Mr. Braconi,1933775664,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-12,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,1,quoted_banker_or_economist,True,Steven Ricchiuto,1933775721,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-12,,2008-12,2009-01,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,1,government_official,False,,1933775721,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-12,,2008-12,2009-01,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,1,quoted_banker_or_economist,True,Joshua Shapiro,1933775721,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-12,,2008-12,2009-01,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,12,quoted_banker_or_economist,False,Bernard Baumohl,1933775800,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-08,,2008-12,2009-12,expansion,False,0.9,0.81,187.5302
+worsen,recession,12,politician,True,Barack Obama,1933775800,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-08,,2008-12,2009-12,expansion,False,0.7,0.48999999999999994,187.5302
+worsen,recession,6,other,True,,1933775800,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-08,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,editorial,False,,1933775810,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-28,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,reported_survey,True,,1933775945,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,other,True,,1933775945,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-16,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,,1933776212,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-12,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,12,quoted_banker_or_economist,True,Tetsufumi Yamakawa,1933776212,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-12,,2008-12,2009-12,expansion,False,0.7,0.48999999999999994,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Koya Tabata,1933776212,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-12,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,reported_survey,False,,1933776244,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-08,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,other,True,,1933776262,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-17,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+improve,expansion,6,politician,False,Barack Obama,1933776370,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-27,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+improve,expansion,6,quoted_banker_or_economist,False,Stanford Group,1933776370,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-27,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+worsen,recession,6,reported_survey,False,,1933776740,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-31,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,False,The Economist,1933776744,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-15,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+improve,expansion,6,other,False,,1933776745,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-31,,2008-10,2009-04,recession,False,0.9,0.81,297.1825
+worsen,recession,6,editorial,True,,1933776745,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-31,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,reported_survey,False,,1933776760,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-05,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+improve,expansion,6,quoted_banker_or_economist,True,,1933776760,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-05,,2008-12,2009-06,recession,False,0.7,0.48999999999999994,187.5302
+worsen,recession,6,other,False,DuPont,1933776760,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-05,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,other,False,Credit Suisse,1933776760,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-05,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,reported_survey,False,,1933776763,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-05,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,editorial,True,,1933776763,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-05,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,12,quoted_banker_or_economist,True,Francisco Blanch,1933776763,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-05,,2008-12,2009-12,expansion,False,0.7,0.48999999999999994,187.5302
+worsen,recession,6,reported_survey,False,,1933776828,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-31,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,editorial,False,,1933776828,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-31,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,True,,1933776828,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-31,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,3,quoted_banker_or_economist,False,National Association of State Workforce Agencies,1933776836,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-15,,2008-12,2009-03,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,1,government_official,True,,1933776836,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-15,,2008-12,2009-01,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,3,government_official,True,Raymond Filippone,1933776836,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-15,,2008-12,2009-03,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,12,government_official,True,,1933776836,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-15,,2008-12,2009-12,expansion,False,0.7,0.48999999999999994,187.5302
+worsen,recession,3,editorial,False,,1933776906,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-31,,2008-10,2009-01,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,12,editorial,True,,1933776906,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-31,,2008-10,2009-10,expansion,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,editorial,False,,1933776906,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-31,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+improve,expansion,6,quoted_banker_or_economist,False,Mark LaNeve,1933776931,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-15,,2008-12,2009-06,recession,False,0.9,0.81,187.5302
+improve,expansion,6,quoted_banker_or_economist,False,Dean Singleton,1933776931,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-15,,2008-12,2009-06,recession,False,0.9,0.81,187.5302
+worsen,recession,6,reported_survey,False,,1933777025,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-15,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,12,reported_survey,True,,1933777025,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-15,,2008-12,2009-12,expansion,False,0.7,0.48999999999999994,187.5302
+worsen,recession,6,reported_survey,False,,1933777275,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-06,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Kevin Hassett,1933777394,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-06,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+improve,expansion,24,government_official,False,,1933777394,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-06,,2008-11,2010-11,expansion,True,0.9,0.009999999999999995,221.9536
+improve,expansion,24,politician,False,Barack Obama,1933778413,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-21,,2008-12,2010-12,expansion,True,0.9,0.009999999999999995,187.5302
+worsen,recession,12,other,False,,1933778413,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-21,,2008-12,2009-12,expansion,False,0.9,0.81,187.5302
+worsen,recession,12,other,True,,1933778413,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-21,,2008-12,2009-12,expansion,False,0.7,0.48999999999999994,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Kathleen Miller Prunty,1933778447,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-21,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Kathleen Miller Prunty,1933778447,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-21,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,reported_survey,True,,1933778458,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-21,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,reported_survey,True,,1933778458,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-21,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,editorial,True,,1933778458,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-21,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,2,other,False,Nancy Adams,1933778498,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-21,,2008-12,2009-02,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,editorial,False,,1933778629,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-21,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,Professor Lawless,1933779839,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-16,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Elizabeth Warren,1933779839,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-16,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+improve,expansion,6,politician,False,President Luiz Inacio Lula da Silva of Brazil,1933779859,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-16,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+worsen,recession,6,other,True,,1933779902,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-20,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+stable,expansion,6,quoted_banker_or_economist,True,Anne Saunders,1933779902,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-20,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+improve,expansion,6,other,False,Rebecca Saeger,1933779902,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-20,,2008-10,2009-04,recession,False,0.9,0.81,297.1825
+worsen,recession,6,other,True,,1933779902,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-20,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+improve,expansion,6,other,False,Michael Mendenhall,1933779902,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-20,,2008-10,2009-04,recession,False,0.9,0.81,297.1825
+improve,expansion,24,reported_survey,False,Joseph E. Stiglitz,1933779945,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-30,,2008-11,2010-11,expansion,True,0.9,0.009999999999999995,221.9536
+improve,expansion,24,quoted_banker_or_economist,True,Joseph E. Stiglitz,1933779945,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-30,,2008-11,2010-11,expansion,True,0.7,0.09000000000000002,221.9536
+worsen,recession,24,quoted_banker_or_economist,False,Joseph E. Stiglitz,1933779945,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-30,,2008-11,2010-11,expansion,False,0.9,0.81,221.9536
+improve,expansion,12,quoted_banker_or_economist,False,Joseph E. Stiglitz,1933779945,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-30,,2008-11,2009-11,expansion,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,other,True,,1933780372,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-16,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,reported_survey,False,,1933781409,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-16,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,reported_survey,True,General Motors,1933781409,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-16,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,,1933781438,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-16,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,liberal economists,1933781438,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-16,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,other,True,,1933781488,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-09,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+improve,expansion,6,other,False,,1933781488,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-09,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+improve,expansion,6,reported_survey,False,,1933782301,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-30,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+improve,expansion,6,government_official,True,Doug J. Marchand,1933782301,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-30,,2008-11,2009-05,recession,False,0.7,0.48999999999999994,221.9536
+improve,expansion,6,quoted_banker_or_economist,False,Bert M. Tenenbaum,1933782301,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-30,,2008-11,2009-05,recession,False,0.9,0.81,221.9536
+worsen,recession,6,quoted_banker_or_economist,True,Mr. Marks,1933782969,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-21,,2008-09,2009-03,recession,True,0.7,0.09000000000000002,275.0569
+worsen,recession,6,quoted_banker_or_economist,False,Mr. Frank,1933782969,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-21,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,quoted_banker_or_economist,False,Mr. Marks,1933782969,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-21,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,quoted_banker_or_economist,False,Ben S. Bernanke,1933785557,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-12,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+improve,expansion,12,quoted_banker_or_economist,True,Jeffrey Garten,1933785557,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-12,,2008-10,2009-10,expansion,True,0.7,0.09000000000000002,297.1825
+improve,expansion,6,government_official,False,,1933785557,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-12,,2008-10,2009-04,recession,False,0.9,0.81,297.1825
+worsen,recession,3,quoted_banker_or_economist,False,,1933785726,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-30,,2008-09,2008-12,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,other,True,,1933785726,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-30,,2008-09,2009-03,recession,True,0.7,0.09000000000000002,275.0569
+worsen,recession,12,reported_survey,False,,1933786362,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-14,,2008-12,2009-12,expansion,False,0.9,0.81,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Stephen A. Walsh,1933786362,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-14,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Stephen A. Walsh,1933786362,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-14,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,other,False,,1933786439,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-12,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+improve,expansion,6,other,True,,1933786439,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-12,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,reported_survey,False,,1933786668,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-30,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,quoted_banker_or_economist,True,Aurelio Maccario,1933786668,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-30,,2008-09,2009-03,recession,True,0.7,0.09000000000000002,275.0569
+worsen,recession,6,other,True,Lorraine W. Egan,1933786668,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-30,,2008-09,2009-03,recession,True,0.7,0.09000000000000002,275.0569
+worsen,recession,6,other,False,Lorraine W. Egan,1933786668,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-09-30,,2008-09,2009-03,recession,True,0.9,0.009999999999999995,275.0569
+worsen,recession,6,editorial,True,Ben Stein,1933786681,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-14,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,reported_survey,False,,1933786771,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-03,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,government_official,True,Ben S. Bernanke,1933786771,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-03,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,government_official,True,Ben S. Bernanke,1933786771,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-03,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+improve,expansion,14,quoted_banker_or_economist,False,James W. Hughes,1933786789,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-14,,2008-12,2010-02,expansion,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,other,True,,1933786789,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-14,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Ann Mane Miller,1933786789,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-14,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,,1933787267,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-05,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,reported_survey,True,Moody's Economy.com,1933787267,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-05,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Mike Kirby,1933787519,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-14,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,other,False,,1933787519,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-14,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,quoted_banker_or_economist,True,Joel R. Bloomer,1933787519,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-14,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,other,False,,1933788367,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-19,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+improve,expansion,6,quoted_banker_or_economist,False,Yair Reiner,1933788367,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-19,,2008-10,2009-04,recession,False,0.9,0.81,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Tavis McCourt,1933788367,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-19,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+improve,expansion,6,quoted_banker_or_economist,True,Mr. Reiner,1933788367,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-19,,2008-10,2009-04,recession,False,0.7,0.48999999999999994,297.1825
+worsen,recession,6,other,False,,1933788399,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-19,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Nicholas Gray,1933788399,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-19,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,editorial,False,,1933788519,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-19,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,editorial,True,,1933788519,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-19,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,reported_survey,True,Merrill Lynch,1933788609,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-19,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Dalton Conley,1933788695,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-19,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,quoted_banker_or_economist,False,Harvey Brenner,1933788695,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-19,,2008-10,2009-04,recession,True,0.9,0.009999999999999995,297.1825
+worsen,recession,6,other,True,,1933788695,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-19,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,other,True,,1933788695,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-10-19,,2008-10,2009-04,recession,True,0.7,0.09000000000000002,297.1825
+worsen,recession,6,quoted_banker_or_economist,True,Bernard Baumohl,1933789399,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-07,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+improve,expansion,6,quoted_banker_or_economist,False,David Axelrod,1933789643,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-07,,2008-12,2009-06,recession,False,0.9,0.81,187.5302
+worsen,recession,6,editorial,True,,1933789643,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-07,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+improve,expansion,6,editorial,False,,1933789643,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-07,,2008-12,2009-06,recession,False,0.9,0.81,187.5302
+worsen,recession,6,quoted_banker_or_economist,False,Robert J. Shiller,1933790409,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-02,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,reported_survey,False,,1933790418,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-23,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,reported_survey,False,,1933790418,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-23,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,reported_survey,False,,1933790418,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-23,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Howard Lieberman,1933790521,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-02,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,Howard Lieberman,1933790521,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-02,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,quoted_banker_or_economist,False,,1933790521,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-02,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,other,False,,1933790566,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-07,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,other,False,,1933790566,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-07,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+stable,recession,6,other,True,,1933790566,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-07,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
+worsen,recession,6,editorial,False,,1933790675,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-23,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,editorial,True,,1933790675,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-23,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,editorial,False,,1933790675,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-23,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,editorial,True,,1933790675,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-23,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,government_official,False,Mr. Spano,1933791972,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-23,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,other,False,Christina Rohatynskyj,1933791972,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-23,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,other,False,Karen Cheeks-Lomax,1933791972,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-23,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,other,False,Ms. Farrell,1933791972,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-23,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,other,True,Kathy Halas,1933791972,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-23,,2008-11,2009-05,recession,True,0.7,0.09000000000000002,221.9536
+worsen,recession,6,other,False,James A. Krauskopf,1933791972,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-23,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+worsen,recession,6,other,False,,1933796070,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-23,,2008-11,2009-05,recession,True,0.9,0.009999999999999995,221.9536
+improve,expansion,6,other,True,,1933796070,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-11-23,,2008-11,2009-05,recession,False,0.7,0.48999999999999994,221.9536
+worsen,recession,6,editorial,False,,1933796130,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-07,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,editorial,False,,1933796130,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-07,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,editorial,False,,1933796130,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-07,,2008-12,2009-06,recession,True,0.9,0.009999999999999995,187.5302
+worsen,recession,6,editorial,True,,1933796130,proquest,economy,gfc_2008,crisis,,New York Times (2008-),,2008-12-07,,2008-12,2009-06,recession,True,0.7,0.09000000000000002,187.5302
