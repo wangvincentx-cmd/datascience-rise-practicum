@@ -15,6 +15,15 @@ kappa above 0.6 is substantial agreement, above 0.8 near-perfect.
 
   python validate_kappa.py kappa --arm economy
 
+Add --source to validate one source in isolation, e.g. the GPT extraction:
+  python validate_kappa.py sample --arm economy --source proquest
+
+PROQUEST runs INSIDE the TDM Studio VM. The exported pred_*.export.jsonl has
+claim_text stripped, so graders can only read the claims on the un-stripped
+in-VM files (this script skips the .export.jsonl copies automatically). Run all
+three steps in the VM; only the printed kappa NUMBERS leave (do not export
+validation_sample.csv or validation_disagreements.csv -- they contain claim_text).
+
 What the graders label (fill each column with exactly these values):
   economy arm  : grader col = predicted state -> "recession" / "expansion" / "not_a_prediction"
   elections arm: grader col = predicted winner (candidate or party) -> or "not_a_prediction"
@@ -27,16 +36,35 @@ import random
 from pathlib import Path
 
 import pandas as pd
-from sklearn.metrics import cohen_kappa_score
 
 SAMPLE_FRAC = 0.20
 SAMPLE_CAP = 200
 LABEL_COL = {"economy": "predicted_state_at_horizon", "elections": "predicted_winner"}
 
 
-def load_claims(arm):
+def cohen_kappa(a, b):
+    """Cohen's kappa for two label sequences (no sklearn dependency, so this
+    runs in the locked TDM Studio VM with just pandas)."""
+    from collections import Counter
+    a, b = list(a), list(b)
+    n = len(a)
+    if n == 0:
+        return float("nan")
+    po = sum(x == y for x, y in zip(a, b)) / n
+    ca, cb = Counter(a), Counter(b)
+    pe = sum((ca[lbl] / n) * (cb[lbl] / n) for lbl in set(a) | set(b))
+    return 1.0 if pe >= 1 else (po - pe) / (1 - pe)
+
+
+def load_claims(arm, source=None):
+    """Load extracted claims for an arm, optionally only one source (e.g.
+    'proquest'). Skips *.export.jsonl (the text-stripped export copies) so
+    validation runs on the in-VM files that still carry claim_text."""
     rows = []
-    for path in glob.glob(f"data/predictions/pred_*_{arm}_*.jsonl"):
+    pattern = f"data/predictions/pred_{source or '*'}_{arm}_*.jsonl"
+    for path in glob.glob(pattern):
+        if path.endswith(".export.jsonl"):
+            continue
         with open(path) as f:
             for line in f:
                 r = json.loads(line)
@@ -45,8 +73,8 @@ def load_claims(arm):
     return pd.DataFrame(rows)
 
 
-def mode_sample(arm):
-    df = load_claims(arm)
+def mode_sample(arm, source=None):
+    df = load_claims(arm, source)
     if df.empty:
         raise SystemExit(f"No {arm} claims found yet.")
     n = min(max(int(len(df) * SAMPLE_FRAC), 10), SAMPLE_CAP, len(df))
@@ -81,9 +109,9 @@ def mode_kappa(arm):
     for col in ("grader_A", "grader_B", "llm_label"):
         df[col] = df[col].astype(str).str.strip().str.lower()
 
-    ab = cohen_kappa_score(df["grader_A"], df["grader_B"])
-    a_llm = cohen_kappa_score(df["grader_A"], df["llm_label"])
-    b_llm = cohen_kappa_score(df["grader_B"], df["llm_label"])
+    ab = cohen_kappa(df["grader_A"], df["grader_B"])
+    a_llm = cohen_kappa(df["grader_A"], df["llm_label"])
+    b_llm = cohen_kappa(df["grader_B"], df["llm_label"])
     print(f"n = {len(df)} double-coded claims ({arm} arm)")
     print(f"Cohen's kappa, grader A vs grader B : {ab:.3f}")
     print(f"Cohen's kappa, grader A vs LLM      : {a_llm:.3f}")
@@ -102,8 +130,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("mode", choices=["sample", "kappa"])
     ap.add_argument("--arm", choices=["economy", "elections"], required=True)
+    ap.add_argument("--source", choices=["loc", "nyt", "proquest"],
+                    help="validate only one source (e.g. proquest); default all")
     args = ap.parse_args()
-    (mode_sample if args.mode == "sample" else mode_kappa)(args.arm)
+    if args.mode == "sample":
+        mode_sample(args.arm, args.source)
+    else:
+        mode_kappa(args.arm)
 
 
 if __name__ == "__main__":

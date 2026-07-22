@@ -43,6 +43,7 @@ Resume-safe: already-parsed GOIDs are skipped on rerun.
 import argparse
 import csv
 import json
+from collections import Counter
 from pathlib import Path
 
 from lxml import etree, html
@@ -169,6 +170,34 @@ def inspect(xml_files):
         print("\nAll core fields populated. Safe to run without --inspect.")
 
 
+def _paper_only(path):
+    """Extract just the publication title (skips body parsing, for a fast tally)."""
+    try:
+        root = etree.parse(str(path), PARSER).getroot()
+    except (etree.XMLSyntaxError, OSError):
+        return None
+    if root is None:
+        return None
+    pub, _ = _xpath_text(root, PUBTITLE_XPATHS)
+    return pub or "<no publication title>"
+
+
+def count_papers(xml_files):
+    """Tally unique newspaper_title across the whole dataset, most common first."""
+    counts = Counter()
+    unparsed = 0
+    for path in xml_files:
+        pub = _paper_only(path)
+        if pub is None:
+            unparsed += 1
+        else:
+            counts[pub] += 1
+    print(f"{len(xml_files)} files, {len(counts)} unique papers"
+          + (f", {unparsed} unparsed" if unparsed else ""))
+    for paper, n in counts.most_common():
+        print(f"  {n:6d}  {paper}")
+
+
 def run_dataset(arm, window_id, dataset_dir, extra_meta, limit=None):
     out_dir = Path("data/raw")
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -219,17 +248,19 @@ def main():
     ap.add_argument("--limit", type=int, default=None, help="max files, for testing")
     ap.add_argument("--inspect", action="store_true",
                     help="parse a few files, print matched tags, write nothing")
+    ap.add_argument("--papers", action="store_true",
+                    help="tally unique newspaper_title across the whole dataset, write nothing")
     args = ap.parse_args()
 
     dataset_dir = Path(args.dataset_dir)
     if not dataset_dir.is_dir():
         raise SystemExit(f"No such dataset dir: {dataset_dir}")
 
-    if args.inspect:
+    if args.inspect or args.papers:
         xml_files = sorted(dataset_dir.rglob("*.xml"))
         if not xml_files:
             raise SystemExit(f"No .xml files under {dataset_dir}")
-        inspect(xml_files)
+        (count_papers if args.papers else inspect)(xml_files)
         return
 
     if args.arm == "elections":
