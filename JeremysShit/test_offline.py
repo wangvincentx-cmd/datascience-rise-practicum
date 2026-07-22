@@ -293,4 +293,30 @@ f_neutral = hl.hedging_features("Corn was harvested across the county last week.
 check("hedging_features: no markers -> neutral, zero score",
       f_neutral["hedge_class"] == "neutral" and f_neutral["hedge_score"] == 0)
 
+# ---------- spf_benchmark.py ----------
+print("spf_benchmark:")
+import spf_benchmark as spf
+
+check("direction_label: strong growth -> improve", spf.direction_label(3.0, 1.0) == "improve")
+check("direction_label: contraction -> worsen", spf.direction_label(-2.0, 1.0) == "worsen")
+check("direction_label: within band -> no_change", spf.direction_label(0.5, 1.0) == "no_change")
+check("direction_label: NaN forecast -> empty (unscorable)",
+      spf.direction_label(float("nan"), 1.0) == "")
+check("survey_date: 1970 Q2 starts in April 1970",
+      spf.survey_date(1970, 2) == pd.Timestamp("1970-04-01"))
+
+# score_spf with an injected realized fn (no FRED needed): forecast columns
+# average to +4.0 -> 'improve'; stub says reality also improved -> hit.
+spf_df = pd.DataFrame([{"YEAR": 1975, "QUARTER": 1,
+                        "DRGDP3": 3.0, "DRGDP4": 4.0, "DRGDP5": 5.0, "DRGDP6": 4.0},
+                       {"YEAR": 1980, "QUARTER": 1,
+                        "DRGDP3": -3.0, "DRGDP4": -2.0, "DRGDP5": -2.0, "DRGDP6": -1.0}])
+sc_spf = spf.score_spf(spf_df, realized_dir_fn=lambda d: "improve", band=1.0)
+check("score_spf: mean forecast +4 -> predicted 'improve'",
+      sc_spf.loc[0, "predicted_label"] == "improve")
+check("score_spf: predicted improve vs realized improve -> hit=1",
+      sc_spf.loc[0, "hit"] == 1)
+check("score_spf: mean forecast -1 -> predicted 'worsen', realized improve -> hit=0",
+      sc_spf.loc[1, "predicted_label"] == "worsen" and sc_spf.loc[1, "hit"] == 0)
+
 print(f"\nALL {PASS} CHECKS PASSED")

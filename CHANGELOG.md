@@ -279,6 +279,38 @@ git history for full CHANGELOG detail pre-pivot):
       hold); **#1 is supporting** (persistent optimism) with an honest
       power caveat. None required new scraping, LLM spend, or ProQuest.
 
+- [x] **SPF professional-forecaster benchmark added (2026-07-22, idea #4).**
+      `spf_benchmark.py` scores the Survey of Professional Forecasters -- which
+      disagreement.py already frames itself against but the project never
+      actually scored -- on the IDENTICAL ground truth the newspapers use
+      (score_claims.realized_direction, INDPRO/NBER, 12-mo window), over the
+      overlapping 1968+ era. Data: Philly Fed median_rgdp_growth.xlsx (free,
+      quarterly, 1968Q4-2026), auto-downloaded + cached. SPF's ~1-year call =
+      mean of DRGDP3..DRGDP6 (the four quarters AFTER the survey quarter --
+      leakage-safe), banded to improve/worsen/no_change (--band, default 1.0
+      annualized %). Needed a robust .xlsx loader: Philly Fed files carry a
+      date-only docProps `modified` field that crashes openpyxl (TypeError:
+      expected datetime); `read_xlsx_robust()` strips those elements in-memory
+      before pandas reads -- reusable for any Philly Fed file (incl. Livingston).
+      **CLEAN STANDALONE RESULT: SPF directional hit 54.1% (95% CI [47.6,60.6],
+      n=231), prediction mix improve 94% / no_change 6% / WORSEN 0%** -- the
+      professionals essentially NEVER forecast a contraction a year out
+      (Loungani 2001, "failure to predict recessions"); they score decently by
+      siding with the economy's usual upward drift, not by calling turning
+      points. Nice convergence for the poster: **SPF 54.1% ~= Livingston 54.4%
+      ~= Michigan ~55%** -- three independent benchmarks, different eras, all
+      hover just above a coin flip on turning-point-inclusive directional calls.
+      **HONEST CONFOUND, disclosed in the output and here:** the raw press-vs-SPF
+      hit-rate gap (newspapers 30.8% vs SPF 54.1%, 1968+) is NOT a clean skill
+      comparison -- the post-1968 newspaper corpus is NYT crisis-windowed, so it
+      over-samples downturns and skews pessimistic (worsen share 58%), while SPF
+      is a continuous quarterly survey. The sampling-robust contrast is the
+      PREDICTION MIX (SPF ~0% worsen vs the crisis-sampled press), not the hit
+      rate -- same NYT under-sampling limit flagged elsewhere. 8 new offline
+      tests (direction_label, survey_date, score_spf with an injected realized
+      fn so no FRED needed), suite now 62/62. Outputs `spf_scored.csv`,
+      `figures/fig_spf_benchmark.png`.
+
 - [x] **Data cleaning pass (2026-07-19, user: "do some data cleaning...
       outliers... missing data").** Investigated before acting — this
       corpus doesn't have classic sensor-noise numeric outliers, so a
