@@ -22,6 +22,7 @@ import argparse
 import csv
 import json
 import re
+import ssl
 import time
 import urllib.parse
 import urllib.request
@@ -134,6 +135,29 @@ EPISODES = [
 ]
 
 
+def _ssl_context():
+    """Verifying SSL context that survives a TLS-intercepting proxy.
+
+    Machines behind corporate TLS inspection (and some antivirus products)
+    present a re-signed chain whose root is in the OS trust store but NOT in
+    certifi's bundle, so every HTTPS host fails with CERTIFICATE_VERIFY_FAILED
+    -- loc.gov and FRED included. `truststore` delegates to the OS store, which
+    fixes it while STILL VERIFYING. Never fall back to an unverified context."""
+    try:
+        import truststore
+        return truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    except ImportError:
+        pass
+    try:
+        import certifi
+        return ssl.create_default_context(cafile=certifi.where())
+    except ImportError:
+        return ssl.create_default_context()
+
+
+SSL_CONTEXT = _ssl_context()
+
+
 def _get(url: str) -> bytes:
     """Fetch a URL with disk caching, politeness delay, and retry with backoff."""
     CACHE_DIR.mkdir(exist_ok=True)
@@ -145,7 +169,8 @@ def _get(url: str) -> bytes:
         try:
             time.sleep(SLEEP_SECONDS)
             req = urllib.request.Request(url, headers=HEADERS)
-            data = urllib.request.urlopen(req, timeout=90).read()
+            data = urllib.request.urlopen(req, timeout=90,
+                                          context=SSL_CONTEXT).read()
             cache_file.write_bytes(data)
             return data
         except Exception as e:

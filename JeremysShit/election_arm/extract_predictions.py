@@ -182,9 +182,14 @@ Rules:
 def _prompt_and_context(record, arm):
     prompt = ELECTIONS_PROMPT if arm == "elections" else ECONOMY_PROMPT
     text = record["ocr_text"][:MAX_OCR_CHARS]
+    # The window id is deliberately withheld from the model: ids like
+    # "crash_1929" / "calm_1965" name the OUTCOME, so passing them told the
+    # extractor what happened before it labeled the prediction's direction --
+    # hindsight leakage into the label. Date and newspaper are legitimate (both
+    # were known to whoever wrote the page). The election cycle is kept for the
+    # elections arm because it names the contest, not the result.
     context = (f"Newspaper: {record.get('newspaper_title')}\n"
-               f"Date: {record.get('date')}\n"
-               f"Window: {record.get('window')}\n")
+               f"Date: {record.get('date')}\n")
     if arm == "elections":
         context += f"Election cycle: {record.get('cycle')}\n"
     return prompt, f"{context}\nText:\n{text}"

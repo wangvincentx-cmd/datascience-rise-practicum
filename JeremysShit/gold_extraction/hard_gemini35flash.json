@@ -1,0 +1,9 @@
+{
+  "name": "gemini35flash",
+  "overall": 0.9772727272727273,
+  "n": 44,
+  "include_ok": 11,
+  "include_n": 12,
+  "exclude_ok": 32,
+  "exclude_n": 32
+}

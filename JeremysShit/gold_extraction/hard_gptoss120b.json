@@ -1,0 +1,9 @@
+{
+  "name": "gptoss120b",
+  "overall": 0.7045454545454546,
+  "n": 44,
+  "include_ok": 9,
+  "include_n": 12,
+  "exclude_ok": 22,
+  "exclude_n": 32
+}
