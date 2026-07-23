@@ -94,6 +94,65 @@ the Jupyter *terminal*. Two reliable methods:
 
 ---
 
+## 3.5 Notebook bootstrap: empty workbench → ready to run
+
+This is the part that trips people up. Do it once per fresh workbench, in order.
+
+**A. Transfer all scripts + config in ONE shot.** The VM can't `git pull`, so bundle
+the needed files into a tarball, base64 it, and paste one command. On the **Mac**, from
+`JeremysShit/election_arm`, generate the paste:
+```
+tar czf - tdm_parse.py extract_gpt.py strip_for_export.py run_all_economy.sh \
+  sample_claims.py validate_kappa.py analyze_economy.py model.py \
+  data/windows_economy.csv data/nber_recessions.csv data/proquest_datasets.csv \
+  data/epu_monthly.csv | base64 | tr -d '\n'
+```
+Copy that blob, then in the **VM Jupyter terminal** paste ONE command:
+```
+mkdir -p /home/ec2-user/SageMaker/election_arm && cd /home/ec2-user/SageMaker/election_arm && \
+echo <PASTE_BLOB_HERE> | base64 -d | tar xzf -
+```
+That recreates every script and the `data/` CSVs in the right layout. (Datasets and
+prediction outputs are NOT transferred — datasets get built in the dashboard, §4;
+predictions get generated in §5.)
+
+**B. Confirm the Python env has the packages.** Find the sample env and test the exact
+interpreter the scripts use:
+```
+conda env list                       # find the sample-* env name
+/home/ec2-user/SageMaker/.conda/envs/<sample-env>/bin/python -c "import lxml, openai; print('ok')"
+```
+If it errors on `lxml`, install into that env (`conda`, not `pip` — no internet):
+```
+conda install -n <sample-env> lxml -y
+```
+Then set `run_all_economy.sh`'s `PY=` line to that interpreter's full path.
+
+**C. Expose the GPT proxy** so `extract_gpt.py` can auto-discover it:
+```
+jupyter nbconvert --to script --stdout \
+  ".../ProQuest TDM Studio Samples/GPT_Batch_Processing.ipynb" > gpt_sample.txt
+```
+
+**D. Smoke-test the proxy** (one throwaway call — proves the key/URL/model resolve and the
+daily quota isn't already spent):
+```
+<sample-python> -c "
+from extract_gpt import make_client
+class A: sample='gpt_sample.txt'; base_url=key_file=model=None
+client, model = make_client(A)
+print(client.chat.completions.create(model=model, max_tokens=5,
+    messages=[{'role':'user','content':'say ok'}]).choices[0].message.content)
+"
+```
+Prints `ok` → the notebook is fully set up and ready. Errors with `day rate exceeded` →
+setup is fine, you're just quota-capped; try again after it resets. Any other error →
+check the discovered base_url/key path in `make_client`'s printout.
+
+After A–D succeed, go to §4 (build a dataset) then §5 (run).
+
+---
+
 ## 4. Building a dataset in the ProQuest dashboard
 
 One ProQuest dataset = one window. Steps:
