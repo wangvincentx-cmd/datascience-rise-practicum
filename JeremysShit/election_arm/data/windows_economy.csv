@@ -12,6 +12,7 @@ crash_1987,crisis,Black Monday 1987,1987-10-01,1988-04-30,NYT only; crash with N
 gulf_1990,crisis,1990 recession,1990-07-01,1991-01-31,NYT only; NBER Jul 1990-Mar 1991
 dotcom_2001,crisis,Dot-com bust,2001-03-01,2001-09-30,NYT only; NBER Mar-Nov 2001
 gfc_2008,crisis,Financial crisis 2008,2008-09-01,2009-03-31,NYT only; Lehman Sep 2008; NBER Dec 2007-Jun 2009
+covid_2020,crisis,COVID-19 crash 2020,2020-01-01,2020-07-31,NYT/ProQuest; NBER Feb-Apr 2020 (shortest recession on record); pandemic-driven not a financial-system crisis - may behave differently than the other crisis windows
 calm_1905,placebo,Calm 1905,1905-03-01,1905-09-30,Mid-expansion baseline
 calm_1925,placebo,Calm 1925,1925-03-01,1925-09-30,Mid-expansion baseline
 calm_1955,placebo,Calm 1955,1955-03-01,1955-09-30,Mid-expansion baseline

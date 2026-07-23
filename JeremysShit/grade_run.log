@@ -1,0 +1,176 @@
+Grading 1324 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+  25/1324 graded
+  50/1324 graded
+  75/1324 graded
+    rate limited, waiting 312s
+Resuming: 91 claims already graded in claims_graded.csv
+Grading 1233 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+  25/1233 graded
+    rate limited, waiting 690s
+Resuming: 133 claims already graded in claims_graded.csv
+Grading 1191 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 498s
+Resuming: 136 claims already graded in claims_graded.csv
+Grading 1188 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 811s
+Resuming: 139 claims already graded in claims_graded.csv
+Grading 1185 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 814s
+Resuming: 143 claims already graded in claims_graded.csv
+Grading 1181 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 765s
+Resuming: 144 claims already graded in claims_graded.csv
+Grading 1180 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 287s
+Resuming: 134 claims already graded in claims_graded.csv
+Grading 1190 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 139s
+Resuming: 115 claims already graded in claims_graded.csv
+Grading 1209 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 438s
+Resuming: 97 claims already graded in claims_graded.csv
+Grading 1227 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 450s
+Grading 1324 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    retry after error: The read operation timed out
+    rate limited, waiting 892s
+Resuming: 15 claims already graded in claims_graded.csv
+Grading 1309 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 358s
+Resuming: 30 claims already graded in claims_graded.csv
+Grading 1294 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 737s
+Resuming: 46 claims already graded in claims_graded.csv
+Grading 1278 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 865s
+Resuming: 62 claims already graded in claims_graded.csv
+Grading 1262 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 508s
+Resuming: 78 claims already graded in claims_graded.csv
+Grading 1246 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 349s
+Resuming: 79 claims already graded in claims_graded.csv
+Grading 1245 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 757s
+Resuming: 81 claims already graded in claims_graded.csv
+Grading 1243 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 283s
+    rate limited, waiting 3s
+    rate limited, waiting 1099s
+Resuming: 83 claims already graded in claims_graded.csv
+Grading 1241 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 210s
+    rate limited, waiting 1115s
+Resuming: 85 claims already graded in claims_graded.csv
+Grading 1239 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 521s
+Resuming: 87 claims already graded in claims_graded.csv
+Grading 1237 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 657s
+Resuming: 89 claims already graded in claims_graded.csv
+Grading 1235 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 726s
+Resuming: 91 claims already graded in claims_graded.csv
+Grading 1233 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 466s
+Resuming: 92 claims already graded in claims_graded.csv
+Grading 1232 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 471s
+Resuming: 93 claims already graded in claims_graded.csv
+Grading 1231 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 62s
+    rate limited, waiting 1106s
+Resuming: 95 claims already graded in claims_graded.csv
+Grading 1229 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 357s
+Resuming: 96 claims already graded in claims_graded.csv
+Grading 1228 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 8s
+    rate limited, waiting 194s
+    rate limited, waiting 953s
+Resuming: 98 claims already graded in claims_graded.csv
+Grading 1226 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 789s
+Resuming: 100 claims already graded in claims_graded.csv
+Grading 1224 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 695s
+Resuming: 102 claims already graded in claims_graded.csv
+Grading 1222 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 272s
+    rate limited, waiting 193s
+Resuming: 103 claims already graded in claims_graded.csv
+Grading 1221 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 737s
+Resuming: 105 claims already graded in claims_graded.csv
+Grading 1219 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 726s
+Resuming: 106 claims already graded in claims_graded.csv
+Grading 1218 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 570s
+Resuming: 107 claims already graded in claims_graded.csv
+Grading 1217 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 453s
+Resuming: 108 claims already graded in claims_graded.csv
+Grading 1216 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 57s
+    rate limited, waiting 918s
+Resuming: 110 claims already graded in claims_graded.csv
+Grading 1214 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 465s
+Resuming: 111 claims already graded in claims_graded.csv
+Grading 1213 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 56s
+    rate limited, waiting 193s
+    rate limited, waiting 915s
+Resuming: 113 claims already graded in claims_graded.csv
+Grading 1211 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 977s
+Resuming: 115 claims already graded in claims_graded.csv
+Grading 1209 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 909s
+Resuming: 117 claims already graded in claims_graded.csv
+Grading 1207 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 42s
+    rate limited, waiting 194s
+    rate limited, waiting 917s
+Resuming: 119 claims already graded in claims_graded.csv
+Grading 1205 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 476s
+Resuming: 121 claims already graded in claims_graded.csv
+Grading 1203 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 471s
+Resuming: 122 claims already graded in claims_graded.csv
+Grading 1202 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 383s
+Resuming: 123 claims already graded in claims_graded.csv
+Grading 1201 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 91s
+    rate limited, waiting 908s
+Resuming: 125 claims already graded in claims_graded.csv
+Grading 1199 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 388s
+Resuming: 126 claims already graded in claims_graded.csv
+Grading 1198 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 1144s
+Resuming: 128 claims already graded in claims_graded.csv
+Grading 1196 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 921s
+Resuming: 130 claims already graded in claims_graded.csv
+Grading 1194 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 595s
+Resuming: 132 claims already graded in claims_graded.csv
+Grading 1192 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 712s
+Resuming: 133 claims already graded in claims_graded.csv
+Grading 1191 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 183s
+    rate limited, waiting 909s
+Resuming: 135 claims already graded in claims_graded.csv
+Grading 1189 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 494s
+Resuming: 136 claims already graded in claims_graded.csv
+Grading 1188 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 568s
+Resuming: 137 claims already graded in claims_graded.csv
+Grading 1187 claims with llama-3.3-70b-versatile at https://api.groq.com/openai/v1
+    rate limited, waiting 197s

@@ -9,11 +9,13 @@
     </option>
     <option name="sessionPaths">
       <map>
+        <entry key="0001e17e-28a6-4bc0-9348-3bf9cb408dca" value="/sessions/18df3974-7daf-4441-a560-a2ca73307b9c" />
         <entry key="8a30c312-ef40-4637-8dfa-b8d4e39ea474" value="/sessions/4e2396aa-554c-491b-bc85-d018bf1c35dd" />
       </map>
     </option>
     <option name="sessionTitles">
       <map>
+        <entry key="0001e17e-28a6-4bc0-9348-3bf9cb408dca" value="read proquest extraction file and give me instruct" />
         <entry key="8a30c312-ef40-4637-8dfa-b8d4e39ea474" value="does the model predict which newspaper companies h" />
       </map>
     </option>
