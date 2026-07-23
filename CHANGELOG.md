@@ -221,6 +221,21 @@ Two arms are tracked here: **bill_arm** (primary) and the **economy arm**
       10 training rows; needs a month-level corpus expansion to be viable.
 - [ ] NYT run for the 6 post-1963 windows in `election_arm/data/windows_economy.csv`
       to extend coverage toward 2010.
+- [ ] **ProQuest `covid_2020` window IN PROGRESS.** Added `covid_2020`
+      (crisis, 2020-01-01..2020-07-31, NBER Feb-Apr 2020) to
+      `election_arm/data/windows_economy.csv`; dataset `covid2020` built in the
+      TDM dashboard and parsed in-VM (`tdm_parse.py`). `extract_gpt.py` running
+      against the in-VM proxy. Note: this makes crisis:placebo 7:3 (was 6:3) and
+      it's a pandemic-driven, not financial-system, crisis — flag as a possible
+      outlier. Finish the run, then strip+export label-only preds to the Mac.
+- [ ] Fixed `extract_gpt.py` quitting after ~112 articles: a *transient*
+      per-minute token limit (`token/minute rate reached`) was matched by the
+      old `_is_rate_limit()` and misread as the permanent daily cost cap, so the
+      whole run stopped. Split into `_is_daily_cap()` (day rate / cost/day →
+      stop cleanly) vs `_is_transient_rate_limit()` (per-minute → wait `TPM_WAIT`
+      65s and retry, bounded by MAX_RETRIES). Same bug class as the
+      `grade_claims.py` throttle fix. VM copy must be re-synced for the fix to
+      take effect.
 
 ## Known limits / needs improvement
 

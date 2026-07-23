@@ -122,16 +122,32 @@ class RateLimitReached(Exception):
     resets, so we stop cleanly and resume on the next run instead of grinding."""
 
 
-def _is_rate_limit(err):
-    """True if the error is a quota/rate limit (e.g. ProQuest's daily cap)."""
+TPM_WAIT = 65   # per-minute token/request window resets each minute; wait it out
+
+
+def _is_daily_cap(err):
+    """True ONLY for the per-DAY cost cap (permanent until the daily reset).
+    A per-minute token/request limit must NOT match here -- it is transient and
+    should be waited out and retried, not misread as end-of-day. The daily cap
+    surfaces as 'Application cost/day rate exceeded'."""
     s = str(err).lower()
-    return any(k in s for k in ("day rate", "daily", "rate limit", "ratelimit",
-                                "quota", "too many requests", "429"))
+    return any(k in s for k in ("day rate", "cost/day", "per day", "per-day",
+                                "daily"))
+
+
+def _is_transient_rate_limit(err):
+    """True for a transient throttle (per-minute token/request cap) that clears
+    on its own -- wait ~60s and retry rather than giving up on the article."""
+    s = str(err).lower()
+    return any(k in s for k in ("token/minute", "per minute", "per-minute",
+                                "requests per", "rate limit", "ratelimit",
+                                "too many requests", "429"))
 
 
 def call_model(client, model, record):
     """Return the model's raw text, or None on a non-fatal failure after retries.
-    Raises RateLimitReached on a quota error (caller should stop, not retry)."""
+    Raises RateLimitReached only on the DAILY cost cap (caller should stop). A
+    per-minute limit is waited out in-place so the run keeps going."""
     text = (record.get("ocr_text") or "")[:MAX_OCR_CHARS]
     context = (f"Newspaper: {record.get('newspaper_title')}\n"
                f"Date: {record.get('date')}\nWindow: {record.get('window')}\n")
@@ -144,8 +160,15 @@ def call_model(client, model, record):
             )
             return resp.choices[0].message.content.strip()
         except OpenAIError as e:
-            if _is_rate_limit(e):
+            if _is_daily_cap(e):
                 raise RateLimitReached(str(e))   # permanent until reset; stop now
+            if _is_transient_rate_limit(e):
+                # Transient per-minute cap: wait out the window and retry. Bounded
+                # by MAX_RETRIES so a (surprising) persistent limit can't loop
+                # forever; an exhausted article is left unmarked for the next run.
+                print(f"  per-minute rate limit; waiting {TPM_WAIT}s and retrying")
+                time.sleep(TPM_WAIT)
+                continue
             wait = 2 ** attempt * 5
             print(f"  OpenAI error ({e}); retry in {wait}s")
             time.sleep(wait)
