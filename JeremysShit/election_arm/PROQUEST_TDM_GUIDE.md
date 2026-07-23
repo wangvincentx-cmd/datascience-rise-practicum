@@ -116,28 +116,56 @@ That recreates every script and the `data/` CSVs in the right layout. (Datasets 
 prediction outputs are NOT transferred — datasets get built in the dashboard, §4;
 predictions get generated in §5.)
 
-**B. Confirm the Python env has the packages.** Find the sample env and test the exact
-interpreter the scripts use:
+**B. Find the Python env name and confirm its packages.** The env name has a version
+suffix that differs per workbench, so read it off `conda env list`:
 ```
-conda env list                       # find the sample-* env name
+conda env list
+```
+Pick the **`sample-*` env that is NOT `-r`** (the `-r` one is R, not Python) — e.g.
+`sample-2025.12.578`. If `conda` isn't found, first run
+`source /home/ec2-user/SageMaker/.conda/etc/profile.d/conda.sh`. Then test that the exact
+interpreter the scripts call has both packages:
+```
 /home/ec2-user/SageMaker/.conda/envs/<sample-env>/bin/python -c "import lxml, openai; print('ok')"
 ```
-If it errors on `lxml`, install into that env (`conda`, not `pip` — no internet):
+Prints `ok` → good. Errors on `lxml` → install into *that* env (`conda`, not `pip` — no
+internet), then re-test:
 ```
 conda install -n <sample-env> lxml -y
 ```
-Then set `run_all_economy.sh`'s `PY=` line to that interpreter's full path.
-
-**C. Expose the GPT proxy** so `extract_gpt.py` can auto-discover it:
+Finally, point `run_all_economy.sh` at that interpreter:
 ```
-jupyter nbconvert --to script --stdout \
-  ".../ProQuest TDM Studio Samples/GPT_Batch_Processing.ipynb" > gpt_sample.txt
+sed -i 's|^PY=.*|PY=/home/ec2-user/SageMaker/.conda/envs/<sample-env>/bin/python|' run_all_economy.sh
+```
+
+**C. Create `gpt_sample.txt` so `extract_gpt.py` can auto-discover the proxy.** It needs the
+proxy's base_url, key-file path, and model — all present in ProQuest's sample notebook.
+**Find that notebook by its contents** (the filename varies — searching by name often
+"matched no files"):
+```
+grep -rl -i "openai-compatible\|agai-proxy\|base_url" /home/ec2-user/SageMaker --include="*.ipynb" 2>/dev/null
+```
+Convert whatever it prints to text (quote the path — it has spaces):
+```
+cd /home/ec2-user/SageMaker/election_arm
+jupyter nbconvert --to script --stdout "<PATH_FROM_GREP>" > gpt_sample.txt
+grep -E "base_url|open\(|model" gpt_sample.txt     # verify all three are present
+```
+*Fallback if no notebook is found* — you only need the three values. Confirm the key file
+exists first (`find /home/ec2-user/SageMaker -iname "*token*" -o -iname "*agai*" 2>/dev/null`),
+then hand-write it (adjust the key path to what `find` reported):
+```
+cat > gpt_sample.txt <<'EOF'
+base_url = "https://agai-proxy.prod.int.tdmstudio.proquest.com/large-language-models-openai-compatible/"
+gpt_api_key = open("/home/ec2-user/SageMaker/.token/.agaitoken").read()
+model = "gpt_4o_mini"
+EOF
 ```
 
 **D. Smoke-test the proxy** (one throwaway call — proves the key/URL/model resolve and the
-daily quota isn't already spent):
+quota isn't already spent):
 ```
-<sample-python> -c "
+/home/ec2-user/SageMaker/.conda/envs/<sample-env>/bin/python -c "
 from extract_gpt import make_client
 class A: sample='gpt_sample.txt'; base_url=key_file=model=None
 client, model = make_client(A)
@@ -145,9 +173,10 @@ print(client.chat.completions.create(model=model, max_tokens=5,
     messages=[{'role':'user','content':'say ok'}]).choices[0].message.content)
 "
 ```
-Prints `ok` → the notebook is fully set up and ready. Errors with `day rate exceeded` →
-setup is fine, you're just quota-capped; try again after it resets. Any other error →
-check the discovered base_url/key path in `make_client`'s printout.
+Prints `using proxy base_url=...` then `ok` → the notebook is fully set up. Errors with
+`day rate exceeded` → setup is fine, you're just quota-capped; retry after reset. Any other
+error → check the base_url/key path in `make_client`'s printout (the key path may differ on
+this workbench).
 
 After A–D succeed, go to §4 (build a dataset) then §5 (run).
 
