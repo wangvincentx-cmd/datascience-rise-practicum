@@ -40,7 +40,7 @@ from openai import OpenAI, OpenAIError
 MAX_OCR_CHARS = 12000
 MODEL_FALLBACK = "gpt-4o-mini"
 REQUEST_DELAY = 0.5     # be gentle with ProQuest's shared proxy
-MAX_RETRIES = 4
+MAX_RETRIES = 6     # ride out per-minute (TPM/RPM) limits, which reset in ~60s
 
 # Identical to ECONOMY_PROMPT in extract_predictions.py -- keep them in sync.
 ECONOMY_PROMPT = """You extract economic predictions from historical newspaper text.
@@ -118,15 +118,28 @@ def make_client(args):
 
 
 class RateLimitReached(Exception):
-    """The proxy's daily/rate quota is exhausted. Retrying won't help until it
-    resets, so we stop cleanly and resume on the next run instead of grinding."""
+    """The proxy's per-DAY cost/quota cap is exhausted (needs ~a day to reset).
+    Retrying won't help until then, so we stop cleanly and resume on the next
+    run instead of grinding."""
 
 
-def _is_rate_limit(err):
-    """True if the error is a quota/rate limit (e.g. ProQuest's daily cap)."""
+def _is_daily_cap(err):
+    """True ONLY for the per-DAY cost/quota cap. A per-minute (tokens- or
+    requests-per-minute) 429 is NOT this -- it resets in ~60s, so it must fall
+    through to the retry/backoff path instead of stopping the whole batch.
+    ProQuest's daily error reads 'Application cost/day rate exceeded'."""
     s = str(err).lower()
-    return any(k in s for k in ("day rate", "daily", "rate limit", "ratelimit",
-                                "quota", "too many requests", "429"))
+    return any(k in s for k in ("day rate", "day-rate", "cost/day", "per day",
+                                "per-day", "daily limit", "daily quota"))
+
+
+def _retry_after(err):
+    """Seconds to wait from a Retry-After header, if the error carries one."""
+    try:
+        ra = err.response.headers.get("retry-after")
+        return float(ra) if ra else None
+    except Exception:
+        return None
 
 
 def call_model(client, model, record):
@@ -144,10 +157,12 @@ def call_model(client, model, record):
             )
             return resp.choices[0].message.content.strip()
         except OpenAIError as e:
-            if _is_rate_limit(e):
-                raise RateLimitReached(str(e))   # permanent until reset; stop now
-            wait = 2 ** attempt * 5
-            print(f"  OpenAI error ({e}); retry in {wait}s")
+            if _is_daily_cap(e):
+                raise RateLimitReached(str(e))   # needs ~a day; stop the batch
+            # Transient: per-minute 429, timeout, 5xx. Honor Retry-After if the
+            # server sent one (per-minute limits reset fast), else back off.
+            wait = _retry_after(e) or (2 ** attempt * 5)
+            print(f"  transient error, retry in {wait:.0f}s: {e}", flush=True)
             time.sleep(wait)
     return None
 
