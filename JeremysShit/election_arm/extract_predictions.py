@@ -155,8 +155,9 @@ Find every statement predicting the direction of the US economy: recession or
 depression coming, recovery expected, prosperity returning, hard times ahead,
 panic over, business improving or worsening. Include predictions about output,
 employment, or general business conditions. EXCLUDE stock tips, predictions
-about single companies, and pure descriptions of current conditions with no
-forward-looking element.
+about single companies, forecasts about a foreign economy (UK, Europe, Japan,
+etc.), and pure descriptions of current conditions with no forward-looking
+element.
 
 Return ONLY a JSON array. No markdown fences, no commentary. Each element:
 {
@@ -174,7 +175,8 @@ Rules:
 - predicted_state_at_horizon is what the claim implies the economy will be at
   that horizon: "hard times ahead" -> recession; "worst is over",
   "recovery expected", "prosperity will return" -> expansion.
-- Only forward-looking claims. If no predictions, return [].
+- Only forward-looking claims about the US national economy; skip forecasts
+  about other countries' economies. If no predictions, return [].
 - hedged=true when qualified (may, could, likely, some fear).
 - If direction is genuinely unclear, skip the claim."""
 
@@ -412,7 +414,7 @@ def load_done_ids(out_path):
 def main():
     global MODEL
     ap = argparse.ArgumentParser()
-    ap.add_argument("--source", choices=["loc", "nyt"], required=True)
+    ap.add_argument("--source", choices=["loc", "nyt", "proquest"], required=True)
     ap.add_argument("--arm", choices=["elections", "economy"], required=True)
     ap.add_argument("--window", required=True,
                     help="elections: the year (e.g. 1948) or 'all' for every "
