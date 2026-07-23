@@ -117,7 +117,21 @@ def make_client(args):
     return OpenAI(api_key=api_key, base_url=base_url), model
 
 
+class RateLimitReached(Exception):
+    """The proxy's daily/rate quota is exhausted. Retrying won't help until it
+    resets, so we stop cleanly and resume on the next run instead of grinding."""
+
+
+def _is_rate_limit(err):
+    """True if the error is a quota/rate limit (e.g. ProQuest's daily cap)."""
+    s = str(err).lower()
+    return any(k in s for k in ("day rate", "daily", "rate limit", "ratelimit",
+                                "quota", "too many requests", "429"))
+
+
 def call_model(client, model, record):
+    """Return the model's raw text, or None on a non-fatal failure after retries.
+    Raises RateLimitReached on a quota error (caller should stop, not retry)."""
     text = (record.get("ocr_text") or "")[:MAX_OCR_CHARS]
     context = (f"Newspaper: {record.get('newspaper_title')}\n"
                f"Date: {record.get('date')}\nWindow: {record.get('window')}\n")
@@ -130,6 +144,8 @@ def call_model(client, model, record):
             )
             return resp.choices[0].message.content.strip()
         except OpenAIError as e:
+            if _is_rate_limit(e):
+                raise RateLimitReached(str(e))   # permanent until reset; stop now
             wait = 2 ** attempt * 5
             print(f"  OpenAI error ({e}); retry in {wait}s")
             time.sleep(wait)
@@ -204,8 +220,23 @@ def main():
             record = json.loads(line)
             if record["page_id"] in done:
                 continue
-            raw = call_model(client, model, record)
-            claims = parse_claims(raw, record) if raw else []
+            try:
+                raw = call_model(client, model, record)
+            except RateLimitReached as e:
+                print(f"\n*** DAILY/RATE LIMIT reached: {e}")
+                print(f"*** Stopping cleanly at {processed} pages this run "
+                      f"({with_pred} with predictions, {total_claims} claims).")
+                print("*** This page is NOT marked done -- just re-run after the "
+                      "quota resets and it resumes exactly here.")
+                raise SystemExit(2)   # exit 2 signals the batch runner to stop
+            if raw is None:
+                # A non-quota failure that exhausted retries. Do NOT mark done and
+                # do NOT record a fake 'no_predictions' -- leave it for a rerun to
+                # retry, so real articles aren't lost as false empties.
+                print(f"  giving up on {record['page_id']} after retries "
+                      f"(left unmarked; will retry next run)")
+                continue
+            claims = parse_claims(raw, record)   # call succeeded: [] is a genuine empty
             if not claims:
                 out.write(json.dumps({"page_id": record["page_id"],
                                       "no_predictions": True}) + "\n")

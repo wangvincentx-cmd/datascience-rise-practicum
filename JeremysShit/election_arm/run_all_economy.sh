@@ -44,8 +44,16 @@ for w in $WINDOWS; do
     fi
     $PY tdm_parse.py --arm economy --window "$w" --dataset-dir "$folder" \
         || { echo "  parse failed, skipping $w"; continue; }
-    $GPT_PY extract_gpt.py --source proquest --window "$w" \
-        || { echo "  extract stopped/failed on $w (rate limit?); re-run to resume"; continue; }
+    $GPT_PY extract_gpt.py --source proquest --window "$w"
+    rc=$?
+    if [ $rc -eq 2 ]; then
+        echo "  DAILY RATE LIMIT hit on $w -- stopping the batch."
+        echo "  Re-run this same command after the quota resets to resume here."
+        break
+    elif [ $rc -ne 0 ]; then
+        echo "  extract failed on $w (rc=$rc); skipping to next window"
+        continue
+    fi
     $PY strip_for_export.py "data/predictions/pred_proquest_economy_${w}.jsonl"
 done
 
