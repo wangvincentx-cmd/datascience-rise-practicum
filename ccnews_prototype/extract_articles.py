@@ -62,6 +62,7 @@ def main():
                 data = trafilatura.bare_extraction(
                     html, url=url, with_metadata=True,
                     include_comments=False, include_tables=False,
+                    as_dict=True,   # trafilatura 2.x returns a Document obj otherwise
                 )
             except Exception:
                 continue
