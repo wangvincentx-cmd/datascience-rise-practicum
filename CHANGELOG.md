@@ -1562,6 +1562,153 @@ reportable until a human fills in `human_narrative` and kappa is computed.)
 
 ## Not done / next up
 
+- [ ] **Re-extract the ProQuest corpus with `extract_llm.py` (in progress,
+      2026-07-24).** The 9-window ProQuest export on branch
+      `proquest-tdm-integration` (commit `9da000e`) was labelled by the crude
+      `extract_gpt.py` (single-shot prompt, 12k-char hard truncation, no
+      hallucination guard). Replacing it with `extract_llm.py` (chunked, strict
+      schema, quote-grounding guard) run against the same in-VM GPT proxy — the
+      raw parsed text (`data/raw/proquest_economy_{window}.jsonl`) is already in
+      the VM, so no dashboard rebuild is needed, only the extraction step.
+      `JeremysShit/PASTE_INTO_VM.txt` is a generated paste-helper (base64 blob +
+      per-window commands) for the VM terminal; NOT meant to be committed. Two
+      ProQuest-specific gotchas baked into that helper: (a) the export must drop
+      `extract_llm.py`'s verbatim-text field **`quote`** (the old
+      `strip_for_export.py` only drops `claim_text`), or the export leaks full
+      text; (b) `extract_llm.py`'s 429 handler was patched to recognise
+      ProQuest's daily-cap wording (`day rate`/`cost/day`) so it stops cleanly
+      instead of crashing on the quota reset. Also now covers `covid_2020`,
+      added since the last export. **4o-mini quality-gating step:** ProQuest is
+      forced onto `gpt_4o_mini` (only in-VM proxy model; can't reach the OpenAI
+      API from the locked VM), weaker than the `gpt-4.1` used on loc/nyt. To
+      quantify the gap rather than hand-wave it, the gold-eval harness
+      (`grade_claims.py` + `gold_extraction/{eval_extraction,gold_pages,
+      gold_claims}`) gets transferred into the VM (`GOLD_TRANSFER_TO_VM.txt`,
+      another generated base64 paste-helper, not for commit), 4o-mini is run
+      over the same 16 gold pages via `extract_llm.py`, and scored with
+      `eval_extraction.py` for precision/recall/F1 comparable to `RESULTS.md`.
+      Only the metrics JSON leaves the VM. Reporting rule stands: never pool
+      4o-mini ProQuest labels with 4.1 loc/nyt labels — always split by
+      `source`. **4o-mini gold result (2026-07-24): extraction F1 0.475**
+      (prec 0.42, rec 0.54) — bottom tier of the extraction bake-off, tied with
+      Llama-3.3-70B (0.522)/flash-lite (0.48), far below gemini-3.5-flash's 0.79
+      (which can't run in the VM). Note this is the EXTRACTION task; gpt-4.1's
+      0.89/0.90 is the GRADING kappa, a different job — don't conflate. Labels
+      on found claims are fine (`direction` kappa 0.83); the weakness is
+      precision. FP audit (`--verbose`): all 38 FPs fall into categories the
+      prompt already forbids at length (present-conditions, elections, policy
+      advocacy, conditionals, ads) — so a prompt tweak can't help and a verify
+      pass would be ~F1-neutral from rec 0.54 while doubling calls against the
+      daily cap. Decision: no re-prompt, no verify; lean on the free
+      `scope==national` downstream filter (most FPs are industry/regional/
+      non-economic and never enter national NBER scoring anyway).
+- [ ] **Schema-adapter needed before the reparsed corpus can score
+      (2026-07-24).** `extract_llm.py`'s output is NOT drop-in for
+      `analyze_economy.py`: the scorer keys on `predicted_state_at_horizon`
+      (recession/expansion) and `hedged` (bool) and needs `window`/
+      `window_kind`/`source`, but `extract_llm.py` emits `direction`
+      (improve/worsen/no_change/unclear) + `confidence` (assertive/hedged) and
+      injects none of the window metadata. Fed straight in, every `hit` is NaN.
+      Fix: `election_arm/adapt_llm_economy.py` (Mac, label-only) maps
+      worsen→recession, improve/no_change→expansion, unclear→drop,
+      confidence→hedged, injects window/window_kind (from `windows_economy.csv`)/
+      source=proquest, and applies the `scope==national` filter. One judgment
+      call: `no_change→expansion` (a "no recession coming" call is a real
+      expansion prediction, wanted esp. in placebo windows) — one-line switch to
+      drop instead. Pipeline is now extract → strip → **adapt** →
+      `analyze_economy.py`. **`adapt_llm_economy.py` written + unit-tested
+      2026-07-24** (synthetic export lines through the real mapping: worsen→
+      recession, improve/no_change→expansion, unclear+non-national dropped,
+      no_predictions preserved). Lives on branch `proquest-tdm-integration`.
+- [ ] **ProQuest scope decision (2026-07-24): finish `covid_2020` only; gate
+      the other 8 on a proxy-model check.** Reasoning: post-1963 full text is a
+      walled-garden monopoly (LOC ends 1963; NewsBank/Newspapers.com wall it the
+      same as ProQuest; GDELT is 2015+ metadata) and the credible post-1963
+      numbers already exist via the **NYT+gpt-4.1** corpus (done). ProQuest's
+      only edge is depth (full body vs NYT headline+lead) + publisher breadth,
+      but it's locked to gpt-4o-mini (F1 0.475) by the no-internet VM. So: (1)
+      finish `covid_2020` (already parsed, 4,209 XMLs) end-to-end as a pipeline
+      smoke-test AND a standalone probe; (2) run the proxy `/models` endpoint —
+      if it serves anything above `gpt_4o_mini` (some TDM deployments have full
+      `gpt-4o`), the ~1hr-each dashboard rebuild of the other 8 windows becomes
+      worth it; if mini-only, don't rebuild — lean on the NYT-4.1 corpus and use
+      ProQuest only as a narrow robustness/diversity note. Caveat: covid alone
+      scores its own hit-rate but can't power crisis-vs-placebo (needs the calm
+      windows rebuilt too).
+- [ ] **Proxy `/models` check done: `gpt-4o` (full) is available, and it does
+      NOT clear the bar (2026-07-24).** gpt-4o gold: F1 0.537 (prec 0.465, rec
+      0.635) vs mini's 0.475 (prec 0.42, rec 0.54). The +0.06 is all recall —
+      precision barely moved and it's the *identical 38 false positives*, proving
+      the precision ceiling is GPT-family over-extraction on these pages (ignores
+      the exclusion list), NOT a model-size gap; gemini-flash hits prec 1.00/0.84
+      / F1 0.79 but can't run in the locked VM. 4o's `direction` kappa is also
+      WORSE (0.70 vs mini's 0.83), and direction is what maps to the scored
+      recession/expansion call. At ~10-15x mini's per-token cost (and the daily
+      cap is a *cost* cap, so ~10-15x faster exhaustion over ~30k articles), 4o
+      is not worth it. **Decision: no full 9-window rebuild on either model;
+      finish `covid_2020` on mini as a pipeline test + single-window robustness
+      anecdote; the NYT+gpt-4.1 corpus remains the post-1963 story.** Open cheap
+      check: re-eval mini on the `scope==national` subset (the claims that
+      actually enter scoring) to see if effective precision is better than the
+      all-claims 0.46.
+- [ ] **Pivot away from ProQuest to the Fed Greenbook as a 4th benchmark
+      (2026-07-24).** Both VM-available OpenAI models cap at ~0.5 F1 / ~0.46
+      precision on ProQuest extraction (gemini, the 0.79 winner, can't run in the
+      locked VM), and the post-1963 *newspaper* problem is unfixable either way —
+      NYT is headline-only (recall-capped), ProQuest is deep-but-noisy. Rather
+      than keep fighting newspaper copyright, added the **Philadelphia Fed
+      Greenbook/Tealbook Data Set** (Fed Board staff real-time forecasts, monthly
+      by FOMC meeting, **Jan 1966–Dec 2020**) as forecaster #4 next to SPF/
+      Livingston/Michigan. It's structured numbers (no extraction, no LLM, no
+      precision problem), scored on the identical INDPRO/NBER rule via
+      `greenbook_benchmark.py` (mirrors `spf_benchmark.py`, reuses its
+      `read_xlsx_robust` Philly-Fed loader). Fit is BENCHMARK-only: it has none
+      of `model.py`'s newspaper features (publisher/voice/hedging/text), so it
+      does NOT feed the claim-accuracy model. Coverage note: the 5-yr FOMC
+      confidentiality lag means it never reaches 2021–2026, but every post-1963
+      crisis window (oil_1973 … gfc_2008, **covid_2020**) sits inside 1966–2020,
+      so it costs nothing. `greenbook_benchmark.py` scaffolded + syntax-checked;
+      PENDING a one-click manual download of the JS-gated Row-Format xlsx to
+      `cache/greenbook_row_format.xlsx`, then `--inspect` to map the real
+      sheet/date/forecast-column names (the only 3 constants left to finalize).
+      UPDATE 2026-07-24: user downloaded the **All-Column-Format** variant (a
+      folder of per-variable xlsx, columns = editions, rows = target quarters),
+      not the single-workbook Row Format the scaffold assumed — loader needs
+      adapting. Inspected the real layout: `gRGDP` has **490 editions
+      (1967-03-29 → 2020-12-04, covid included)**; exact modeling-row counts are
+      **1,804** (edition × horizon, +1..+4q ~1yr band) / **2,735** (all horizons)
+      / **480** (one call per edition). Folder also carries gIP (INDPRO-scored,
+      matches newspapers), UNEMP, gPCPI, +11 more variables.
+- [ ] **Forecast-credibility model planned (2026-07-24, `forecast_credibility_
+      PLAN.md`).** "Given a forecast + the economy's state when it was made, P(it
+      comes true)." Small tabular (~1.8-2.7k rows × ~14 features) → logistic
+      regression primary + shallow trees secondary; NO neural net (too small,
+      needs interpretability). User's design: **3 models — Greenbook-only,
+      Livingston-only, Combined — compared**, with a `source` tag throughout.
+      Guardrails locked to keep the comparison fair: shared (intersection)
+      feature set for the head-to-head (source-native extras — Livingston
+      dispersion, Greenbook gap — reported separately); report full-era AND the
+      1967-2020 overlap; add cross-source transfer (train A→test B ⇒ is
+      credibility a general property?); source-stratified reporting so Livingston
+      (~few hundred rows) isn't drowned by Greenbook volume. Same discipline as
+      model.py: split by era not random, PR-AUC/ROC/Brier/calibration, real-time
+      state features only. Build order: adapt greenbook loader → greenbook_scored
+      .csv → forecast_credibility.py.
+      SOURCES LOCKED (user, 2026-07-24): **US-only, three forecasters —
+      Greenbook + Livingston + SPF individual microdata.** SPF adds forecaster
+      IDENTITY (individual responses, `Individual_RGDP.xlsx` 683 KB confirmed
+      curl-able), multi-variable, dispersion, and the **Anxious Index**
+      (P(GDP decline) — a ready-made recession-probability). EXCLUDED by user:
+      Fed SEP (too recent) and ALL international (IMF/OECD) — keeps US scope at
+      the cost of turning-point power (accepted; frame as calibration).
+      Provenance discipline REQUIRED since 3 different forecaster types are being
+      merged: every row carries core harmonized fields + a `source`/`forecaster_id`
+      tag + never-dropped provenance columns (`source_file`, `variable_native`,
+      `horizon_native`); source-native extras namespaced (`livingston_dispersion`,
+      `greenbook_output_gap`, `spf_forecaster_track_record`) and kept out of the
+      shared-feature head-to-head; a variable crosswalk + a per-build merge audit
+      (rows × source × variable × era). Reported caveat: sources share the same
+      ~8–12 US recessions, so combined n ≠ independent episodes.
 - [ ] **Scale the regex-vs-LLM recall spot-check to a real sample** (see
       "Spot-check" entry above) — 10-20 pages across multiple episodes,
       to get an actual recall-gap estimate instead of the n=1 anecdote.
