@@ -21,7 +21,7 @@ cache/
 #   pages_monthly.jsonl ~500 MB   scrape_monthly.py, the 1900-1963 scrape
 #   claims_*.jsonl                extract_llm.py output
 JeremysShit/data/pages.jsonl
-JeremysShit/data/monthly/
+# JeremysShit/data/monthly/
 JeremysShit/claims_v2.jsonl
 JeremysShit/claims_monthly.jsonl
 JeremysShit/gold_extraction/pred_*.jsonl
