@@ -41,6 +41,9 @@ def main():
     ap.add_argument("--domains", default=None)
     ap.add_argument("--min-chars", type=int, default=300,
                     help="skip articles with less body text than this")
+    ap.add_argument("--max-records", type=int, default=0,
+                    help="stop after this many HTML responses (0 = no limit); "
+                         "use a small value like 500 for a fast test run")
     args = ap.parse_args()
 
     domains = load_domains(args.domains)
@@ -57,6 +60,8 @@ def main():
             if "html" not in ctype.lower():
                 continue
             seen += 1
+            if args.max_records and seen > args.max_records:
+                break
             try:
                 html = record.content_stream().read()
                 data = trafilatura.bare_extraction(
