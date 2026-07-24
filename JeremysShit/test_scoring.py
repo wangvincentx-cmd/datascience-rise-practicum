@@ -48,9 +48,14 @@ CPI = series([("1925-01", 100), ("1926-01", 110),
               ("1940-01", 110), ("1941-01", 110.2)])
 UNRATE = series([("1949-01", 4.0), ("1950-01", 6.0),
                  ("1955-01", 5.0), ("1956-01", 5.05)])
+#   STOCKS +40% over 1925 (bull), -30% over 1930 (bear), +2% over 1935 (flat)
+STOCKS = series([("1925-01", 100), ("1926-01", 140),
+                 ("1930-01", 100), ("1931-01", 70),
+                 ("1935-01", 100), ("1936-01", 102)])
 RECESSIONS = set(pd.period_range("1907-05", "1908-06", freq="M"))
 
-T = TruthData(indpro=INDPRO, cpi=CPI, unrate=UNRATE, recessions=RECESSIONS)
+T = TruthData(indpro=INDPRO, cpi=CPI, unrate=UNRATE, recessions=RECESSIONS,
+              stocks=STOCKS)
 
 
 print("truth_data: realized outcomes over known 12-month windows")
@@ -68,6 +73,18 @@ check("UNRATE +2pt -> up (unemployment rose)",
       T.realized_direction("employment", pd.Timestamp("1949-01-01"), 12)[0] == "up")
 check("UNRATE +0.05pt -> flat",
       T.realized_direction("employment", pd.Timestamp("1955-01-01"), 12)[0] == "flat")
+
+print("\ntruth_data: markets scored against STOCKS, not industrial output")
+check("stocks +40% -> improve",
+      T.realized_direction("markets", pd.Timestamp("1925-01-01"), 12) == ("improve", True, "STOCK"))
+check("stocks -30% -> worsen",
+      T.realized_direction("markets", pd.Timestamp("1930-01-01"), 12) == ("worsen", True, "STOCK"))
+check("stocks +2% -> flat",
+      T.realized_direction("markets", pd.Timestamp("1935-01-01"), 12)[0] == "flat")
+check("markets uses the STOCK series, not INDPRO",
+      T.realized_direction("markets", pd.Timestamp("1925-01-01"), 12)[2] == "STOCK")
+check("markets before 1914 -> NBER fallback",
+      T.realized_direction("markets", pd.Timestamp("1907-06-01"), 11)[2] == "NBER")
 
 print("\ntruth_data: coverage boundaries -> unscorable, never guessed")
 check("prices before 1913 -> unscorable",

@@ -139,7 +139,9 @@ Return ONLY a JSON array. No markdown fences, no commentary. Each element:
   "speaker_name": "personal name of the forecaster if stated or clearly implied, else \\"na\\"",
   "scope": "national" | "regional" | "foreign" | "industry",
   "is_quoted_forecaster": true or false,
-  "conditional_on": "the stated condition in 10 words or fewer, else \\"na\\""
+  "conditional_on": "the stated condition in 10 words or fewer, else \\"na\\"",
+  "reasoning": "the reason/mechanism the forecaster gives, 12 words or fewer, else \\"na\\"",
+  "current_state": "how the claim characterizes conditions NOW: \\"good\\" | \\"bad\\" | \\"mixed\\" | \\"na\\""
 }}
 
 Rules:
@@ -147,6 +149,22 @@ Rules:
 - direction: reassurance that conditions are sound or that fears are unfounded ("nothing in the outlook to cause uneasiness") is "improve", NOT "no_change". Use "no_change" only when the sentence explicitly says conditions hold flat. Use "unclear" only when it is genuinely a forecast whose direction cannot be read -- never as a default.
 - For price claims, ask what the sentence implies for conditions OVERALL, using its own framing.
 - confidence: judge the words, not the speaker's authority. "will", "is certain", "undoubtedly" = assertive; "may", "likely", "is expected", "we do not think" = hedged.
+# NOTE (2026-07-23): `reasoning` and `current_state` were added but their recall
+# impact on the gold pages is UNVERIFIED (Gemini quota was exhausted at add
+# time). Adding fields has regressed recall before (see `horizon_text`, reverted).
+# Run `extract_llm.py` on gold_extraction/gold_pages.jsonl and check
+# eval_extraction.py recall stays ~0.65 BEFORE these ship in the monthly-corpus
+# extraction. If recall drops, delete these two fields.
+- reasoning: if the forecaster gives a BASIS for the forecast -- a mechanism,
+  cause, or evidence ("because the tariff will pass", "on the strength of the
+  wheat crop", "as inventories are depleted") -- capture it briefly. A forecast
+  with a stated mechanism is testable in a way a bare assertion is not. "na" if
+  no reason is given.
+- current_state: how the claim characterizes the CURRENT economy it is
+  forecasting from -- "good" (booming, sound), "bad" (depressed, in panic),
+  "mixed", or "na" if it says nothing about present conditions. "Business is bad
+  now but will recover" -> current_state "bad", direction "improve". This is the
+  base the forecast starts from, not the forecast itself.
 - voice: judge WHO is speaking, not what it is about.
 - scope: WHICH economy the claim is about. "national" = the US economy overall.
   "regional" = a US state, city or region. "foreign" = a non-US economy (a

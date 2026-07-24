@@ -222,6 +222,12 @@ def fig_accuracy_over_time(sc):
 
 if __name__ == "__main__":
     sc = pd.read_csv("claims_v2_scored.csv")
+    # Join episode from the page corpus (the scorer doesn't carry it) so the
+    # per-episode figures work straight off a freshly re-scored CSV.
+    if "episode" not in sc.columns:
+        pages = {json.loads(l)["page_id"]: json.loads(l)
+                 for l in open("data/pages.jsonl", encoding="utf-8")}
+        sc["episode"] = sc["page_id"].map(lambda p: (pages.get(p) or {}).get("episode"))
     sc = sc[(sc["scorable"] == True) & (sc["hit"].isin([0, 1]))].copy()
     all_claims = [json.loads(l) for l in open("claims_v2.jsonl", encoding="utf-8")]
     fig_extraction()

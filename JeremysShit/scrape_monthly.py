@@ -344,11 +344,36 @@ def parse_fulltext(raw):
     return "\n".join(parts).strip() if parts else text.strip()
 
 
+def parse_shard(spec, n_rows):
+    """'K/N' -> (k, n). Machine K of N takes every Nth manifest row (row i where
+    i % N == K-1). Modulo interleaving, not contiguous blocks, so the load is
+    balanced -- every machine gets a mix of dense and sparse months rather than
+    one machine drawing all of a heavy era."""
+    if not spec:
+        return 1, 1
+    k, n = (int(x) for x in spec.split("/"))
+    if not (1 <= k <= n):
+        raise SystemExit(f"--shard {spec}: need 1 <= K <= N")
+    return k, n
+
+
 def stage_fetch(args, out_dir):
     manifest_path = out_dir / "monthly_manifest.csv"
     if not manifest_path.exists():
         raise SystemExit(f"{manifest_path} missing -- run --stage search first")
-    out_path = out_dir / "pages_monthly.jsonl"
+
+    with open(manifest_path, encoding="utf-8") as fh:
+        rows = [r for r in csv.DictReader(fh)]
+
+    k, n = parse_shard(args.shard, len(rows))
+    # Output name carries the shard so 4 machines' files never collide when
+    # combined in one folder later.
+    out_name = "pages_monthly.jsonl" if n == 1 else f"pages_monthly.shard{k}of{n}.jsonl"
+    out_path = out_dir / out_name
+    if n > 1:
+        rows = [r for i, r in enumerate(rows) if i % n == (k - 1)]
+        print(f"SHARD {k}/{n}: this machine handles {len(rows)} of the manifest's "
+              f"pages -> {out_name}")
 
     done = set()
     if out_path.exists() and not args.overwrite:
@@ -360,10 +385,8 @@ def stage_fetch(args, out_dir):
                     pass
         print(f"resuming fetch: {len(done)} pages already downloaded")
 
-    with open(manifest_path, encoding="utf-8") as fh:
-        rows = [r for r in csv.DictReader(fh)]
     todo = [r for r in rows if r["page_id"] not in done]
-    print(f"{len(todo)} pages to fetch (of {len(rows)} in manifest)")
+    print(f"{len(todo)} pages to fetch (of {len(rows)} in this shard)")
 
     mode = "w" if args.overwrite else "a"
     n_ok = n_skip = 0
@@ -422,6 +445,11 @@ if __name__ == "__main__":
     ap.add_argument("--end", default="1963-12")
     ap.add_argument("--pages-per-month", type=int, default=30)
     ap.add_argument("--out-dir", default="data/monthly")
+    ap.add_argument("--shard", default=None,
+                    help="split the FETCH across machines: 'K/N' means this is "
+                         "machine K of N, handling every Nth manifest row. Each "
+                         "machine writes pages_monthly.shardKofN.jsonl; combine "
+                         "later with combine_shards.py.")
     ap.add_argument("--overwrite", action="store_true")
     args = ap.parse_args()
 

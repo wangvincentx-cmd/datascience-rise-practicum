@@ -71,9 +71,15 @@ def macro_features(dates):
     trailing 6 and 12 months USING ONLY values that would have been public by
     then (shifted forward by MACRO_LAG_M). Missing (pre-coverage) -> NaN, filled
     with a flag column so early claims still contribute claim features."""
+    from truth_data import STOCK_SERIES
     indpro = load_fred("INDPRO").shift(MACRO_LAG_M)
     cpi = load_fred("CPIAUCNS").shift(MACRO_LAG_M)
     unrate = load_fred("UNRATE").shift(MACRO_LAG_M)
+    # The stock index needs almost no lag -- prices are public the same day. A
+    # 1929 forecaster was literally watching this. Trend + recent volatility are
+    # the two signals a contemporary would read off the ticker.
+    stocks = load_fred(STOCK_SERIES)
+    stk_ret = stocks.pct_change()  # monthly returns, for volatility
 
     def trail(series, p, months):
         p0 = p - months
@@ -84,6 +90,13 @@ def macro_features(dates):
             return np.nan
         return 100.0 * (v1 - v0) / v0
 
+    def stock_vol(p, months=6):
+        p0 = p - months
+        if p0 < stk_ret.index.min() or p > stk_ret.index.max():
+            return np.nan
+        window = stk_ret[(stk_ret.index >= p0) & (stk_ret.index <= p)]
+        return float(window.std() * 100) if len(window) >= 3 else np.nan
+
     rows = []
     for d in dates:
         p = pd.Timestamp(d).to_period("M")
@@ -91,14 +104,17 @@ def macro_features(dates):
         cp12 = trail(cpi, p, 12)
         ur = unrate.asof(p) if unrate.index.min() <= p <= unrate.index.max() else np.nan
         ur6 = (ur - unrate.asof(p - 6)) if not pd.isna(ur) and (p - 6) >= unrate.index.min() else np.nan
+        stk6 = trail(stocks, p, 6)
         rows.append({
             "m_indpro_g6": ip6, "m_indpro_g12": ip12,
             "m_indpro_accel": (ip6 - ip12) if not (pd.isna(ip6) or pd.isna(ip12)) else np.nan,
             "m_cpi_yoy": cp12, "m_unrate": ur, "m_unrate_d6": ur6,
+            "m_stock_ret6": stk6, "m_stock_vol6": stock_vol(p),
         })
     m = pd.DataFrame(rows)
     m["m_has_indpro"] = m["m_indpro_g12"].notna().astype(int)
     m["m_has_unrate"] = m["m_unrate"].notna().astype(int)
+    m["m_has_stock"] = m["m_stock_ret6"].notna().astype(int)
     return m.fillna(0.0)
 
 
@@ -119,10 +135,66 @@ def claim_features(df):
     return out
 
 
+def consensus_features(df):
+    """Press consensus and disagreement AROUND each claim, from the corpus itself.
+
+    For the month a claim was printed, what were the OTHER claims saying? A
+    forecast that echoes a strong press consensus is a different animal from one
+    that stands alone against it -- and the SPREAD of opinion that month is a
+    press-based uncertainty signal (the Baker-Bloom-Davis idea). All derived from
+    the claims themselves, no new data. Leave-one-out (the claim is excluded from
+    its own month's consensus) so a claim cannot define the consensus it is then
+    measured against."""
+    d = df.copy()
+    d["_m"] = pd.to_datetime(d["date"], errors="coerce").dt.to_period("M").astype(str)
+    d["_imp"] = (d.get("predicted_norm", "").astype(str) == "improve").astype(int)
+    d["_wor"] = (d.get("predicted_norm", "").astype(str) == "worsen").astype(int)
+    grp = d.groupby("_m").agg(n=("_imp", "size"), imp=("_imp", "sum"),
+                              wor=("_wor", "sum"))
+    out = pd.DataFrame(index=df.index)
+    net, dis, against = [], [], []
+    for _, r in d.iterrows():
+        g = grp.loc[r["_m"]]
+        n_oth = g["n"] - 1
+        if n_oth <= 0:
+            net.append(0.0); dis.append(0.0); against.append(0)
+            continue
+        imp_oth = g["imp"] - r["_imp"]
+        wor_oth = g["wor"] - r["_wor"]
+        net_oth = (imp_oth - wor_oth) / n_oth        # +1 all-improve .. -1 all-worsen
+        # disagreement: how split the others are (max at 50/50), 0 at unanimous
+        p_imp = imp_oth / n_oth
+        dis_oth = 1.0 - abs(2 * p_imp - 1) if (imp_oth + wor_oth) else 0.0
+        net.append(net_oth)
+        dis.append(dis_oth)
+        # does this claim swim against the consensus?
+        against.append(int((r["_imp"] and net_oth < -0.2) or
+                           (r["_wor"] and net_oth > 0.2)))
+    out["x_consensus_net"] = net
+    out["x_disagreement"] = dis
+    out["x_against_consensus"] = against
+    return out
+
+
+def interaction_features(claim_feat, macro_feat):
+    """direction x macro-momentum: predicting 'improve' while output is falling is
+    a different bet than the same call during an expansion. The single product
+    term often carries what neither feature does alone."""
+    out = pd.DataFrame(index=claim_feat.index)
+    dir_sign = claim_feat["c_direction"].map(
+        {"improve": 1.0, "worsen": -1.0}).fillna(0.0)
+    out["x_dir_momentum"] = dir_sign * macro_feat["m_indpro_g6"]
+    out["x_dir_stock"] = dir_sign * macro_feat["m_stock_ret6"]
+    return out
+
+
 CLAIM_CAT = ["c_direction", "c_topic", "c_voice", "c_scope"]
 CLAIM_NUM = ["c_hedged", "c_quoted", "c_named", "c_has_number", "c_len", "c_horizon"]
 MACRO_NUM = ["m_indpro_g6", "m_indpro_g12", "m_indpro_accel", "m_cpi_yoy",
-             "m_unrate", "m_unrate_d6", "m_has_indpro", "m_has_unrate"]
+             "m_unrate", "m_unrate_d6", "m_stock_ret6", "m_stock_vol6",
+             "m_has_indpro", "m_has_unrate", "m_has_stock"]
+EXTRA_NUM = ["x_consensus_net", "x_disagreement", "x_against_consensus",
+             "x_dir_momentum", "x_dir_stock"]
 
 
 def make_pipe(cat, num):
@@ -191,7 +263,27 @@ def run(args):
 
     cf = claim_features(df)
     mf = macro_features(df["date"])
-    X = pd.concat([cf.reset_index(drop=True), mf.reset_index(drop=True)], axis=1)
+    xf = consensus_features(df)
+    inter = interaction_features(cf, mf)
+    ef = pd.concat([xf.reset_index(drop=True), inter.reset_index(drop=True)], axis=1)
+    X = pd.concat([cf.reset_index(drop=True), mf.reset_index(drop=True),
+                   ef.reset_index(drop=True)], axis=1)
+
+    # Descriptive splits for the NEW derived features -- meaningful even where the
+    # nested model isn't, and often the more interesting finding.
+    print("\n=== descriptive: hit rate by DERIVED feature ===")
+    dd = df.copy()
+    dd["against_consensus"] = xf["x_against_consensus"].values
+    dd["disagreement_q"] = pd.qcut(xf["x_disagreement"], 3,
+                                   labels=["low", "mid", "high"], duplicates="drop")
+    for col, lbl in [("against_consensus", "swims against press consensus"),
+                     ("disagreement_q", "press disagreement that month")]:
+        g = dd.groupby(dd[col]).agg(n=("hit", "size"), hit=("hit", "mean"))
+        g = g[g["n"] >= 25]
+        if len(g):
+            print(f"  by {lbl}:")
+            for k, row in g.iterrows():
+                print(f"    {str(k):<14} n={int(row['n']):<5} hit={row['hit']:.3f}")
 
     print("\n=== nested ROC-AUC (LeaveOneGroupOut, out-of-fold) ===")
     print(f"  1. base rate                {max(y.mean(), 1-y.mean()):.3f}  "
@@ -200,9 +292,11 @@ def run(args):
     print(f"  2. macro-only               AUC {auc_macro:.3f}")
     auc_claim, _ = grouped_auc(X, y, groups, CLAIM_CAT, CLAIM_NUM)
     print(f"  3. claim-only               AUC {auc_claim:.3f}")
-    auc_full, oof_full = grouped_auc(X, y, groups, CLAIM_CAT, CLAIM_NUM + MACRO_NUM)
-    print(f"  4. claim + macro            AUC {auc_full:.3f}")
-    auc_gb, _ = grouped_auc(X, y, groups, CLAIM_CAT, CLAIM_NUM + MACRO_NUM,
+    auc_full, oof_full = grouped_auc(X, y, groups, CLAIM_CAT,
+                                     CLAIM_NUM + MACRO_NUM + EXTRA_NUM)
+    print(f"  4. claim + macro + derived  AUC {auc_full:.3f}")
+    auc_gb, _ = grouped_auc(X, y, groups, CLAIM_CAT,
+                            CLAIM_NUM + MACRO_NUM + EXTRA_NUM,
                             clf=GradientBoostingClassifier(random_state=0))
     print(f"  5. gradient boosting        AUC {auc_gb:.3f}")
 
