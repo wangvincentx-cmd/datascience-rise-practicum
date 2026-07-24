@@ -18,7 +18,11 @@ import glob
 import json
 import sys
 
-import py3langid as langid
+from py3langid.langid import LanguageIdentifier, MODEL_FILE
+
+# Default py3langid.classify() returns a raw log-probability, not a 0-1 score.
+# A normalized identifier gives a real confidence in [0, 1] so --lang-prob works.
+_IDENT = LanguageIdentifier.from_pickled_model(MODEL_FILE, norm_probs=True)
 
 # Substrings — any domain containing one of these is dropped. Not exhaustive;
 # the language filter does most of the work. These are the obvious offenders:
@@ -69,8 +73,8 @@ def main():
                     continue
                 # detect on title + first 600 chars of body (fast, plenty of signal)
                 sample = ((r.get("title") or "") + " " + (r.get("text") or ""))[:600]
-                lang, prob = langid.classify(sample)
-                if lang != args.lang or prob < args.lang_prob:
+                lang, prob = _IDENT.classify(sample)
+                if lang != args.lang or float(prob) < args.lang_prob:
                     dropped_lang += 1
                     continue
                 out.write(json.dumps(r, ensure_ascii=False) + "\n")
