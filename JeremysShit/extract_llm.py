@@ -8,10 +8,9 @@ the gold pages (gold_extraction/), that has recall 0.19 and precision 0.44 -- it
 misses four claims in five, and nearly half of what it returns is not a
 prediction. This reads the whole page instead and returns structured claims.
 
-Ported from election_arm/extract_predictions.py (its call_llm param-adaptation
-logic, its fence-stripping JSON parser, its ECONOMY_PROMPT as the starting
-point), kept self-contained per the one-arm-one-codebase convention in
-CLAUDE.md. Four things differ:
+Self-contained: the call_llm param-adaptation logic, the fence-stripping JSON
+parser, and the extraction prompt all live here. Four things it does that the
+old regex extractor did not:
 
 1. **No outcome leakage.** The old context block passed `Window: crash_1929`.
    Episode/window names state the OUTCOME, so passing them tells the model what

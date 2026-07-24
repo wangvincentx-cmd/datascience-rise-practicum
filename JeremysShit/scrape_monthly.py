@@ -71,7 +71,8 @@ from pathlib import Path
 BASE = "https://www.loc.gov/collections/chronicling-america/"
 HEADERS = {"User-Agent": "BU-RISE-student-research/0.2 "
                         "(economic prediction accuracy study)"}
-SLEEP_SECONDS = 1.1
+SLEEP_SECONDS = 1.6  # ~37 req/min -- polite enough to avoid LOC's burst 429s
+COOLDOWN_AFTER_FAIL = 120  # pause this long after a month is rate-limited out
 
 # Held constant across all 768 months. None of these implies a direction.
 # "business outlook" is kept from v1 -- it is neutral (an outlook can be good or
@@ -152,7 +153,15 @@ def _get(url, cache=True):
             if e.code == 404:
                 raise RuntimeError(f"404 (no more results): {url}") from e
             last_err = e
-            wait = 5 * (attempt + 1)
+            if e.code == 429:
+                # Rate limited. LOC's penalty window is minutes, not seconds, so
+                # a 5-25s backoff never clears it -- it just burns the retries and
+                # the whole month fails. Honor Retry-After if sent, else back off
+                # 30 -> 60 -> 120 -> 240 -> 480 (capped 600). If even that is not
+                # enough the month is skipped and retried on the next run.
+                wait = int(e.headers.get("Retry-After") or 0) or min(600, 30 * 2 ** attempt)
+            else:
+                wait = 5 * (attempt + 1)
             print(f"    retry {attempt + 1}/5: HTTP {e.code} (waiting {wait}s)",
                   flush=True)
             time.sleep(wait)
@@ -235,13 +244,19 @@ def stage_search(args, out_dir):
     manifest_path = out_dir / "monthly_manifest.csv"
     denom_path = out_dir / "monthly_denominators.csv"
 
+    # "Done" is read from the DENOMINATORS file, not the manifest: every month
+    # that completes writes denominator rows (one per term) even if it found
+    # zero pages, whereas a legitimately sparse month writes no manifest rows.
+    # Keying on the manifest would retry every empty month forever; keying on
+    # denominators marks exactly the months that actually finished. Failed
+    # months (atomic) write neither file, so they correctly reappear as not-done.
     done = set()
-    if manifest_path.exists() and not args.overwrite:
-        with open(manifest_path, encoding="utf-8") as fh:
+    if denom_path.exists() and not args.overwrite:
+        with open(denom_path, encoding="utf-8") as fh:
             done = {row["month"] for row in csv.DictReader(fh)}
         print(f"resuming search: {len(done)} months already done")
 
-    fresh = args.overwrite or not manifest_path.exists()
+    fresh = args.overwrite or not denom_path.exists()
     mode = "w" if args.overwrite else "a"
     all_months = list(months(args.start, args.end))
 
@@ -254,38 +269,58 @@ def stage_search(args, out_dir):
             dw.writerow(["month", "total_pages_digitised", "term", "term_hits",
                          "pages_taken"])
 
+        n_failed = 0
         for i, (month, d0, d1) in enumerate(all_months, 1):
             if month in done:
                 continue
-            total_pages = month_total_pages(d0, d1)
-            seen, rows = set(), []
             per_term = max(1, args.pages_per_month // len(NEUTRAL_TERMS))
-            for term in NEUTRAL_TERMS:
-                try:
+            # Build the WHOLE month in memory first; only commit to disk if every
+            # query succeeded. A month is therefore atomic: fully written (and so
+            # skipped next run) or written nowhere (and so retried next run). Any
+            # real failure -- a 429 that outlasts the backoff, a dropped
+            # connection -- aborts the month cleanly instead of crashing the run
+            # or, worse, recording a rate-limited month as "done" with terms
+            # missing. This is what makes recoverable failures actually recover.
+            try:
+                total_pages = month_total_pages(d0, d1)
+                seen, month_rows, denom_rows = set(), [], []
+                for term in NEUTRAL_TERMS:
                     hits, term_total = search_month(term, d0, d1, per_term)
-                except RuntimeError as e:
-                    print(f"  {month} '{term}' failed: {e}", flush=True)
-                    continue
-                taken = 0
-                for h in hits:
-                    pid = h.get("id", "")
-                    if not pid or pid in seen:
-                        continue
-                    seen.add(pid)
-                    lccn = _first(h.get("number_lccn"))
-                    rows.append([month, pid, h.get("date", ""),
-                                 "; ".join(h.get("partof_title") or [])[:120],
-                                 "; ".join(h.get("location_state") or []),
-                                 lccn or "", term,
-                                 int(bool(lccn) and lccn in PANEL_LCCNS)])
-                    taken += 1
-                dw.writerow([month, total_pages, term, term_total, taken])
-            for r in rows:
+                    taken = 0
+                    for h in hits:
+                        pid = h.get("id", "")
+                        if not pid or pid in seen:
+                            continue
+                        seen.add(pid)
+                        lccn = _first(h.get("number_lccn"))
+                        month_rows.append([month, pid, h.get("date", ""),
+                                     "; ".join(h.get("partof_title") or [])[:120],
+                                     "; ".join(h.get("location_state") or []),
+                                     lccn or "", term,
+                                     int(bool(lccn) and lccn in PANEL_LCCNS)])
+                        taken += 1
+                    denom_rows.append([month, total_pages, term, term_total, taken])
+            except RuntimeError as e:
+                n_failed += 1
+                print(f"[{i}/{len(all_months)}] {month}: SKIPPED "
+                      f"({str(e)[:60]}) -- will retry on next run. "
+                      f"Cooling down {COOLDOWN_AFTER_FAIL}s.", flush=True)
+                time.sleep(COOLDOWN_AFTER_FAIL)
+                continue
+
+            for r in month_rows:
                 mw.writerow(r)
+            for r in denom_rows:
+                dw.writerow(r)
             mf.flush()
             df.flush()
-            print(f"[{i}/{len(all_months)}] {month}: {len(rows):>3} pages "
+            print(f"[{i}/{len(all_months)}] {month}: {len(month_rows):>3} pages "
                   f"of {total_pages:,} digitised", flush=True)
+
+        if n_failed:
+            print(f"\n{n_failed} month(s) were skipped on rate-limit/network "
+                  f"errors. Just run the SAME command again -- completed months "
+                  f"are skipped and only the skipped ones are retried.")
 
     print(f"\nmanifest      -> {manifest_path}")
     print(f"denominators  -> {denom_path}")

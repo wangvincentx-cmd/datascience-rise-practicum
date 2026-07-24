@@ -187,7 +187,10 @@ HEURISTIC_BETTER = re.compile(r"\b(prosperity|recover\w*|revival|improve\w*|bett
 SHORT_HORIZON = re.compile(
     r"\b(soon|shortly|immediat\w+|at once|right away|near future|coming months|"
     r"next few months|before long|within (?:a few )?months|"
-    r"this (?:spring|summer|fall|autumn|winter)|by (?:spring|summer|fall|winter))\b",
+    r"(?:a few )?weeks?(?: (?:or|cr) months?)?|months? to come|from now on|"
+    r"(?:by|in|for|next) the (?:spring|summer|fall|autumn|winter)|"
+    r"this (?:spring|summer|fall|autumn|winter)|"
+    r"by (?:spring|summer|fall|winter))\b",
     re.I)
 LONG_HORIZON = re.compile(
     r"\b(long[- ]?run|long[- ]?term|for years|coming years|years to come|"
