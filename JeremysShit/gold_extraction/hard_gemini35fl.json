@@ -1,0 +1,9 @@
+{
+  "name": "gemini35fl",
+  "overall": 0.7954545454545454,
+  "n": 44,
+  "include_ok": 3,
+  "include_n": 12,
+  "exclude_ok": 32,
+  "exclude_n": 32
+}

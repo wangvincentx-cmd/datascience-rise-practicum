@@ -15,6 +15,18 @@ __pycache__/
 cache/
 **/data/raw/
 
+# Large regenerable corpora. Every one of these is rebuildable from cache/ or
+# re-downloadable, and they run from tens to hundreds of MB:
+#   pages.jsonl          ~46 MB   build_page_corpus.py, from cache/
+#   pages_monthly.jsonl ~500 MB   scrape_monthly.py, the 1900-1963 scrape
+#   claims_*.jsonl                extract_llm.py output
+JeremysShit/data/pages.jsonl
+# JeremysShit/data/monthly/
+JeremysShit/claims_v2.jsonl
+JeremysShit/claims_monthly.jsonl
+JeremysShit/gold_extraction/pred_*.jsonl
+JeremysShit/gold_extraction/log_*.txt
+
 # Incomplete / regenerable grading output (commit the finished version deliberately
 # with `git add -f JeremysShit/claims_graded.csv` once a full run has completed —
 # an in-progress file is a partial corpus and shouldn't be committed by accident)
@@ -36,3 +48,4 @@ JeremysShit/grade_run.log
 
 # Superseded by handgrade_newspapers/ (regenerated on every grading run)
 JeremysShit/validation_sample.csv
+.claude/settings.json

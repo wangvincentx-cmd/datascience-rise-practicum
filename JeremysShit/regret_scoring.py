@@ -67,6 +67,69 @@ def regret(error_type, severity, w_opt, w_pess):
     return 0.0
 
 
+def cluster_permutation_test(misses, n_crisis, n_control):
+    """Exact randomization test for the crisis-vs-control optimistic-error gap,
+    with EPISODE as the unit of randomization (valid regardless of cluster
+    count -- no asymptotics, unlike a cluster-robust SE or GEE with only 19
+    clusters) but the test STATISTIC computed on pooled claim-level data (more
+    power than collapsing each episode to one median, which is what the
+    Mann-Whitney check above does and why it under-uses the data: an episode
+    with 174 misses and one with 3 count equally under Mann-Whitney).
+
+    Null: which episodes happen to be labeled 'crisis' vs 'control' is
+    exchangeable. Enumerate EVERY way to choose n_control of the 19 episodes
+    as control (n_crisis + n_control choose n_control -- 27,132 for 13-vs-6,
+    small enough to do exactly, no Monte Carlo approximation needed). For each
+    assignment, pool claims by the relabeled group and recompute the observed
+    statistic (crisis optimistic-share minus control optimistic-share). The
+    p-value is the exact fraction of assignments at least as extreme as the
+    real one.
+    """
+    from itertools import combinations
+
+    ep = (misses.groupby(["episode", "kind"])
+          .agg(n=("error_type", "size"),
+               n_opt=("error_type", lambda x: (x == "optimistic_error").sum()))
+          .reset_index())
+    episodes = ep["episode"].tolist()
+    n_arr = ep["n"].to_numpy()
+    opt_arr = ep["n_opt"].to_numpy()
+    real_control = set(ep.loc[ep["kind"] == "control", "episode"])
+
+    def stat_for(control_set):
+        is_ctrl = np.array([e in control_set for e in episodes])
+        crisis_share = opt_arr[~is_ctrl].sum() / n_arr[~is_ctrl].sum()
+        control_share = opt_arr[is_ctrl].sum() / n_arr[is_ctrl].sum()
+        return crisis_share - control_share
+
+    observed = stat_for(real_control)
+    null_stats = np.array([stat_for(set(combo)) for combo in combinations(episodes, n_control)])
+    p_exact = (null_stats >= observed).mean()   # one-sided: crisis > control
+    return observed, p_exact, null_stats
+
+
+def cluster_bootstrap_ci(misses, n_boot=10000, seed=0):
+    """Percentile bootstrap CI for the crisis-minus-control optimistic-share gap,
+    resampling EPISODES with replacement within each kind (not claims) --
+    'not significant' and 'no effect' are different claims; a p-value alone
+    doesn't say how big the effect plausibly is. Same clustering logic as
+    cluster_permutation_test, but for the estimate's uncertainty, not the
+    null-hypothesis test."""
+    ep = (misses.groupby(["episode", "kind"])
+          .agg(n=("error_type", "size"),
+               n_opt=("error_type", lambda x: (x == "optimistic_error").sum()))
+          .reset_index())
+    crisis = ep[ep["kind"] == "crisis"][["n", "n_opt"]].to_numpy()
+    control = ep[ep["kind"] == "control"][["n", "n_opt"]].to_numpy()
+    rng = np.random.default_rng(seed)
+    gaps = np.empty(n_boot)
+    for i in range(n_boot):
+        c = crisis[rng.integers(0, len(crisis), len(crisis))]
+        k = control[rng.integers(0, len(control), len(control))]
+        gaps[i] = c[:, 1].sum() / c[:, 0].sum() - k[:, 1].sum() / k[:, 0].sum()
+    return np.percentile(gaps, [2.5, 97.5])
+
+
 def episode_severity(df):
     """Normalized [0,1] severity per episode from INDPRO peak-to-trough decline.
     Returns (severity Series, basis Series). Pre-1919 episodes get an NBER
@@ -119,6 +182,46 @@ def main(args):
         for kind, g in misses.groupby("kind"):
             no = (g["error_type"] == "optimistic_error").sum()
             print(f"  {kind:8s}: {no}/{len(g)} misses optimistic = {no/len(g):.1%}")
+
+        # The claim-level binomial test above (p~1e-10) treats every claim as
+        # an independent Bernoulli draw. It isn't: claims inside one episode
+        # share wire-service copy and the same macro reality, so within-episode
+        # correlation can make that p-value look far more significant than it
+        # is. Re-test at the EPISODE level instead -- one optimistic-share
+        # number per episode, crisis vs control -- where independence across
+        # episodes (different decades, different papers) is far more defensible.
+        ep_share = (misses.groupby(["episode", "kind"])["error_type"]
+                    .apply(lambda x: (x == "optimistic_error").mean())
+                    .reset_index(name="optimistic_share"))
+        crisis_ep = ep_share.loc[ep_share["kind"] == "crisis", "optimistic_share"]
+        control_ep = ep_share.loc[ep_share["kind"] == "control", "optimistic_share"]
+        print(f"\n=== Episode-level robustness check (unit = episode, not claim) ===")
+        print(f"  crisis episodes  (n={len(crisis_ep)}): median optimistic share "
+              f"{crisis_ep.median():.1%}")
+        print(f"  control episodes (n={len(control_ep)}): median optimistic share "
+              f"{control_ep.median():.1%}")
+        if len(crisis_ep) >= 2 and len(control_ep) >= 2:
+            from scipy.stats import mannwhitneyu
+            u_stat, u_p = mannwhitneyu(crisis_ep, control_ep, alternative="greater")
+            print(f"  Mann-Whitney U on episode MEDIANS (low power -- discards claim counts): "
+                  f"U={u_stat:.1f}, p={u_p:.4f}")
+
+            n_crisis_ep, n_control_ep = len(crisis_ep), len(control_ep)
+            observed, p_exact, null_stats = cluster_permutation_test(
+                misses, n_crisis_ep, n_control_ep)
+            print(f"  EXACT cluster-permutation test (episode = randomization unit, "
+                  f"claim-level pooled statistic, all C({n_crisis_ep + n_control_ep},"
+                  f"{n_control_ep})={len(null_stats)} label assignments enumerated):")
+            print(f"    observed crisis-minus-control optimistic-share gap: {observed:+.1%}")
+            print(f"    exact one-sided p-value: {p_exact:.4f}")
+            print("  -> THIS is the number to cite: correct for episode clustering (unlike "
+                  "the claim-level binomial) and does not discard claim-level information "
+                  "(unlike Mann-Whitney on episode medians).")
+
+            ci_lo, ci_hi = cluster_bootstrap_ci(misses)
+            print(f"    episode-cluster bootstrap 95% CI on the gap: [{ci_lo:+.1%}, {ci_hi:+.1%}]  "
+                  "(effect size is not 'no effect' -- it's a wide, mostly-positive interval "
+                  "at this sample size, distinct from the significance question above)")
 
     # 2. Severity-weighted regret (INDPRO episodes only), default weights.
     reg = gb.copy()

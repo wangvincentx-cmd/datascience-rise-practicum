@@ -183,9 +183,16 @@ Return strict JSON with exactly these fields:
   or clearly implied in the sentence (e.g. "Roger Babson", "Secretary Mellon"),
   else "na". Names only — not organizations or newspapers.
 
-The sentence was printed on {date} during the "{episode}" period. Sentence:
+The sentence was printed on {date}. Sentence:
 \"\"\"{quote}\"\"\"
 """
+# NOTE: the episode name is deliberately NOT in the prompt. It used to be
+# ("printed on {date} during the \"{episode}\" period"), which handed the grader
+# the OUTCOME -- "1929 Crash", "1907 Panic", "1905 Calm (control)" -- before it
+# labeled the prediction's direction. That is hindsight leakage into the label,
+# in the one project whose whole discipline is that only information available
+# at the time of the prediction may be used. The date stays: it is genuinely
+# known to the writer, and the model needs it to read period-specific language.
 
 GRADE_FIELDS = ["is_prediction", "topic", "direction", "price_direction",
                 "unemployment_direction", "horizon_months", "confidence", "voice",
@@ -330,8 +337,7 @@ def grade(args, rotator=None):
         for row in graded:
             writer.writerow({k: row.get(k, "") for k in out_fields})
         for i, row in enumerate(todo, 1):
-            prompt = RUBRIC_PROMPT.format(date=row["date"], episode=row["episode"],
-                                          quote=row["quote"])
+            prompt = RUBRIC_PROMPT.format(date=row["date"], quote=row["quote"])
             try:
                 g = rotator.call(prompt, args.model, args.base_url, min_tokens=args.min_tokens)
             except AllKeysExhausted as e:
@@ -386,7 +392,7 @@ GROQ_BASE = "https://api.groq.com/openai/v1"
 
 def _batch_request_lines(todo, model, min_tokens=None):
     for row in todo:
-        prompt = RUBRIC_PROMPT.format(date=row["date"], episode=row["episode"], quote=row["quote"])
+        prompt = RUBRIC_PROMPT.format(date=row["date"], quote=row["quote"])
         body = {
             "model": model,
             "messages": [{"role": "user", "content": prompt}],

@@ -1,0 +1,9 @@
+{
+  "name": "qwen3_235b",
+  "overall": 0.7727272727272727,
+  "n": 44,
+  "include_ok": 5,
+  "include_n": 12,
+  "exclude_ok": 29,
+  "exclude_n": 32
+}

@@ -1,0 +1,26 @@
+2192 pages -> 2325 requests
+packed into 5 batch job(s) under 15MB each
+  submitted [1/5] batches/e03um736ws8eq503rphjf6v1gtycmgndypsl (559 requests)
+  submitted [2/5] batches/810kyuxdrz2a4st3mhy7d5tbufetmwglffdy (501 requests)
+  submitted [3/5] batches/wh9uh3psj2pglvl5bpmkmstjyuqquc3p0kdy (587 requests)
+  submitted [4/5] batches/gb2ehx5f5ilvx56tudsfvoy65zzw5ugytw83 (632 requests)
+  submitted [5/5] batches/rfxg32ycu0r5n70c296n7z2qgv5ks4iips0u (46 requests)
+  waiting on batch 1/5...
+    e03um736ws8eq503rphjf6v1gtycmgndypsl: BATCH_STATE_RUNNING  (0/559 ok, 0 failed)
+    e03um736ws8eq503rphjf6v1gtycmgndypsl: BATCH_STATE_RUNNING  (0/559 ok, 0 failed)
+    e03um736ws8eq503rphjf6v1gtycmgndypsl: BATCH_STATE_SUCCEEDED  (559/559 ok, 0 failed)
+  waiting on batch 2/5...
+    810kyuxdrz2a4st3mhy7d5tbufetmwglffdy: BATCH_STATE_SUCCEEDED  (501/501 ok, 0 failed)
+  waiting on batch 3/5...
+    wh9uh3psj2pglvl5bpmkmstjyuqquc3p0kdy: BATCH_STATE_RUNNING  (0/587 ok, 0 failed)
+    wh9uh3psj2pglvl5bpmkmstjyuqquc3p0kdy: BATCH_STATE_RUNNING  (0/587 ok, 0 failed)
+    wh9uh3psj2pglvl5bpmkmstjyuqquc3p0kdy: BATCH_STATE_SUCCEEDED  (587/587 ok, 0 failed)
+  waiting on batch 4/5...
+    gb2ehx5f5ilvx56tudsfvoy65zzw5ugytw83: BATCH_STATE_RUNNING  (0/632 ok, 0 failed)
+    gb2ehx5f5ilvx56tudsfvoy65zzw5ugytw83: BATCH_STATE_SUCCEEDED  (632/632 ok, 0 failed)
+  waiting on batch 5/5...
+    rfxg32ycu0r5n70c296n7z2qgv5ks4iips0u: BATCH_STATE_SUCCEEDED  (46/46 ok, 0 failed)
+
+3658 claims -> claims_v2.jsonl
+10 dropped by the hallucination guard
+tokens: 17,472,893 in / 663,824 out  (billed at 50% batch rate)

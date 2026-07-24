@@ -51,6 +51,19 @@ FIGDIR = Path("figures")
 # FRED silently hangs on non-browser user agents — a browser-like UA is required.
 FRED_HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
 
+
+def wilson_ci(k, n, z=1.96):
+    """Wilson score interval for a binomial proportion — safer than the normal
+    (Wald) interval at the small n and extreme rates several episodes have
+    here (e.g. 1929 Crash hit_rate=0.106, n=188; 1990 Recession n=10)."""
+    if n == 0:
+        return np.nan, np.nan
+    p = k / n
+    denom = 1 + z**2 / n
+    center = (p + z**2 / (2 * n)) / denom
+    half = (z * np.sqrt(p * (1 - p) / n + z**2 / (4 * n**2))) / denom
+    return max(0.0, center - half), min(1.0, center + half)
+
 # NBER US business cycle contractions (peak month -> trough month), 1902-1961.
 NBER_RECESSIONS = [
     ("1902-09", "1904-08"), ("1907-05", "1908-06"), ("1910-01", "1912-01"),
@@ -174,7 +187,10 @@ HEURISTIC_BETTER = re.compile(r"\b(prosperity|recover\w*|revival|improve\w*|bett
 SHORT_HORIZON = re.compile(
     r"\b(soon|shortly|immediat\w+|at once|right away|near future|coming months|"
     r"next few months|before long|within (?:a few )?months|"
-    r"this (?:spring|summer|fall|autumn|winter)|by (?:spring|summer|fall|winter))\b",
+    r"(?:a few )?weeks?(?: (?:or|cr) months?)?|months? to come|from now on|"
+    r"(?:by|in|for|next) the (?:spring|summer|fall|autumn|winter)|"
+    r"this (?:spring|summer|fall|autumn|winter)|"
+    r"by (?:spring|summer|fall|winter))\b",
     re.I)
 LONG_HORIZON = re.compile(
     r"\b(long[- ]?run|long[- ]?term|for years|coming years|years to come|"
@@ -319,8 +335,13 @@ def score(args):
         composite_score=("composite_score", "mean"),
         share_predicting_improve=("predicted_label",
                                   lambda x: (x == "improve").mean())).round(3)
+    # Wilson CI on hit_rate: several episodes have n<20 (e.g. 1990 Recession
+    # n=10), where a point estimate alone invites over-reading noise as signal.
+    ci = by_ep.apply(lambda row: wilson_ci(round(row["hit_rate"] * row["n"]), row["n"]),
+                      axis=1, result_type="expand")
+    by_ep["hit_rate_ci_lo"], by_ep["hit_rate_ci_hi"] = ci[0].round(3), ci[1].round(3)
     by_ep.to_csv("results_by_episode.csv")
-    print("\n=== Hit rate by episode ===")
+    print("\n=== Hit rate by episode (95% Wilson CI) ===")
     print(by_ep.to_string())
 
     lb = (s.groupby("publisher").agg(n=("hit", "size"), hit_rate=("hit", "mean"),

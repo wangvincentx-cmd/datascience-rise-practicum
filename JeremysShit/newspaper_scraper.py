@@ -22,6 +22,7 @@ import argparse
 import csv
 import json
 import re
+import ssl
 import time
 import urllib.parse
 import urllib.request
@@ -57,9 +58,38 @@ EPISODES = [
         "terms": ["financial panic", "business outlook", "return of prosperity"],
     },
     {
+        # NBER 1910-01 .. 1912-01. Added 2026-07-22 (power expansion for the
+        # optimism-asymmetry test -- see CHANGELOG): free LOC full-text
+        # coverage, no ProQuest needed, previously unscraped.
+        "name": "1910 Recession", "kind": "crisis",
+        "start": "1910-06-01", "end": "1911-03-31",
+        "terms": ["business depression", "business outlook", "return of prosperity"],
+    },
+    {
+        # NBER 1913-01 .. 1914-12 (ends just before WWI -- window kept short
+        # of Aug 1914 on purpose, same reasoning the project already applies
+        # to skip the 1918-19 war recession: wartime economic claims are a
+        # different domain, not a clean peacetime "did they see it coming."
+        "name": "1913 Recession", "kind": "crisis",
+        "start": "1913-06-01", "end": "1914-03-31",
+        "terms": ["business depression", "business outlook", "return of prosperity"],
+    },
+    {
         "name": "1920 Depression", "kind": "crisis",
         "start": "1920-06-01", "end": "1921-03-31",
         "terms": ["business depression", "business outlook", "return of prosperity"],
+    },
+    {
+        # NBER 1923-05 .. 1924-07. Added 2026-07-22, same reasoning as 1910/1913.
+        "name": "1923 Recession", "kind": "crisis",
+        "start": "1923-09-01", "end": "1924-05-31",
+        "terms": ["business depression", "business outlook", "return of prosperity", "business revival"],
+    },
+    {
+        # NBER 1926-10 .. 1927-11. Added 2026-07-22, same reasoning as 1910/1913.
+        "name": "1926 Recession", "kind": "crisis",
+        "start": "1927-01-01", "end": "1927-09-30",
+        "terms": ["business recession", "business outlook", "business revival"],
     },
     {
         "name": "1929 Crash", "kind": "crisis",
@@ -105,6 +135,29 @@ EPISODES = [
 ]
 
 
+def _ssl_context():
+    """Verifying SSL context that survives a TLS-intercepting proxy.
+
+    Machines behind corporate TLS inspection (and some antivirus products)
+    present a re-signed chain whose root is in the OS trust store but NOT in
+    certifi's bundle, so every HTTPS host fails with CERTIFICATE_VERIFY_FAILED
+    -- loc.gov and FRED included. `truststore` delegates to the OS store, which
+    fixes it while STILL VERIFYING. Never fall back to an unverified context."""
+    try:
+        import truststore
+        return truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    except ImportError:
+        pass
+    try:
+        import certifi
+        return ssl.create_default_context(cafile=certifi.where())
+    except ImportError:
+        return ssl.create_default_context()
+
+
+SSL_CONTEXT = _ssl_context()
+
+
 def _get(url: str) -> bytes:
     """Fetch a URL with disk caching, politeness delay, and retry with backoff."""
     CACHE_DIR.mkdir(exist_ok=True)
@@ -116,7 +169,8 @@ def _get(url: str) -> bytes:
         try:
             time.sleep(SLEEP_SECONDS)
             req = urllib.request.Request(url, headers=HEADERS)
-            data = urllib.request.urlopen(req, timeout=90).read()
+            data = urllib.request.urlopen(req, timeout=90,
+                                          context=SSL_CONTEXT).read()
             cache_file.write_bytes(data)
             return data
         except Exception as e:
@@ -179,12 +233,12 @@ def extract_claims(text: str, phrase: str):
     return claims
 
 
-def run(episodes, pages_per_term, out_csv):
+def run(episodes, pages_per_term, out_csv, log_csv="search_log.csv"):
     fieldnames = ["claim_id", "episode", "kind", "publisher", "state", "date",
                   "search_term", "page_url", "quote"]
     n_rows, seen_pages, claim_id = 0, set(), 0
     with open(out_csv, "w", newline="", encoding="utf-8") as f, \
-         open("search_log.csv", "w", newline="", encoding="utf-8") as lf:
+         open(log_csv, "w", newline="", encoding="utf-8") as lf:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         log_writer = csv.writer(lf)
@@ -223,7 +277,7 @@ def run(episodes, pages_per_term, out_csv):
               f.flush()
             print(f"  running total: {n_rows} claims from {len(seen_pages)} pages")
     print(f"\nDONE. {n_rows} candidate claims from {len(seen_pages)} pages -> {out_csv}")
-    print("Search coverage logged to search_log.csv")
+    print(f"Search coverage logged to {log_csv}")
 
 
 if __name__ == "__main__":
@@ -232,8 +286,14 @@ if __name__ == "__main__":
                     help="substring filter on episode names, e.g. --episodes 1907 1929")
     ap.add_argument("--pages-per-term", type=int, default=30)
     ap.add_argument("--out", default="claims_raw.csv")
+    ap.add_argument("--log-out", default="search_log.csv",
+                    help="search_log.csv is opened in OVERWRITE mode -- when scraping a "
+                         "subset of episodes to merge in later (not a fresh full run), "
+                         "point this at a separate file so the real search_log.csv (the "
+                         "corpus-transparency record for every episode already scraped) "
+                         "isn't wiped down to just the subset's rows.")
     args = ap.parse_args()
     eps = EPISODES
     if args.episodes:
         eps = [e for e in EPISODES if any(k.lower() in e["name"].lower() for k in args.episodes)]
-    run(eps, args.pages_per_term, args.out)
+    run(eps, args.pages_per_term, args.out, args.log_out)

@@ -3,10 +3,13 @@ Replace the LLM `confidence` label with an OBJECTIVE, reproducible hedging
 score, and re-run the overconfidence analysis on that solid ground.
 
 Why: `confidence` (assertive vs hedged) is this project's WEAKEST-validated
-grade -- Cohen's kappa 0.19 against the human gold standard (KAPPA_RESULTS.md),
-barely above chance. Any calibration finding resting on it ("assertive claims
-were less accurate -> overconfidence") is only as trustworthy as a 0.19-kappa
-label, which a reviewer will flag immediately. But hedging is a well-studied,
+grade -- Cohen's kappa 0.17 for gpt-4.1 (the grader used on the scored corpus)
+against the human gold standard, barely above chance (the original Llama-3.3
+validation run in KAPPA_RESULTS.md scored 0.19 on this field; see CHANGELOG's
+seven-model bake-off table for gpt-4.1's own number). Any calibration finding
+resting on it ("assertive claims were less accurate -> overconfidence") is only
+as trustworthy as a sub-0.2-kappa label, which a reviewer will flag
+immediately. But hedging is a well-studied,
 lexically-marked feature of scientific and forecasting prose (Hyland 2005,
 *Metadiscourse*): epistemic modals and hedge phrases ("may", "might", "could",
 "expected to", "appears") vs boosters/certainty markers ("will", "certainly",
@@ -106,7 +109,7 @@ def main():
             print(f"  -> assertive claims are NOT worse ({diff:+.3f}) -> the LLM-confidence "
                   "overconfidence result does NOT survive an objective measure.")
 
-    print("\n=== For contrast: the LLM `confidence` label (kappa=0.19) ===")
+    print("\n=== For contrast: the LLM `confidence` label (gpt-4.1 kappa=0.17) ===")
     if "confidence" in s.columns:
         print(s.groupby("confidence").agg(n=("hit", "size"),
                                           hit_rate=("hit", "mean")).round(3).to_string())
@@ -156,7 +159,7 @@ def _figure(obj, s):
                          ha="center", fontsize=8)
         axes[1].axhline(0.5, color="crimson", ls="--", lw=1)
         axes[1].set_ylim(0, 1)
-        axes[1].set_title("Hit rate by LLM confidence label (kappa=0.19)")
+        axes[1].set_title("Hit rate by LLM confidence label (gpt-4.1 kappa=0.17)")
     fig.suptitle("Overconfidence, objective lexical measure vs the unreliable LLM label")
     plt.tight_layout()
     plt.savefig(FIGDIR / "fig_hedging.png", dpi=200)

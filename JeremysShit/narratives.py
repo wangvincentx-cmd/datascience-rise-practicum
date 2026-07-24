@@ -40,6 +40,7 @@ Outputs: claims_narratives.csv, printed prevalence + accuracy tables,
 """
 
 import argparse
+import json
 import os
 import re
 from pathlib import Path
@@ -127,8 +128,9 @@ Sentence: {quote}"""
 def grade_narratives_llm(df, api_key, model, base_url, limit=None):
     """Authoritative gpt-4.1 narrative pass, reusing grade_claims.call_llm.
     Returns df with an `narrative_llm` column. Kept thin on purpose -- for the
-    full corpus use grade_claims.py's --batch path (50% cheaper); this is for a
-    --limit smoke test and the kappa-validation sample."""
+    full corpus use --batch (below), which reuses grade_claims.py's generic
+    OpenAI Batch API plumbing (poll_batch/fetch_file); this synchronous path
+    is for a --limit smoke test and the kappa-validation sample only."""
     from grade_claims import call_llm
     rows = df.head(limit) if limit else df
     labels = []
@@ -144,9 +146,154 @@ def grade_narratives_llm(df, api_key, model, base_url, limit=None):
     return out
 
 
+# ---- Full-corpus batch pass (--batch) --------------------------------------
+# Reuses grade_claims.py's poll_batch/fetch_file (generic HTTP plumbing, no
+# dependency on its RUBRIC_PROMPT/GRADE_FIELDS) but builds its own request
+# lines, since the narrative prompt/response shape (one label field, keyed by
+# claim_id) differs from grade_claims.py's multi-field grading rubric.
+NARRATIVE_BATCH_MAX_TOKENS = 40
+
+
+def _narrative_batch_lines(rows, model):
+    for r in rows:
+        prompt = NARRATIVE_PROMPT.format(date=r.get("date", ""),
+                                         episode=r.get("episode", ""), quote=r["quote"])
+        body = {
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "response_format": {"type": "json_object"},
+            "temperature": 0.0,
+            "max_tokens": NARRATIVE_BATCH_MAX_TOKENS,
+        }
+        yield json.dumps({"custom_id": str(r["claim_id"]), "method": "POST",
+                          "url": "/v1/chat/completions", "body": body})
+
+
+def _submit_narrative_batch(api_key, rows, model):
+    import requests
+    from grade_claims import OPENAI_BATCH_BASE
+    jsonl = "\n".join(_narrative_batch_lines(rows, model))
+    headers = {"Authorization": f"Bearer {api_key}"}
+    resp = requests.post(f"{OPENAI_BATCH_BASE}/files", headers=headers,
+                         files={"file": ("batch_input.jsonl", jsonl.encode("utf-8"),
+                                        "application/jsonl")},
+                         data={"purpose": "batch"}, timeout=120)
+    resp.raise_for_status()
+    file_id = resp.json()["id"]
+    resp = requests.post(f"{OPENAI_BATCH_BASE}/batches",
+                         headers={**headers, "Content-Type": "application/json"},
+                         json={"input_file_id": file_id, "endpoint": "/v1/chat/completions",
+                              "completion_window": "24h"}, timeout=60)
+    resp.raise_for_status()
+    return resp.json()
+
+
+def run_narrative_batch(df, api_key, model, chunk_size=800, poll_interval=30,
+                        out_path="claims_narratives_llm_full.csv"):
+    """Batch-grade every claim's narrative label over the full corpus (1,628
+    claims as of 2026-07-22 -- one or two chunks at NARRATIVE_BATCH_MAX_TOKENS
+    output, comfortably under the org enqueued-token cap that bit
+    grade_claims.py at 2,415 claims/900k tokens with a much heavier prompt).
+    Resume-safe by claim_id via an existing out_path."""
+    from grade_claims import fetch_file, poll_batch
+
+    done_ids = set()
+    if os.path.exists(out_path):
+        done_ids = set(pd.read_csv(out_path)["claim_id"].astype(str))
+        if done_ids:
+            print(f"Resuming: {len(done_ids)} claims already labeled in {out_path}")
+
+    todo = [r for _, r in df.iterrows() if str(r["claim_id"]) not in done_ids]
+    if not todo:
+        print("Nothing left to label.")
+        return pd.read_csv(out_path)
+
+    chunks = [todo[i:i + chunk_size] for i in range(0, len(todo), chunk_size)]
+    print(f"Submitting {len(todo)} claims to the OpenAI Batch API ({model}) in "
+         f"{len(chunks)} chunk(s) of up to {chunk_size}...")
+
+    header_written = os.path.exists(out_path)
+    for ci, chunk in enumerate(chunks, 1):
+        print(f"--- chunk {ci}/{len(chunks)}: {len(chunk)} claims ---", flush=True)
+        batch = _submit_narrative_batch(api_key, chunk, model)
+        print(f"  batch id {batch['id']}, status {batch['status']}")
+        result = poll_batch(api_key, batch["id"], interval=poll_interval)
+
+        labels = {}
+        if result.get("output_file_id"):
+            for line in fetch_file(api_key, result["output_file_id"]).splitlines():
+                if not line.strip():
+                    continue
+                rec = json.loads(line)
+                body = (rec.get("response") or {}).get("body") or {}
+                try:
+                    content = body["choices"][0]["message"]["content"]
+                    label = json.loads(content).get("narrative", "none")
+                except Exception:
+                    label = "ERROR:parse"
+                labels[rec["custom_id"]] = label
+        if result.get("error_file_id"):
+            err_text = fetch_file(api_key, result["error_file_id"])
+            err_lines = [l for l in err_text.splitlines() if l.strip()]
+            print(f"  {len(err_lines)} request(s) errored -- first: "
+                 f"{err_lines[0][:300] if err_lines else ''}")
+
+        chunk_rows = pd.DataFrame(chunk)
+        chunk_rows["narrative_llm"] = chunk_rows["claim_id"].astype(str).map(labels).fillna("ERROR:missing")
+        chunk_rows.to_csv(out_path, mode="a", index=False, header=not header_written)
+        header_written = True
+        n_ok = sum(1 for v in labels.values() if not str(v).startswith("ERROR"))
+        print(f"  chunk {ci}/{len(chunks)} {result['status']}: {n_ok}/{len(chunk)} labeled "
+             f"-> {out_path}")
+
+    print(f"\nAll {len(chunks)} chunk(s) complete -> {out_path}")
+    return pd.read_csv(out_path)
+
+
 def main(args):
     df = pd.read_csv("claims_scored.csv")
     df = add_narratives(df)
+
+    if args.batch:
+        api_key = os.environ.get("OPENAI_API_KEY")
+        if not api_key:
+            raise SystemExit("Set OPENAI_API_KEY for --batch.")
+        graded = run_narrative_batch(df, api_key, args.model,
+                                     chunk_size=args.batch_chunk_size,
+                                     poll_interval=args.poll_interval,
+                                     out_path="claims_narratives_llm_full.csv")
+        graded["complacent_llm"] = graded["narrative_llm"].isin(COMPLACENT)
+        agree = (graded["narrative"] == graded["narrative_llm"]).mean()
+        print(f"\nFull-corpus LLM pass (n={len(graded)}): lexical-vs-LLM raw "
+              f"agreement {agree:.1%} -> claims_narratives_llm_full.csv")
+
+        print("\n=== Narrative prevalence (AUTHORITATIVE gpt-4.1-class LLM pass) ===")
+        print(graded["narrative_llm"].value_counts(normalize=True).round(3).to_string())
+
+        s = graded.dropna(subset=["hit"]).copy()
+        print("\n=== Accuracy by narrative (LLM labels) ===")
+        acc = (s.groupby("narrative_llm").agg(n=("hit", "size"), hit_rate=("hit", "mean"))
+               .sort_values("hit_rate").round(3))
+        print(acc.to_string())
+        if "new_era" in acc.index or "sound_fundamentals" in acc.index:
+            comp_hit = s[s["complacent_llm"]]["hit"].mean()
+            other_hit = s[~s["complacent_llm"]]["hit"].mean()
+            print(f"\n  complacent narratives hit {comp_hit:.1%} vs everything else "
+                  f"{other_hit:.1%}  (delta {comp_hit - other_hit:+.3f})")
+
+        comp = (graded.groupby("episode")
+                .agg(n=("complacent_llm", "size"), complacent_share=("complacent_llm", "mean"),
+                     kind=("kind", "first"))
+                .sort_values("complacent_share", ascending=False).round(3))
+        print("\n=== Complacent-narrative share by episode (LLM labels) ===")
+        print(comp.to_string())
+        _figure(comp, path=FIGDIR / "fig_narratives_llm.png",
+               title="Complacent narratives by episode (red = crisis, green = calm control)\n"
+                     "AUTHORITATIVE gpt-4.1-class LLM pass")
+        print("\nclaims_narratives_llm_full.csv + figures/fig_narratives_llm.png written")
+        print("NEXT: pull a 40-80-claim human kappa sample (see narratives_kappa_sample.py) "
+              "before reporting these on the poster.")
+        return
 
     if args.llm:
         api_key = os.environ.get("OPENAI_API_KEY") or os.environ.get("DEEPSEEK_API_KEY")
@@ -157,7 +304,7 @@ def main(args):
         agree = (graded["narrative"] == graded["narrative_llm"]).mean()
         print(f"LLM narrative smoke test (n={len(graded)}): lexical-vs-LLM raw "
               f"agreement {agree:.1%} -> claims_narratives_llm.csv")
-        print("NEXT: run grade_claims-style --batch over the full corpus, then a "
+        print("NEXT: run --batch over the full corpus, then a "
               "~40-80-claim human kappa check before trusting these.")
         return
 
@@ -193,7 +340,7 @@ def main(args):
           "(gpt-4.1) + a human kappa check, not yet run.")
 
 
-def _figure(comp):
+def _figure(comp, path=None, title=None):
     try:
         import matplotlib
         matplotlib.use("Agg")
@@ -210,17 +357,27 @@ def _figure(comp):
     ax.set_yticklabels(d.index, fontsize=8)
     ax.set_xlabel("share of claims telling a complacent story "
                   "(new era / sound fundamentals / temporary)")
-    ax.set_title("Complacent narratives by episode (red = crisis, green = calm control)\n"
+    ax.set_title(title or "Complacent narratives by episode (red = crisis, green = calm control)\n"
                  "lexical screen -- preview of the Narrative Economics angle")
     plt.tight_layout()
-    plt.savefig(FIGDIR / "fig_narratives.png", dpi=200)
+    plt.savefig(path or (FIGDIR / "fig_narratives.png"), dpi=200)
     plt.close()
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--llm", action="store_true", help="run the gpt-4.1 narrative pass (needs OPENAI_API_KEY)")
+    ap.add_argument("--batch", action="store_true",
+                    help="run the authoritative LLM narrative pass over the FULL corpus via "
+                         "the OpenAI Batch API (needs OPENAI_API_KEY) -- 50%% cheaper, "
+                         "meant to be backgrounded")
     ap.add_argument("--limit", type=int, default=None, help="limit rows for the --llm smoke test")
-    ap.add_argument("--model", default="gpt-4.1")
+    ap.add_argument("--model", default="gpt-4.1",
+                    help="gpt-4.1 is this project's bake-off-validated grader; pass "
+                         "gpt-4.1-mini for a cheaper run (re-check kappa before trusting it)")
     ap.add_argument("--base-url", default="https://api.openai.com/v1")
+    ap.add_argument("--batch-chunk-size", type=int, default=800,
+                    help="claims per Batch API submission (--batch)")
+    ap.add_argument("--poll-interval", type=float, default=30,
+                    help="seconds between batch status checks (--batch)")
     main(ap.parse_args())

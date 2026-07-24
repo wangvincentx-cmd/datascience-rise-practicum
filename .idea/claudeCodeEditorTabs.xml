@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ClaudeCodeEditorTabs">
+    <option name="activeSessionId" value="ffac8a7e-2d80-468c-a48f-897a10846dcc" />
+    <option name="openSessionIds">
+      <list>
+        <option value="fe0c0c90-e7b9-4b66-91df-573963e0e924" />
+        <option value="a7efec05-1ed4-4632-a78c-4575f0faade9" />
+        <option value="ffac8a7e-2d80-468c-a48f-897a10846dcc" />
+      </list>
+    </option>
+    <option name="sessionPaths">
+      <map>
+        <entry key="0001e17e-28a6-4bc0-9348-3bf9cb408dca" value="/sessions/18df3974-7daf-4441-a560-a2ca73307b9c" />
+        <entry key="a7efec05-1ed4-4632-a78c-4575f0faade9" value="/sessions/18df3974-7daf-4441-a560-a2ca73307b9c" />
+        <entry key="fe0c0c90-e7b9-4b66-91df-573963e0e924" value="/sessions/new" />
+        <entry key="ffac8a7e-2d80-468c-a48f-897a10846dcc" value="/sessions/new" />
+      </map>
+    </option>
+    <option name="sessionTitles">
+      <map>
+        <entry key="0001e17e-28a6-4bc0-9348-3bf9cb408dca" value="read proquest extraction file and give me instruct" />
+        <entry key="a7efec05-1ed4-4632-a78c-4575f0faade9" value="prelim abstract" />
+        <entry key="fe0c0c90-e7b9-4b66-91df-573963e0e924" value="Claude Code" />
+        <entry key="ffac8a7e-2d80-468c-a48f-897a10846dcc" value="Claude Code" />
+      </map>
+    </option>
+  </component>
+</project>
