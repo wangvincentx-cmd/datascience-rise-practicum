@@ -336,6 +336,39 @@ git history for full CHANGELOG detail pre-pivot):
       **Greenbook 54.0% ~= SPF 54.1% ~= Livingston 54.4% ~= Michigan ~55%.**
       Outputs `greenbook_scored.csv`, `figures/fig_greenbook_benchmark.png`.
 
+- [x] **Greenbook ANATOMY analysis — the Fed-staff counterpart to the
+      newspapers' optimism gap (2026-07-25).** New `greenbook_analysis.py`
+      (tables + `figures/fig_greenbook_anatomy.png`), three findings:
+      **(1) The forecast collapses to a constant.** SD of the gRGDP forecast
+      falls monotonically 4.01 -> 0.90 pp from the nowcast to 8 quarters out
+      while the mean stays flat at ~2.8%, and the share of forecasts below zero
+      collapses 12.9% -> 0.0%. **At 6+ quarters out the staff has NEVER
+      forecast negative growth: 0 of 545 forecasts across 54 years.** Beyond a
+      year the Greenbook simply IS a trend forecast — and a constant cannot
+      track turning points, so its zero directional skill is mechanical, not a
+      scoring artifact. This is the strongest single defense of the skill
+      metric: the null is explained, not just measured.
+      **(2) It forecast growth into every recession.** For all 8 NBER peaks
+      1969-2020, the mean 1-yr-ahead forecast in the 12 months before the peak
+      is POSITIVE. Only 3 of 8 (1969, 1980, 1981) ever produced a single
+      negative call; the four most recent — **1990, 2001, 2007 (GFC, mean
+      +2.08%, worst call still +1.45%), and 2020 (COVID, mean +2.08%)** — were
+      missed entirely. Loungani's "failure to predict recessions" in the Fed's
+      own internal numbers.
+      **(3) Skill ~0 in every decade** (1970s +0.8, 1980s +1.2, 1990s +1.2,
+      2000s 0.0, 2010s 0.0; overall +0.0, n=480). The 1990s' high 85% raw rate
+      is purely the recession-free decade inflating the naive baseline to
+      83.8% — a worked example of why the raw rate must never be quoted alone.
+      POSTER FRAMING: this converts the arm's headline from a weak "who scored
+      higher" into a strong, literature-anchored claim — **the newspapers'
+      optimism bias is not amateurism; the best-resourced forecaster in the
+      country shows the same bias, structurally, and by construction cannot
+      call a turn more than a year out.** Adds `NBER_MODERN` (the 1969-2020
+      chronology; `score_claims.NBER_RECESSIONS` stops at 1961 because the
+      newspaper corpus does). 5 new offline tests, deliberately data-free
+      (the workbook is gitignored, so workbook-touching tests would fail on a
+      fresh clone) — suite now **90/90**.
+
 - [!] **CRITICAL METRIC PROBLEM found via the Greenbook run (2026-07-25) —
       read before writing up ANY hit-rate comparison.** Greenbook's 54.0% is
       EXACTLY the score of a constant "always say improve" forecaster on the
