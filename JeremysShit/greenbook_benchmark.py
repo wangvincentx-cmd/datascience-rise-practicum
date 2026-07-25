@@ -112,7 +112,12 @@ def score_greenbook(gb, realized_dir_fn, band=BAND_GDP):
     rows = []
     for _, r in gb.iterrows():
         fc = np.nanmean([r[c] for c in FORECAST_COLS if c in gb.columns])
-        d = pd.to_datetime(r[DATE_COL], errors="coerce")
+        # GBdate arrives as an INTEGER (19670329). pd.to_datetime() on a bare
+        # int reads it as nanoseconds-since-epoch and silently returns
+        # 1970-01-01, which would score every forecast against the wrong
+        # realized window. Parse it as a YYYYMMDD string instead.
+        d = pd.to_datetime(str(r[DATE_COL]).split(".")[0], format="%Y%m%d",
+                           errors="coerce")
         if pd.isna(d):
             continue
         pred = direction_label(fc, band)

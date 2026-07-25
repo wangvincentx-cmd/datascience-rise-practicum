@@ -313,6 +313,79 @@ git history for full CHANGELOG detail pre-pivot):
       fn so no FRED needed), suite now 62/62. Outputs `spf_scored.csv`,
       `figures/fig_spf_benchmark.png`.
 
+- [x] **Greenbook (Fed Board staff) benchmark RUN — data acquired and scored
+      (2026-07-25).** The blocking manual download is done: user fetched the
+      Row-Format workbook (`cache/GBweb_Row_Format.xlsx`, 584 KB, copied to the
+      name the script expects, `cache/greenbook_row_format.xlsx`; `cache/` is
+      gitignored so it is NOT committed — re-download if cloning fresh). The
+      page is a JS shell (verified: 18 KB, zero `.xlsx` hrefs, and guessed
+      `/-/media/` paths all return a soft-404 HTML page with HTTP 200), so the
+      download stays manual — no scripted path exists.
+      `--inspect` CONFIRMED all three guessed constants were right:
+      sheet `gRGDP`, date col `GBdate`, forecast cols `gRGDPF1..F4` (the four
+      quarters after the `F0` nowcast).
+      **BUG FIXED while running:** `GBdate` arrives as an INTEGER (19670329);
+      `pd.to_datetime()` on a bare int reads it as nanoseconds-since-epoch and
+      silently returned **1970-01-01 for every row**, which would have scored
+      every Greenbook forecast against the wrong realized window. Now parsed as
+      a `%Y%m%d` string. Post-fix dates span 1967-03-29 -> 2020-12-04, 490
+      editions (matches `forecast_credibility_PLAN.md`), 480 scorable.
+      **RESULT: Greenbook directional hit 54.0% (95% CI [49.6,58.3], n=480)**,
+      prediction mix improve 92% / no_change 7% / worsen 1% — the same "never
+      forecast a contraction" pattern as SPF. Four-way convergence:
+      **Greenbook 54.0% ~= SPF 54.1% ~= Livingston 54.4% ~= Michigan ~55%.**
+      Outputs `greenbook_scored.csv`, `figures/fig_greenbook_benchmark.png`.
+
+- [!] **CRITICAL METRIC PROBLEM found via the Greenbook run (2026-07-25) —
+      read before writing up ANY hit-rate comparison.** Greenbook's 54.0% is
+      EXACTLY the score of a constant "always say improve" forecaster on the
+      same rows (naive baseline = 54.0%, Greenbook = 54.0%, skill = 0.0 pts).
+      Because 92% of its calls are `improve`, the hit rate is measuring the base
+      rate of expansion, NOT forecasting skill. Checking the newspapers the same
+      way is worse — on `claims_scored.csv` (now n=1,297 improve/worsen/
+      no_change rows) newspapers score 49.6% vs a 56.0% naive baseline =
+      **-6.4 pts of skill**, and in the 1946-1963 Livingston head-to-head window
+      specifically: newspapers 58.0% vs naive **79.2%** = **-21.2 pts**. So the
+      poster's headline "newspapers beat the economists 61.3% vs 54.4%" is not
+      safe as a skill claim — in that window BOTH are far below a broken clock,
+      and the ranking between them may be noise plus era-base-rate differences.
+      This is the SAME trap `CLAUDE.md` already codifies for bill_arm ("accuracy
+      is never reported — a trivial 'always dies' classifier scores ~96%"),
+      reappearing in the economy arm as raw directional hit rate.
+      FIX BEFORE WRITE-UP: report **skill relative to the naive baseline
+      computed on the same rows/era** (hit rate minus always-improve rate), or a
+      Brier skill score, alongside — not instead of — the raw rate. Note this
+      does NOT invalidate the sampling-robust findings (the PREDICTION MIX
+      contrast, the optimism gap, 1929 at 13%); it invalidates naked hit-rate
+      rankings across groups with different base rates.
+
+- [x] **Skill-vs-naive-baseline metric wired into `score_claims.py`
+      (2026-07-25), so every future run reports it automatically.** New
+      `naive_skill()` helper (docstring explains the trap) returns
+      (hit, naive, skill_pts, n) on `improve/worsen/no_change` rows only.
+      Three reporting sites: (1) a new `=== SKILL vs a naive 'always improve'
+      forecaster ===` block printed BEFORE any raw rate, with an era breakdown;
+      (2) `naive_rate` + `skill_pts` columns added to the by-episode table and
+      `results_by_episode.csv`, each episode judged against the base rate it
+      actually faced; (3) a baseline check inside `head_to_head()` that prints
+      both sides' skill and emits an explicit WARNING against quoting the raw
+      newspapers-vs-Livingston gap when skill is negative. 6 new offline tests
+      (always-improve => exactly 0 skill; perfect forecaster => positive;
+      up/down/stable rows excluded; empty input safe) — suite now **85/85**.
+      **Numbers on the current corpus (n=1,297 directional):** newspapers 49.0%
+      vs naive 55.1% = **-6.1 pts**; by era 1900-1945 -3.4, 1946-1963 **-21.2**,
+      1964-2010 +2.7. Per-episode skill is mostly negative, with real positives
+      only at 1973 Oil Shock (+44.0), 1990 Recession (+20.0), 1929 Crash (+10.0)
+      — i.e. the papers add value exactly where the naive optimist fails, which
+      is a MUCH better framing for the poster than the raw rate.
+      **HEADLINE REVERSAL to be aware of:** on the expanded corpus the
+      1946-63 head-to-head now reads newspapers 48.6% (n=572) vs Livingston
+      54.4% — the newspaper CI now EXCLUDES Livingston in the opposite
+      direction from the old "newspapers beat the economists 61.3%" claim.
+      Both are below the 59.6% naive baseline (newspapers -10.5, Livingston
+      -5.2). Any slide/poster text still asserting newspapers out-forecast
+      economists needs rewriting.
+
 - [x] **Narrative Economics (Shiller) scaffold built; LEXICAL preview run,
       authoritative LLM pass NOT yet run (2026-07-22, idea #5, the stretch
       goal).** `narratives.py` codes each claim into one of six perennial

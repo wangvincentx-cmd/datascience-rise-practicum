@@ -64,6 +64,43 @@ def wilson_ci(k, n, z=1.96):
     half = (z * np.sqrt(p * (1 - p) / n + z**2 / (4 * n**2))) / denom
     return max(0.0, center - half), min(1.0, center + half)
 
+
+# The three general-direction labels. The price/unemployment codes
+# ('up'/'down'/'stable') use a different vocabulary and are excluded from the
+# naive-baseline comparison below.
+DIRECTIONAL_LABELS = ("improve", "worsen", "no_change")
+
+
+def naive_skill(s):
+    """Hit rate MINUS the score a constant 'always say improve' forecaster would
+    get on these same rows.
+
+    Why this exists: a raw directional hit rate is not a skill measure when the
+    outcome classes are imbalanced. The economy expands most of the time, so a
+    broken clock that always predicts "improve" scores the base rate for free —
+    and forecasters who are structurally optimistic (Greenbook: 92% of calls are
+    'improve'; SPF: 94%) inherit that score without doing any forecasting. Run
+    on the real data this is not hypothetical: the Fed staff's Greenbook scores
+    54.0% against a 54.0% naive baseline (exactly zero skill), and in the
+    1946-1963 Livingston head-to-head window the newspapers score 58.0% against
+    a 79.2% baseline (-21.2 points — far worse than the broken clock).
+
+    Comparing raw hit rates across groups drawn from different eras therefore
+    compares their base rates, not their skill. This is the same trap CLAUDE.md
+    already bans for bill_arm ("accuracy is never reported" at a 3-4% base
+    rate), in directional form.
+
+    Returns (hit_rate, naive_rate, skill_points, n); all rates as percentages.
+    """
+    d = s.dropna(subset=["hit"])
+    d = d[d["predicted_label"].isin(DIRECTIONAL_LABELS)
+          & d["realized_label"].isin(DIRECTIONAL_LABELS)]
+    if d.empty:
+        return np.nan, np.nan, np.nan, 0
+    hit = d["hit"].mean() * 100
+    naive = (d["realized_label"] == "improve").mean() * 100
+    return hit, naive, hit - naive, len(d)
+
 # NBER US business cycle contractions (peak month -> trough month), 1902-1961.
 NBER_RECESSIONS = [
     ("1902-09", "1904-08"), ("1907-05", "1908-06"), ("1910-01", "1912-01"),
@@ -324,6 +361,31 @@ def score(args):
     print(f"\n{len(scored)} predictions, {len(s)} scorable "
           f"({len(scored) - len(s)} unscorable: pre-1913 prices / pre-1948 employment)")
 
+    # Report skill BEFORE any raw hit rate, so nobody reads a bare rate as if it
+    # were a skill measure. See naive_skill() for why.
+    hit, naive, skill, n_dir = naive_skill(s)
+    print("\n=== SKILL vs a naive 'always improve' forecaster ===")
+    if n_dir:
+        print(f"  newspapers hit rate : {hit:5.1f}%   (n={n_dir} directional claims)")
+        print(f"  naive baseline      : {naive:5.1f}%   (always predict 'improve')")
+        print(f"  SKILL               : {skill:+5.1f} points")
+        verdict = ("BEATS the broken clock" if skill > 0 else
+                   "does NOT beat a broken clock")
+        print(f"  -> {verdict}. Report THIS, not the bare hit rate: groups drawn")
+        print("     from different eras have different base rates, so comparing")
+        print("     raw hit rates compares those base rates, not skill.")
+        s_era = s.copy()
+        s_era["_yr"] = pd.to_datetime(s_era["date"], errors="coerce").dt.year
+        print("  by era:")
+        for lo, hi, lab in [(1900, 1946, "1900-1945"), (1946, 1964, "1946-1963"),
+                            (1964, 2011, "1964-2010")]:
+            h, nv, sk, k = naive_skill(s_era[(s_era["_yr"] >= lo) & (s_era["_yr"] < hi)])
+            if k >= 20:
+                print(f"    {lab}: n={k:5d}  hit {h:5.1f}%  naive {nv:5.1f}%  "
+                      f"skill {sk:+5.1f}pts")
+    else:
+        print("  (no directional improve/worsen/no_change rows to score)")
+
     print("\n=== Composite score (accuracy + punctuality + specificity, mean of 3) ===")
     print(f"  mean composite: {s['composite_score'].mean():.3f}  "
           f"(accuracy leg {s['hit'].mean():.3f}, punctuality leg "
@@ -340,8 +402,16 @@ def score(args):
     ci = by_ep.apply(lambda row: wilson_ci(round(row["hit_rate"] * row["n"]), row["n"]),
                       axis=1, result_type="expand")
     by_ep["hit_rate_ci_lo"], by_ep["hit_rate_ci_hi"] = ci[0].round(3), ci[1].round(3)
+    # Per-episode skill. Computed on the episode's OWN directional rows, so each
+    # episode is judged against the base rate it actually faced — a crisis
+    # window and a calm control have very different "always improve" scores, and
+    # comparing their raw hit rates without this is comparing those base rates.
+    sk = s.groupby("episode").apply(
+        lambda g: pd.Series(dict(zip(("hit_dir", "naive_rate", "skill_pts", "n_dir"),
+                                     naive_skill(g)))), include_groups=False)
+    by_ep = by_ep.join((sk / 100)[["naive_rate", "skill_pts"]].round(3))
     by_ep.to_csv("results_by_episode.csv")
-    print("\n=== Hit rate by episode (95% Wilson CI) ===")
+    print("\n=== Hit rate by episode (95% Wilson CI; skill_pts = hit - naive) ===")
     print(by_ep.to_string())
 
     lb = (s.groupby("publisher").agg(n=("hit", "size"), hit_rate=("hit", "mean"),
@@ -446,6 +516,24 @@ def head_to_head(s):
             lo, hi = np.percentile(boots, [2.5, 97.5])
             print(f"  Newspaper 95% CI: [{lo:.1%}, {hi:.1%}] — "
                   f"{'overlaps' if lo <= liv_hit <= hi else 'excludes'} the Livingston rate")
+        # The comparison above is between two RAW hit rates, which is exactly
+        # the reading naive_skill() warns about: 1946-63 was an unusually
+        # expansionary stretch, so "always improve" scores very high in it and
+        # both forecasters can beat each other while losing to a broken clock.
+        # Print the baseline so the gap is never quoted without it.
+        h, naive, skill, k = naive_skill(news)
+        if k:
+            print(f"  --- baseline check on the same window (n={k}) ---")
+            print(f"  naive 'always improve' scores: {naive:.1f}%")
+            print(f"  newspaper skill vs naive:      {skill:+.1f} points")
+            if liv_hit is not None:
+                print(f"  Livingston skill vs naive:     "
+                      f"{liv_hit * 100 - naive:+.1f} points")
+            if skill < 0:
+                print("  WARNING: negative skill — the newspapers lose to a broken")
+                print("  clock here. Do NOT report the raw gap above as evidence")
+                print("  that newspapers out-forecast economists; in this window")
+                print("  it mostly reflects each group's base rate, not skill.")
     else:
         print("  No scored newspaper claims in 1946-63 yet — scale up episodes 6-7.")
 
