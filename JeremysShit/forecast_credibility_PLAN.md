@@ -102,3 +102,36 @@ NOT n independent episodes. Keep `source` explicit; report source-stratified.
    (`gRGDP` first; then `gIP`/`UNEMP`/`gPCPI`), produce `greenbook_scored.csv`.
 2. `forecast_credibility.py`: build the shared feature table, `source`-tagged, from
    Greenbook (+ Livingston), train the 3 models, run the comparison + transfer.
+
+## BUILT & RESULTS (2026-07-24)
+Files: `greenbook_benchmark.py` (leaderboard) · `forecast_data.py` →
+`forecasts.csv` (8,947 rows, 1946-2026, provenance-tagged, merge audit) ·
+`forecast_credibility.py` → `credibility_features.csv` + 3 figures ·
+`test_forecasts.py` (28 offline checks, no network — all pass).
+
+Benchmark leaderboard (directional hit on INDPRO/NBER): Greenbook **54.0%** ≈
+SPF 54.1% ≈ Livingston 54.4% ≈ Michigan ~55%; Greenbook worsen-share **1%**
+("failure to predict recessions", now on the Fed).
+
+Credibility models — single-split held-out AUC was OPTIMISTIC; the honest number
+is multi-origin CV (5-fold expanding window): Greenbook **0.74 [0.44-0.99]** ·
+SPF **0.66 [0.55-0.85]** · Livingston **0.70 [0.50-0.89]** (wide ranges = the
+few-recessions caveat, visible). **Cross-source transfer high both ways**
+(livingston→greenbook 0.84, spf→greenbook 0.83) → credibility generalizes.
+**Deployable (real-time-safe) model** — dropping the leaky NBER-final features and
+adding a yield-curve signal costs only ~0.03 AUC → leakage isn't driving it.
+**Multivar pool** (real-activity vars) — Greenbook holds & tightens
+(0.755 [0.63-0.92]); SPF stays weak.
+
+Ablation (what carries the signal): Greenbook forecast-only 0.79 / state-only
+0.77 / full 0.81 — both matter; **SPF forecast-only 0.55 (≈chance) / state-only
+0.76** — an individual pro's specific number adds ~nothing; the macro STATE is the
+story. Top coefficients everywhere: unemployment change, momentum, `usrec_now`
+(−: forecasts made in recessions fail). Net honest read: **credibility is mostly
+turning-point proximity, not a property of the forecast itself.**
+
+Reviewer-proofing: fixed SEED; bootstrap CIs on every held-out AUC; ablation
+instead of assertion; temporal (never random) split; Okabe-Ito colorblind-safe
+figures; caveats printed (underpowered on turning points; shared recessions;
+revised-FRED state features; Livingston-IP vs GB/SPF-RGDP cross). Open upgrades:
+real-time vintages (RTDSM), multi-variable pooling, multi-origin CV.

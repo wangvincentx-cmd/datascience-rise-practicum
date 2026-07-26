@@ -1,171 +1,145 @@
 """
 Add the Fed Board staff's Greenbook/Tealbook forecasts as a FOURTH professional
-benchmark, alongside SPF (spf_benchmark.py), the Livingston economists, and the
-Michigan households. Same design as spf_benchmark.py: put a professional
-forecaster on the IDENTICAL directional ground truth the newspapers are scored
-on, so "did the Fed staff see it coming" becomes a matched head-to-head, not a
-number computed a different way.
+benchmark, alongside SPF (spf_benchmark.py), Livingston, and Michigan. Same
+design as spf_benchmark.py: put a professional forecaster on the IDENTICAL
+directional ground truth the newspapers are scored on, so "did the Fed staff see
+it coming" is a matched head-to-head, not a number computed a different way.
 
-WHAT THIS IS (and is NOT):
-  - It is a BENCHMARK/SCORING source, not a feed for model.py. Greenbook is
-    structured numbers, not text -- there is nothing to LLM-extract (this is the
-    good news: it skips the noisy step that gave ProQuest 0.46 precision), and it
-    has none of the newspaper-claim features model.py learns from (publisher,
-    voice, hedging, claim text). It is forecaster #4 on the leaderboard.
-  - Coverage is Jan 1966 -> ~Dec 2020: the Fed staff forecasts began in 1966, and
-    FOMC materials are released on a strict 5-YEAR confidentiality lag, so the set
-    is always ~5 years behind the present and will not reach 2021-2026. This costs
-    us nothing -- every post-1963 crisis window (oil_1973 ... gfc_2008, covid_2020)
-    sits inside 1966-2020. covid is the showcase: did the Jan/Feb-2020 Tealbooks
-    call the pandemic collapse? (Almost certainly not.)
+This is a BENCHMARK/SCORING source, not a feed for model.py (Greenbook is
+structured numbers, no text to extract, and none of the newspaper-claim features).
+It is also the base table the forecast-credibility model builds on
+(forecast_credibility_PLAN.md).
 
-DATA -- one manual download (the file is JS-gated on the Philly Fed site; there is
-no stable direct URL to curl):
-    1. Open https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/greenbook
-    2. Download the "Excel -- Row Format" workbook.
-    3. Save it as:  JeremysShit/cache/greenbook_row_format.xlsx
-Then:
-    python greenbook_benchmark.py --inspect     # FIRST: list sheets + columns, map the real names
-    python greenbook_benchmark.py               # score + table + figures/fig_greenbook_benchmark.png
+DATA: the "All Column Format" folder (per-variable xlsx; each COLUMN is a Greenbook
+edition `gRGDP_YYYYMMDD`, each ROW a target quarter `YYYY.Q`, cell = that edition's
+forecast). Downloaded to cache/Gbweb_All_Column_Format/. Real GDP growth = gRGDP,
+split into two era files (1967_1984, 1985_Last); 490 editions, 1967-2020.
 
-Row format: 16 sheets (sheet 1 = Documentation, then 15 variable sheets). Each
-variable sheet has one row per Greenbook date, columns for (at most) the 4 quarters
-before the nowcast, the nowcast quarter, and up to 9 quarters ahead. We score the
-real-GDP-growth sheet: average the ~1-year-ahead columns (the four quarters after
-the nowcast), band to improve/worsen/no_change, and compare to realized INDPRO/NBER
-over 12 months -- the same rule and band the newspaper general-business claims use.
+Scoring (leakage-safe, identical to spf_benchmark):
+  - predicted direction: mean of the four quarters AFTER the edition's nowcast
+    quarter (the ~1-year-ahead call), banded improve/worsen/no_change at BAND_GDP.
+  - realized direction: score_claims.realized_direction over 12 months from the
+    edition date -- the SAME INDPRO/NBER rule/band the newspapers use.
 
-The three --sheet/--date-col/--forecast-cols defaults below are BEST GUESSES until
---inspect confirms them against the real file; they are the only thing to finalize.
+Usage:
+    python greenbook_benchmark.py                 # gRGDP, band 1.0
+    python greenbook_benchmark.py --var gIP       # score a different variable
+Outputs: greenbook_scored.csv, printed benchmark table, figures/fig_greenbook_benchmark.png
 """
 
 import argparse
-import io
 import re
-import zipfile
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import requests  # noqa: F401  (kept for parity with spf_benchmark; download is manual)
 
 from score_claims import fred, realized_direction
-from spf_benchmark import direction_label, _boot_ci
+from spf_benchmark import read_xlsx_robust, direction_label, _boot_ci
 
-CACHE = Path("cache")
+GB_DIR = Path("cache/Gbweb_All_Column_Format")
 FIGDIR = Path("figures")
-GB_FILE = CACHE / "greenbook_row_format.xlsx"
 BAND_GDP = 1.0          # annualized-% no-change band, same default as SPF
-
-# --- VERIFY THESE THREE WITH --inspect, then finalize -----------------------
-# Real-GDP-growth sheet name; the Greenbook-date column; and the four ~1yr-ahead
-# forecast columns (the quarters AFTER the nowcast). Names below are guesses.
-SHEET_RGDP = "gRGDP"
-DATE_COL = "GBdate"
-FORECAST_COLS = ["gRGDPF1", "gRGDPF2", "gRGDPF3", "gRGDPF4"]
-# ----------------------------------------------------------------------------
+ERA_FILES = {"1967_1984": "{var}_1967_1984.xlsx", "1985_Last": "{var}_1985_Last.xlsx"}
 
 
-def read_xlsx_robust(path, sheet_name=0):
-    """Load a Philly Fed .xlsx sheet. Their files carry a date-only docProps
-    field that trips openpyxl; strip it in-memory first. (Generalized from
-    spf_benchmark.read_xlsx_robust to take a sheet_name.)"""
-    raw = Path(path).read_bytes()
-    zin = zipfile.ZipFile(io.BytesIO(raw))
-    buf = io.BytesIO()
-    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zout:
-        for item in zin.infolist():
-            data = zin.read(item.filename)
-            if item.filename == "docProps/core.xml":
-                data = re.sub(rb"<dcterms:(created|modified)[^>]*>[^<]*</dcterms:\1>",
-                              b"", data)
-            zout.writestr(item, data)
-    buf.seek(0)
-    import warnings
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        return pd.read_excel(buf, engine="openpyxl", sheet_name=sheet_name)
+def _target_qindex(label):
+    """'1966.1'/1966.1 -> quarter index (year*4 + q-1). Q is the first decimal."""
+    s = str(label).strip()
+    if "." not in s:
+        return None
+    y, q = s.split(".")
+    q = int(q[0])                       # 1966.10 shouldn't happen, but be safe
+    if not (1 <= q <= 4):
+        return None
+    return int(y) * 4 + (q - 1)
 
 
-def inspect():
-    """List every sheet, then the columns + first rows of the RGDP sheet, so the
-    SHEET_RGDP / DATE_COL / FORECAST_COLS constants can be set to real names."""
-    if not GB_FILE.exists():
-        raise SystemExit(f"Download the Row-Format workbook to {GB_FILE} first "
-                         f"(see this file's docstring).")
-    xl = pd.ExcelFile(io.BytesIO(GB_FILE.read_bytes()), engine="openpyxl")
-    print("SHEETS:")
-    for s in xl.sheet_names:
-        print(f"  {s}")
-    guess = SHEET_RGDP if SHEET_RGDP in xl.sheet_names else next(
-        (s for s in xl.sheet_names if re.search(r"rgdp|gdp", s, re.I)), None)
-    if not guess:
-        print("\n(no obvious real-GDP sheet -- pick one from the list above)")
-        return
-    df = read_xlsx_robust(GB_FILE, sheet_name=guess)
-    print(f"\nRGDP-ish sheet '{guess}':\n  columns: {list(df.columns)}")
-    print(df.head(6).to_string())
+def _edition_date(col):
+    m = re.search(r"_(\d{8})$", str(col))
+    return pd.to_datetime(m.group(1), format="%Y%m%d") if m else None
 
 
-def score_greenbook(gb, realized_dir_fn, band=BAND_GDP):
-    """Score each Greenbook row on the newspapers' ground truth."""
+def load_editions(var="gRGDP"):
+    """One (edition_date, forecast_growth_1yr, source_file) per Greenbook edition:
+    the mean of the four quarters AFTER the edition's nowcast quarter."""
     rows = []
-    for _, r in gb.iterrows():
-        fc = np.nanmean([r[c] for c in FORECAST_COLS if c in gb.columns])
-        d = pd.to_datetime(r[DATE_COL], errors="coerce")
-        if pd.isna(d):
+    for fname in (ERA_FILES[k].format(var=var) for k in ERA_FILES):
+        path = GB_DIR / fname
+        if not path.exists():
             continue
-        pred = direction_label(fc, band)
-        realized = realized_dir_fn(d)
-        hit = int(pred == realized) if (pred and realized) else np.nan
-        rows.append({"date": d, "forecast_growth": round(float(fc), 3) if fc == fc else np.nan,
-                     "predicted_label": pred, "realized_label": realized, "hit": hit})
-    return pd.DataFrame(rows)
+        df = read_xlsx_robust(path)
+        df = df.rename(columns={df.columns[0]: "target"})
+        df["qi"] = df["target"].map(_target_qindex)
+        ed_cols = [c for c in df.columns if str(c).startswith(f"{var}_")]
+        for c in ed_cols:
+            d = _edition_date(c)
+            if d is None:
+                continue
+            eq = d.year * 4 + (d.month - 1) // 3          # nowcast quarter index
+            window = df[(df["qi"] > eq) & (df["qi"] <= eq + 4)][c]
+            fc = np.nanmean(pd.to_numeric(window, errors="coerce")) if len(window) else np.nan
+            rows.append({"forecast_date": d, "forecast_growth": fc,
+                         "source_file": fname})
+    return pd.DataFrame(rows).sort_values("forecast_date").reset_index(drop=True)
+
+
+def score(ed, realized_dir_fn, band=BAND_GDP, var="gRGDP"):
+    out = ed.copy()
+    out["pred_direction"] = out["forecast_growth"].map(lambda g: direction_label(g, band))
+    out["realized_direction"] = out["forecast_date"].map(realized_dir_fn)
+    out["hit"] = [int(p == r) if (p and r) else np.nan
+                  for p, r in zip(out["pred_direction"], out["realized_direction"])]
+    # provenance / harmonized columns (forecast_credibility_PLAN.md schema)
+    out["source"] = "greenbook"
+    out["forecaster_id"] = "fed_staff"
+    out["variable_native"] = var
+    out["variable_canonical"] = {"gRGDP": "real_gdp", "gIP": "industrial_production",
+                                 "UNEMP": "unemployment"}.get(var, var)
+    out["horizon_native"] = "+1..+4Q"
+    return out
 
 
 def main(args):
-    if not GB_FILE.exists():
-        raise SystemExit(f"Download the Row-Format workbook to {GB_FILE} first "
-                         f"(see this file's docstring).")
     cpi, indpro, unrate = fred("CPIAUCNS"), fred("INDPRO"), fred("UNRATE")
 
     def realized_dir_fn(date):
         return realized_direction("general_business", "", "", date, 12,
                                   cpi, indpro, unrate)[0]
 
-    gb = read_xlsx_robust(GB_FILE, sheet_name=SHEET_RGDP)
-    scored = score_greenbook(gb, realized_dir_fn, args.band)
+    ed = load_editions(args.var)
+    if ed.empty:
+        raise SystemExit(f"No editions for {args.var} in {GB_DIR} -- check the folder.")
+    scored = score(ed, realized_dir_fn, args.band, args.var)
     scored.to_csv("greenbook_scored.csv", index=False)
-    gb_s = scored.dropna(subset=["hit"])
-    era = gb_s[gb_s["date"] >= f"{args.since}-01-01"]
+    s = scored.dropna(subset=["hit"])
+    era = s[s["forecast_date"] >= f"{args.since}-01-01"]
 
-    def compo(s):
-        return {d: (s["predicted_label"] == d).mean()
+    def compo(x):
+        return {d: (x["pred_direction"] == d).mean()
                 for d in ("improve", "no_change", "worsen")}
 
-    ci = _boot_ci(era["hit"])
-    c = compo(era)
-    print(f"=== Greenbook (Fed Board staff), {args.since}+, on the newspapers' "
-          "ground truth ===")
+    ci, c = _boot_ci(era["hit"]), compo(era)
+    print(f"=== Greenbook (Fed Board staff, {args.var}), {args.since}+, "
+          "newspapers' ground truth ===")
+    print(f"  editions scored: {len(era)}  (of {len(scored)} total, "
+          f"{scored['forecast_date'].dt.year.min()}-{scored['forecast_date'].dt.year.max()})")
     print(f"  directional hit rate: {era['hit'].mean():.1%}  "
-          f"95% CI [{ci[0]:.1%}, {ci[1]:.1%}]  n={len(era)}")
+          f"95% CI [{ci[0]:.1%}, {ci[1]:.1%}]")
     print(f"  prediction mix: improve {c['improve']:.0%} / no_change "
           f"{c['no_change']:.0%} / worsen {c['worsen']:.0%}")
-    print("  Expected (like SPF): the Fed staff rarely forecast a contraction a "
-          "year out\n  -- the 'failure to predict recessions'. Compare the worsen "
-          "share to SPF's ~0%.")
-
-    print("\n=== Benchmark reference ===")
+    print("  (expect, like SPF: the Fed staff rarely call a contraction a year "
+          "out -- worsen share near 0)")
+    print("\n=== Benchmark leaderboard ===")
     print(f"  Greenbook (INDPRO/NBER, {args.since}+): {era['hit'].mean():.1%}  n={len(era)}")
-    print("  SPF economists (spf_benchmark.py):      54.1%")
-    print("  Livingston economists (1946-63):        54.4%")
-    print("  Michigan households (tier2):            ~55%")
-
-    _figure(era, compo(era), args.since)
+    print("  SPF economists:            54.1%")
+    print("  Livingston economists:     54.4%")
+    print("  Michigan households:      ~55%")
+    _figure(era, compo(era), args.since, args.var)
     print("\ngreenbook_scored.csv + figures/fig_greenbook_benchmark.png written")
 
 
-def _figure(era, mix, since):
+def _figure(era, mix, since, var):
     try:
         import matplotlib
         matplotlib.use("Agg")
@@ -187,9 +161,9 @@ def _figure(era, mix, since):
     ax2.text(0, hr + 0.01, f"{hr:.1%}\n(n={len(era)})", ha="center", fontsize=9)
     ax2.axhline(0.5, color="crimson", ls="--", lw=1, label="coin flip")
     ax2.set_ylim(0, 1); ax2.set_ylabel("directional hit rate")
-    ax2.set_title(f"Greenbook directional accuracy, {since}+")
+    ax2.set_title(f"Greenbook accuracy, {since}+")
     ax2.legend()
-    fig.suptitle("The Fed's Greenbook: another professional benchmark on the newspapers' ruler")
+    fig.suptitle("The Fed's Greenbook on the newspapers' ruler")
     plt.tight_layout()
     plt.savefig(FIGDIR / "fig_greenbook_benchmark.png", dpi=200)
     plt.close()
@@ -198,14 +172,8 @@ def _figure(era, mix, since):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--inspect", action="store_true",
-                    help="list sheets + RGDP columns so the 3 constants can be mapped")
+    ap.add_argument("--var", default="gRGDP", help="Greenbook variable code (gRGDP, gIP, UNEMP, ...)")
     ap.add_argument("--band", type=float, default=BAND_GDP,
                     help="annualized-%% no-change band (default 1.0, matches SPF)")
-    ap.add_argument("--since", type=int, default=1966,
-                    help="first year of the era to report on")
-    args = ap.parse_args()
-    if args.inspect:
-        inspect()
-    else:
-        main(args)
+    ap.add_argument("--since", type=int, default=1967, help="first year to report on")
+    main(ap.parse_args())
