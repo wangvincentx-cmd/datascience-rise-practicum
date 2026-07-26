@@ -84,6 +84,35 @@ def load_editions(var="gRGDP"):
     return pd.DataFrame(rows).sort_values("forecast_date").reset_index(drop=True)
 
 
+def load_editions_wide(var="gRGDP", max_h=8):
+    """One row per Greenbook edition with columns {var}F0..{var}F{max_h}
+    (nowcast quarter + max_h quarters ahead) -- the same editions as
+    load_editions(), just kept per-horizon instead of collapsed to the
+    +1..+4Q mean. Feeds greenbook_analysis.py's horizon anatomy."""
+    rows = []
+    for fname in (ERA_FILES[k].format(var=var) for k in ERA_FILES):
+        path = GB_DIR / fname
+        if not path.exists():
+            continue
+        df = read_xlsx_robust(path)
+        df = df.rename(columns={df.columns[0]: "target"})
+        df["qi"] = df["target"].map(_target_qindex)
+        s = df.set_index("qi")
+        ed_cols = [c for c in df.columns if str(c).startswith(f"{var}_")]
+        for c in ed_cols:
+            d = _edition_date(c)
+            if d is None:
+                continue
+            eq = d.year * 4 + (d.month - 1) // 3
+            row = {"gbdate": d}
+            col = s[c]
+            for h in range(max_h + 1):
+                v = col.get(eq + h, np.nan)
+                row[f"{var}F{h}"] = v.iloc[0] if isinstance(v, pd.Series) else v
+            rows.append(row)
+    return pd.DataFrame(rows).sort_values("gbdate").reset_index(drop=True)
+
+
 def score(ed, realized_dir_fn, band=BAND_GDP, var="gRGDP"):
     out = ed.copy()
     out["pred_direction"] = out["forecast_growth"].map(lambda g: direction_label(g, band))

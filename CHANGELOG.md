@@ -369,6 +369,35 @@ git history for full CHANGELOG detail pre-pivot):
       (the workbook is gitignored, so workbook-touching tests would fail on a
       fresh clone) — suite now **90/90**.
 
+- [x] **Merge regression in `greenbook_analysis.py` found + fixed
+      (2026-07-26).** The remote branch added `greenbook_analysis.py` against
+      the OLD Greenbook loader (single `cache/greenbook_row_format.xlsx`
+      workbook, `GB_FILE`/`SHEET_RGDP`, wide columns `gRGDPF0..F8` per
+      edition-row) while, in parallel, `greenbook_benchmark.py` was rewritten
+      locally for the **All-Column-Format** folder (`GB_DIR`, per-variable
+      files, columns = editions, rows = target quarters) and dropped
+      `GB_FILE`/`SHEET_RGDP` entirely. The merge combined both with no
+      textual conflict (different files) but a silent semantic break:
+      `test_offline.py` failed at import (`ImportError: cannot import name
+      'GB_FILE'`), meaning the just-claimed "suite now 90/90" above was never
+      actually true post-merge. Fix: added `load_editions_wide(var, max_h)` to
+      `greenbook_benchmark.py` (same per-edition/per-horizon shape the old row
+      format gave, built from the All-Column-Format files via the existing
+      `_target_qindex`/`_edition_date` helpers), pointed
+      `greenbook_analysis.py`'s `load_greenbook()` at it, and fixed
+      `skill_by_decade()`'s two remaining stale assumptions (reads
+      `greenbook_scored.csv`'s real column names — `forecast_date` not `date`,
+      `pred_direction`/`realized_direction` renamed to the
+      `predicted_label`/`realized_label` `naive_skill()` expects). Verified by
+      rerunning `greenbook_analysis.py` live: horizon anatomy (SD 4.01→0.90,
+      545 forecasts), recession calls (3/8), and skill-by-decade (overall
+      54.0%/54.0%/+0.0) all reproduce the numbers already written up above.
+      `test_offline.py` back to **90/90**. Lesson: a docstring/import that
+      looks fine at commit time can still be merge-broken by an independent
+      rewrite of its dependency on another branch — worth an offline-suite run
+      right after any merge that touches a shared module, not just after local
+      edits.
+
 - [!] **CRITICAL METRIC PROBLEM found via the Greenbook run (2026-07-25) —
       read before writing up ANY hit-rate comparison.** Greenbook's 54.0% is
       EXACTLY the score of a constant "always say improve" forecaster on the
@@ -480,7 +509,32 @@ git history for full CHANGELOG detail pre-pivot):
       gap / asymmetric regret as centerpiece, the three-benchmark
       turning-point-blindness convergence, the hedging correction, narratives
       as in-progress). Numbers cited are the current committed ones; author
-      line + a couple of framing choices are marked as placeholders to confirm.
+      line + a couple of framing choices are marked as framing choices to confirm.
+
+- [x] **Extended abstract updated with the Greenbook benchmark, Greenbook
+      anatomy, and forecast-credibility model (2026-07-26)** -- all three were
+      built and committed to `CHANGELOG.md` (2026-07-24/25) but never made it
+      into `EXTENDED_ABSTRACT.md`, which still read as a pre-Greenbook,
+      3-benchmark/5-result document. Fixed: extended Result 2 (was
+      SPF/Livingston/Michigan-only) to a 4-way convergence including Greenbook
+      54.0% and the anatomy findings (SD collapse 4.01->0.90pp by horizon,
+      0/545 negative calls 6+ quarters out, only 3/8 NBER peaks ever got a
+      negative call, skill ~0 every decade); added a new Result 3 for the
+      pooled Greenbook/Livingston/SPF credibility model (CV AUC 0.74/0.66/0.70,
+      cross-source transfer ~0.83-0.84, forecast-only vs state-only ablation,
+      real-time-safe check costs ~0.03 AUC); renumbered the old Results 3-5
+      (hedging correction, interaction, narratives) to 4-6 and fixed the two
+      Result-5 cross-references in the header and Limitations that now point
+      to 6. Added a Data-and-methods bullet describing the 3 benchmark panels
+      + the pooled credibility dataset, a Limitations bullet on the
+      credibility model's shared-recessions/FOMC-lag/revised-FRED caveats
+      (all already disclosed in the code's own docstrings, just not yet in
+      the write-up), 5 new figure entries
+      (`fig_greenbook_{benchmark,anatomy}.png`,
+      `fig_credibility_{calibration,coefficients,transfer}.png` -- confirmed
+      all 5 exist in `figures/`), and a Conclusion sentence tying the
+      Greenbook/credibility results back to the century-wide thesis. No code
+      or data changed, doc-only.
 
 - [x] **Pre-submission review found the Result-1 headline p-value was
       anti-conservative; fixed with an episode-level test (2026-07-22).** The

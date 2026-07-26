@@ -30,15 +30,15 @@ Three analyses:
 Usage (from JeremysShit/):
     python greenbook_analysis.py          # tables + figures/fig_greenbook_anatomy.png
 
-Reads cache/greenbook_row_format.xlsx (see greenbook_benchmark.py's docstring
-for the manual download) and greenbook_scored.csv (run greenbook_benchmark.py
-first).
+Reads the All-Column-Format folder (cache/Gbweb_All_Column_Format/, see
+greenbook_benchmark.py's docstring) and greenbook_scored.csv (run
+greenbook_benchmark.py first).
 """
 
 import numpy as np
 import pandas as pd
 
-from greenbook_benchmark import GB_FILE, SHEET_RGDP, read_xlsx_robust
+from greenbook_benchmark import load_editions_wide
 
 FIGDIR = __import__("pathlib").Path("figures")
 SCORED = "greenbook_scored.csv"
@@ -56,12 +56,7 @@ HORIZONS = [f"gRGDPF{h}" for h in range(9)]
 
 
 def load_greenbook():
-    gb = read_xlsx_robust(GB_FILE, sheet_name=SHEET_RGDP)
-    # GBdate is an int (19670329); see greenbook_benchmark for why str-parsing
-    # it matters (a bare int is read as nanoseconds and yields 1970-01-01).
-    gb["gbdate"] = pd.to_datetime(gb["GBdate"].astype(str), format="%Y%m%d",
-                                  errors="coerce")
-    return gb.dropna(subset=["gbdate"])
+    return load_editions_wide("gRGDP", max_h=8)
 
 
 def horizon_anatomy(gb):
@@ -120,10 +115,12 @@ def recession_calls(gb):
 def skill_by_decade():
     """Skill vs a constant 'always improve' forecaster, by decade."""
     from score_claims import naive_skill
-    s = pd.read_csv(SCORED, parse_dates=["date"])
+    s = pd.read_csv(SCORED, parse_dates=["forecast_date"])
+    s = s.rename(columns={"pred_direction": "predicted_label",
+                          "realized_direction": "realized_label"})
     print("\n=== 3. SKILL vs a naive 'always improve' forecaster, by decade ===")
     rows = []
-    for dec, g in s.groupby(s["date"].dt.year // 10 * 10):
+    for dec, g in s.groupby(s["forecast_date"].dt.year // 10 * 10):
         hit, naive, skill, n = naive_skill(g)
         if n >= 20:
             rows.append({"decade": f"{dec}s", "n": n, "hit": round(hit, 1),

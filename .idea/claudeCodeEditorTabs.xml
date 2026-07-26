@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ClaudeCodeEditorTabs">
-    <option name="activeSessionId" value="bd1afe80-53b3-49da-b43c-a89283b94f55" />
+    <option name="activeSessionId" value="9deb2bdb-15d1-401a-8ba9-5168607f0920" />
     <option name="openSessionIds">
       <list>
-        <option value="fe0c0c90-e7b9-4b66-91df-573963e0e924" />
-        <option value="bd1afe80-53b3-49da-b43c-a89283b94f55" />
+        <option value="9deb2bdb-15d1-401a-8ba9-5168607f0920" />
       </list>
     </option>
     <option name="sessionPaths">
       <map>
         <entry key="0001e17e-28a6-4bc0-9348-3bf9cb408dca" value="/sessions/18df3974-7daf-4441-a560-a2ca73307b9c" />
-        <entry key="bd1afe80-53b3-49da-b43c-a89283b94f55" value="/sessions/e04d4c61-1c3b-4d1a-9c88-07a81fe1ebab" />
-        <entry key="fe0c0c90-e7b9-4b66-91df-573963e0e924" value="/sessions/017809f3-ba2d-479e-8ab0-b283139f5475" />
+        <entry key="9deb2bdb-15d1-401a-8ba9-5168607f0920" value="/sessions/e04d4c61-1c3b-4d1a-9c88-07a81fe1ebab" />
       </map>
     </option>
     <option name="sessionTitles">
       <map>
         <entry key="0001e17e-28a6-4bc0-9348-3bf9cb408dca" value="read proquest extraction file and give me instruct" />
-        <entry key="bd1afe80-53b3-49da-b43c-a89283b94f55" value="given what we have right now (data not including N" />
-        <entry key="fe0c0c90-e7b9-4b66-91df-573963e0e924" value="we are using pro quest tdm to gather newspaper dat" />
+        <entry key="9deb2bdb-15d1-401a-8ba9-5168607f0920" value="given what we have right now (data not including N" />
       </map>
     </option>
   </component>
