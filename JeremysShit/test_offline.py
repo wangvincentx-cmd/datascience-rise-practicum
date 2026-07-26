@@ -294,6 +294,59 @@ check("hedging_features: no markers -> neutral, zero score",
       f_neutral["hedge_class"] == "neutral" and f_neutral["hedge_score"] == 0)
 
 # ---------- spf_benchmark.py ----------
+print("naive_skill (baseline-relative scoring):")
+# A perfectly optimistic forecaster in a mostly-expanding world: 7 of 10 periods
+# improve, and it says "improve" every time. Hit rate 70% looks strong but is
+# exactly the naive baseline, so skill must be 0 — this is the Greenbook case.
+_always_improve = pd.DataFrame({
+    "predicted_label": ["improve"] * 10,
+    "realized_label": ["improve"] * 7 + ["worsen"] * 3,
+    "hit": [1] * 7 + [0] * 3,
+})
+_h, _n, _sk, _k = sc.naive_skill(_always_improve)
+check("always-improve forecaster gets hit rate == naive baseline",
+      round(_h, 6) == 70.0 and round(_n, 6) == 70.0)
+check("...and therefore exactly zero skill", round(_sk, 6) == 0.0)
+check("counts only directional rows", _k == 10)
+
+# A forecaster that actually calls the downturns beats the same baseline.
+_skilled = pd.DataFrame({
+    "predicted_label": ["improve"] * 7 + ["worsen"] * 3,
+    "realized_label": ["improve"] * 7 + ["worsen"] * 3,
+    "hit": [1] * 10,
+})
+check("perfect forecaster shows positive skill", sc.naive_skill(_skilled)[2] > 0)
+
+# Price/unemployment label codes use a different vocabulary; including them
+# would make the "always improve" comparison meaningless, so they're dropped.
+_mixed = pd.DataFrame({
+    "predicted_label": ["improve", "up", "down"],
+    "realized_label": ["improve", "up", "stable"],
+    "hit": [1, 1, 0],
+})
+check("excludes up/down/stable price-direction rows", sc.naive_skill(_mixed)[3] == 1)
+check("empty input returns n=0 without raising", sc.naive_skill(_mixed.iloc[:0])[3] == 0)
+
+print("greenbook_analysis:")
+# Only the data-free logic is testable here: cache/greenbook_row_format.xlsx is
+# a manual download and gitignored, so anything touching the workbook would fail
+# on a fresh clone.
+import greenbook_analysis as gba
+
+_peaks = [pd.Timestamp(p) for p, _ in gba.NBER_MODERN]
+_troughs = [pd.Timestamp(t) for _, t in gba.NBER_MODERN]
+check("NBER_MODERN: every peak precedes its trough",
+      all(p < t for p, t in zip(_peaks, _troughs)))
+check("NBER_MODERN: recessions are in chronological order",
+      _peaks == sorted(_peaks))
+check("NBER_MODERN: no overlapping contractions",
+      all(_troughs[i] < _peaks[i + 1] for i in range(len(_peaks) - 1)))
+check("NBER_MODERN: covers the Greenbook era, picking up where score_claims stops",
+      _peaks[0].year > 1961 and _troughs[-1].year <= 2020)
+check("HORIZONS: nowcast through 8 quarters, in order",
+      gba.HORIZONS[0] == "gRGDPF0" and gba.HORIZONS[-1] == "gRGDPF8"
+      and len(gba.HORIZONS) == 9)
+
 print("spf_benchmark:")
 import spf_benchmark as spf
 
