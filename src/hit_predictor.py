@@ -28,6 +28,10 @@ HONEST EVALUATION, and the reasons:
     visible rather than asserted.
   * A block-permutation test: shuffle `hit` WITHIN period, refit, and see how
     often the full model's AUC is beaten by chance.
+  * A block bootstrap over the same periods for the interval around the headline
+    AUC, and a PAIRED one for the interaction rung's lift over the additive rung
+    -- the permutation test only rules out zero signal, not "no better than the
+    model one rung down", which is the claim this module actually makes.
   * Permutation importance computed on HELD-OUT folds, never on training data.
 
 LEAKAGE DISCIPLINE: every economic input comes from macro_context.build_context,
@@ -51,13 +55,13 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.calibration import calibration_curve
+from sklearn.calibration import CalibratedClassifierCV, calibration_curve
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (average_precision_score, brier_score_loss,
                              roc_auc_score)
-from sklearn.model_selection import LeaveOneGroupOut
+from sklearn.model_selection import GroupKFold, LeaveOneGroupOut
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
@@ -178,15 +182,40 @@ def make_pipe(cat, num, clf=None):
 
 
 # --- evaluation ------------------------------------------------------------
-def oof_predict(X, y, groups, cat, num, clf=None):
-    """Out-of-fold probabilities under LeaveOneGroupOut over 3-year periods."""
+def _inner_group_splits(groups_tr, n_splits=5):
+    """Splits for the calibrator, grouped by 3-year period like the outer CV.
+
+    A calibrator fitted on rows the classifier already saw learns the training
+    fit's over-confidence, not the deployed model's, and reports a curve that is
+    too good. Grouping the inner splits by period (rather than at random) keeps
+    the same discipline one level down: the calibration set is periods the
+    classifier underneath it did not train on."""
+    n = int(min(n_splits, len(np.unique(groups_tr))))
+    if n < 2:
+        return None
+    return list(GroupKFold(n_splits=n).split(np.zeros(len(groups_tr)),
+                                             groups=groups_tr))
+
+
+def oof_predict(X, y, groups, cat, num, clf=None, calibrate=None):
+    """Out-of-fold probabilities under LeaveOneGroupOut over 3-year periods.
+
+    `calibrate` ("isotonic" or "sigmoid") wraps the pipeline in a nested,
+    period-grouped CalibratedClassifierCV fitted INSIDE the training fold, so
+    the held-out period stays untouched by both the classifier and its
+    calibrator. Ranking is unchanged by design (both maps are monotone); what
+    changes is whether the numbers can be read as odds."""
     oof = np.full(len(y), np.nan)
     for tr, te in LeaveOneGroupOut().split(X, y, groups):
         if len(np.unique(y[tr])) < 2:
             continue
-        pipe = make_pipe(cat, num, clf)
-        pipe.fit(X.iloc[tr], y[tr])
-        oof[te] = pipe.predict_proba(X.iloc[te])[:, 1]
+        est = make_pipe(cat, num, clf)
+        if calibrate:
+            inner = _inner_group_splits(groups[tr])
+            if inner is not None:
+                est = CalibratedClassifierCV(est, method=calibrate, cv=inner)
+        est.fit(X.iloc[tr], y[tr])
+        oof[te] = est.predict_proba(X.iloc[te])[:, 1]
     return oof
 
 
@@ -198,6 +227,71 @@ def metrics(y, oof):
             "pr_auc": average_precision_score(y[ok], oof[ok]),
             "brier": brier_score_loss(y[ok], oof[ok]),
             "n": int(ok.sum())}
+
+
+# --- uncertainty on the AUCs themselves ------------------------------------
+# The permutation test asks "is this better than NO signal?". These ask the two
+# questions it cannot: how wide is the interval around the headline number, and
+# is the interaction rung distinguishable from the additive rung below it. Both
+# resample whole 3-year PERIODS for the reason block_boot_corr does -- claims
+# inside one period share one economy, so an i.i.d. bootstrap over 14,251 claims
+# would report an interval roughly sqrt(claims-per-block) too narrow. The
+# effective sample here is ~22 blocks, and the intervals should look like it.
+def _block_index(blocks, ok):
+    """Row indices of each block, restricted to rows with a prediction."""
+    idx = np.where(ok)[0]
+    b = np.asarray(blocks)[idx]
+    return {u: idx[b == u] for u in np.unique(b)}
+
+
+def _boot_draws(y, blocks, ok, reps, seed, stat):
+    """Resample blocks with replacement; `stat(idx)` per draw, NaNs dropped."""
+    rng = np.random.default_rng(seed)
+    by_block = _block_index(blocks, ok)
+    uniq = np.array(list(by_block))
+    out = []
+    for _ in range(reps):
+        pick = rng.choice(uniq, len(uniq), replace=True)
+        idx = np.concatenate([by_block[b] for b in pick])
+        if len(np.unique(y[idx])) < 2:      # a draw with one class has no AUC
+            continue
+        out.append(stat(idx))
+    return np.asarray(out, dtype=float)
+
+
+def block_boot_auc(y, oof, blocks, reps=2000, seed=SEED):
+    """Pooled out-of-fold AUC with a percentile block-bootstrap 95% CI."""
+    ok = ~np.isnan(oof)
+    obs = roc_auc_score(y[ok], oof[ok])
+    draws = _boot_draws(y, blocks, ok, reps, seed,
+                        lambda i: roc_auc_score(y[i], oof[i]))
+    if draws.size == 0:
+        return obs, np.nan, np.nan
+    lo, hi = np.percentile(draws, [2.5, 97.5])
+    return float(obs), float(lo), float(hi)
+
+
+def block_boot_auc_delta(y, oof_a, oof_b, blocks, reps=2000, seed=SEED):
+    """AUC(b) - AUC(a) with a PAIRED block-bootstrap CI and two-sided p.
+
+    Paired -- both models are scored on the same resampled blocks -- because the
+    two rungs share nearly all their inputs and most of their error. Comparing
+    two independently drawn intervals would ignore that correlation and make the
+    difference look far less certain than it is.
+
+    The p-value is the bootstrap analogue used by block_boot_corr: recentre the
+    resampling distribution on the observed delta and ask how much of it sits at
+    least as far from zero in absolute value."""
+    ok = ~np.isnan(oof_a) & ~np.isnan(oof_b)
+    obs = roc_auc_score(y[ok], oof_b[ok]) - roc_auc_score(y[ok], oof_a[ok])
+    draws = _boot_draws(y, blocks, ok, reps, seed,
+                        lambda i: (roc_auc_score(y[i], oof_b[i])
+                                   - roc_auc_score(y[i], oof_a[i])))
+    if draws.size == 0:
+        return float(obs), np.nan, np.nan, np.nan
+    lo, hi = np.percentile(draws, [2.5, 97.5])
+    p = float((np.abs(draws - obs) >= abs(obs)).mean())
+    return float(obs), float(lo), float(hi), p
 
 
 LADDER = [
@@ -325,14 +419,44 @@ def run(args):
               "the interaction delta above.")
         return None
 
-    # --- calibration: do the probabilities mean anything? ---
+    # --- how wide is that number? ---
+    # Reported before anything else downstream, because every sentence below
+    # should be read against the interval, not the point estimate.
     _, oof_full, _, _ = results[best]
+    auc_b, auc_lo, auc_hi = block_boot_auc(y, oof_full, groups, reps=args.boot)
+    print(f"\n=== block bootstrap ({args.boot} resamples of {n_groups} periods) ===")
+    print(f"  {best:<34}{auc_b:.3f}  95% CI [{auc_lo:.3f}, {auc_hi:.3f}]")
+    add_name = "4. claim + economy (additive)"
+    dlt, d_lo, d_hi, d_p = block_boot_auc_delta(
+        y, results[add_name][1], oof_full, groups, reps=args.boot)
+    print(f"  interaction lift over additive{dlt:>+9.3f}  "
+          f"95% CI [{d_lo:+.3f}, {d_hi:+.3f}]  p = {d_p:.4f}")
+    if d_lo <= 0 <= d_hi:
+        print("  ** the lift's interval spans zero -- the interaction rung is NOT\n"
+              "     distinguishable from the additive rung on this corpus. Report it "
+              "as such.")
+
+    # --- calibration: do the probabilities mean anything? ---
     ok = ~np.isnan(oof_full)
     frac, mean_pred = calibration_curve(y[ok], oof_full[ok], n_bins=10,
                                         strategy="quantile")
     print("\n=== calibration (out-of-fold, decile bins) ===")
     print(f"  {'predicted':>10}{'actual':>10}")
     for p_, a_ in zip(mean_pred, frac):
+        print(f"  {p_:>10.3f}{a_:>10.3f}")
+
+    # Isotonic, fitted inside each training fold on held-out periods. Monotone,
+    # so ranking (and therefore AUC) is untouched -- the only thing that can move
+    # is Brier, i.e. whether the output may be quoted as odds or only as a rank.
+    oof_cal = oof_predict(X, y, groups, cat_f, num_f, calibrate="isotonic")
+    m_cal = metrics(y, oof_cal)
+    ok_c = ~np.isnan(oof_cal)
+    frac_c, mean_c = calibration_curve(y[ok_c], oof_cal[ok_c], n_bins=10,
+                                       strategy="quantile")
+    print(f"\n  isotonic (nested, period-grouped): Brier {m_full['brier']:.3f} "
+          f"-> {m_cal['brier']:.3f}   AUC {m_full['auc']:.3f} -> {m_cal['auc']:.3f}")
+    print(f"  {'predicted':>10}{'actual':>10}")
+    for p_, a_ in zip(mean_c, frac_c):
         print(f"  {p_:>10.3f}{a_:>10.3f}")
 
     # --- what carries the signal ---
@@ -397,8 +521,15 @@ def run(args):
     paths["results"].write_text(json.dumps(
         {"n": len(d), "base_rate": float(y.mean()),
          "n_periods": int(len(set(groups))), "ladder": ladder,
+         "auc_ci": {"auc": auc_b, "lo": auc_lo, "hi": auc_hi,
+                    "reps": args.boot},
+         "interaction_lift": {"delta": dlt, "lo": d_lo, "hi": d_hi, "p": d_p},
          "calibration": {"predicted": mean_pred.tolist(),
-                         "actual": frac.tolist()}}, indent=2))
+                         "actual": frac.tolist()},
+         "calibration_isotonic": {"predicted": mean_c.tolist(),
+                                  "actual": frac_c.tolist(),
+                                  "brier": m_cal["brier"],
+                                  "auc": m_cal["auc"]}}, indent=2))
     print(f"-> {paths['results']}")
     return final
 
@@ -480,6 +611,8 @@ if __name__ == "__main__":
     ap.add_argument("--importance", action="store_true", default=True)
     ap.add_argument("--no-importance", dest="importance", action="store_false")
     ap.add_argument("--imp-reps", type=int, default=3)
+    ap.add_argument("--boot", type=int, default=2000,
+                    help="block-bootstrap resamples for the AUC intervals")
     ap.add_argument("--exclude", default=None,
                     help="comma-separated factor substrings to ablate, e.g. 'epu'")
     ap.add_argument("--predict-demo", action="store_true",

@@ -570,4 +570,64 @@ check("out_paths: an ablation run cannot overwrite the primary model",
       hp.out_paths("macro_context.csv", "epu")["model"].name
       == "no_epu_hit_predictor.joblib")
 
+# ---------- uncertainty on the AUCs ----------
+# Four blocks of wildly different difficulty, with model B beating model A INSIDE
+# every one of them. This is the shape of the real result (§6 of the notebook):
+# the two marginal intervals overlap heavily, and only the paired comparison can
+# see that one model is reliably ahead.
+print("hit_predictor (uncertainty):")
+from sklearn.metrics import roc_auc_score
+
+_rng = np.random.default_rng(0)
+_blk, _yb, _a, _b = [], [], [], []
+for _g, _sep in enumerate([0.05, 0.25, 0.55, 0.95]):   # easy blocks and hard ones
+    _yy = np.repeat([0, 1], 50)
+    _blk += [_g] * 100
+    _yb += list(_yy)
+    _a += list(_yy * _sep + _rng.normal(0, 1, 100))          # weaker model
+    _b += list(_yy * (_sep + 0.6) + _rng.normal(0, 1, 100))  # better, same blocks
+_blk, _yb = np.array(_blk), np.array(_yb)
+_a, _b = np.array(_a), np.array(_b)
+
+_obs, _lo, _hi = hp.block_boot_auc(_yb, _b, _blk, reps=400)
+check("block_boot_auc: the interval brackets the observed AUC",
+      _lo <= _obs <= _hi)
+check("block_boot_auc: the point estimate is the plain pooled AUC",
+      abs(_obs - roc_auc_score(_yb, _b)) < 1e-12)
+
+_a_nan = _a.copy()
+_a_nan[:10] = np.nan          # a fold that could not be predicted
+check("block_boot_auc: rows without a prediction are dropped, not crashed on",
+      np.isfinite(hp.block_boot_auc(_yb, _a_nan, _blk, reps=100)[0]))
+
+_d, _dlo, _dhi, _p = hp.block_boot_auc_delta(_yb, _a, _b, _blk, reps=400)
+_ma = hp.block_boot_auc(_yb, _a, _blk, reps=400)
+check("block_boot_auc_delta: sign is AUC(b) - AUC(a)",
+      abs(_d - (roc_auc_score(_yb, _b) - roc_auc_score(_yb, _a))) < 1e-12)
+check("block_boot_auc_delta: interval brackets the observed delta",
+      _dlo <= _d <= _dhi)
+# The point of pairing. The marginal intervals overlap, so reading them
+# side-by-side would say "no difference"; the paired one excludes zero.
+check("block_boot_auc_delta: paired CI sees a lift the overlapping marginals hide",
+      _ma[1] < _hi and _ma[2] > _lo and _dlo > 0)
+check("block_boot_auc_delta: identical predictions give exactly zero lift",
+      hp.block_boot_auc_delta(_yb, _b, _b, _blk, reps=50)[0] == 0.0)
+
+# The calibrator must never be fitted on rows its own classifier trained on.
+_isp = hp._inner_group_splits(np.array([0, 0, 1, 1, 2, 2, 3, 3]))
+check("_inner_group_splits: no period appears on both sides of an inner split",
+      all(not (set(np.array([0, 0, 1, 1, 2, 2, 3, 3])[tr])
+               & set(np.array([0, 0, 1, 1, 2, 2, 3, 3])[te]))
+          for tr, te in _isp))
+check("_inner_group_splits: one period cannot be split, so calibration is skipped",
+      hp._inner_group_splits(np.array([7, 7, 7])) is None)
+
+_Xc = pd.DataFrame({"v": _b})
+_oc = hp.oof_predict(_Xc, _yb, _blk, [], ["v"], calibrate="isotonic")
+check("oof_predict(calibrate=): returns one probability per row, all in [0, 1]",
+      len(_oc) == len(_yb) and np.nanmin(_oc) >= 0 and np.nanmax(_oc) <= 1)
+check("oof_predict(calibrate=): a calibrated run still predicts every fold",
+      np.isnan(_oc).sum() == np.isnan(
+          hp.oof_predict(_Xc, _yb, _blk, [], ["v"])).sum())
+
 print(f"\nALL {PASS} CHECKS PASSED")

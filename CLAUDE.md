@@ -21,7 +21,7 @@ Deliverables live in `docs/`: `POSTER.md` (the poster text), `RESULTS_MONTHLY.md
 
 ```
 src/          all Python, flat on purpose — see "Why src/ is flat" below
-tests/        three suites: test_offline (90), test_scoring (33), test_forecasts (33)
+tests/        three suites: test_offline (129), test_scoring (33), test_forecasts (33)
 data/
   corpus/     raw pages (GITIGNORED, huge, regenerable by re-scraping)
   claims/     extractor output — the expensive artifact, committed
