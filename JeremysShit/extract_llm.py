@@ -552,16 +552,31 @@ def run(args):
         raise SystemExit(f"set {args.api_key_env} (or pass --api-key-env NONE for a "
                          f"local server that needs no key)")
 
+    todo = [p for p in pages if p["page_id"] not in done]
     mode = "a" if (done and not args.overwrite) else "w"
     totals = {"prompt_tokens": 0, "completion_tokens": 0}
-    n_claims = n_dropped = 0
-    with open(out_path, mode, encoding="utf-8") as fh:
-        for i, page in enumerate(pages, 1):
-            if page["page_id"] in done:
+    n_claims = n_dropped = n_err = 0
+
+    # Pages are independent, so fetch them concurrently. Serially this runs at
+    # ~6 pages/min (one round trip at a time) -- 44 hours for a 15,700-page
+    # corpus. The provider handles parallel requests fine; the wall-clock is
+    # almost entirely round-trip latency, not compute. Writes stay on the main
+    # thread so the output file is never interleaved mid-line.
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    with open(out_path, mode, encoding="utf-8") as fh, \
+         ThreadPoolExecutor(max_workers=args.workers) as pool:
+        futures = {pool.submit(extract_page, page, args.model, args.base_url,
+                               api_key, args.sleep, args.chunk_chars): page
+                   for page in todo}
+        for i, fut in enumerate(as_completed(futures), 1):
+            page = futures[fut]
+            try:
+                claims, usage, dropped = fut.result()
+            except Exception as e:
+                n_err += 1
+                print(f"  [{i}/{len(todo)}] {page.get('date')}  ERROR "
+                      f"{type(e).__name__}: {str(e)[:70]}", flush=True)
                 continue
-            claims, usage, dropped = extract_page(page, args.model, args.base_url,
-                                                  api_key, args.sleep,
-                                                  args.chunk_chars)
             for c in claims:
                 fh.write(json.dumps(c, ensure_ascii=False) + "\n")
             fh.flush()
@@ -569,10 +584,12 @@ def run(args):
                 totals[k] += usage.get(k, 0)
             n_claims += len(claims)
             n_dropped += dropped
-            print(f"  [{i}/{len(pages)}] {page.get('date')}  "
-                  f"{len(claims)} claims"
-                  + (f"  ({dropped} failed the quote check)" if dropped else ""),
-                  flush=True)
+            if i % 25 == 0 or i == len(todo):
+                print(f"  [{i}/{len(todo)}] {n_claims} claims so far"
+                      + (f", {n_err} page errors" if n_err else ""), flush=True)
+    if n_err:
+        print(f"\n{n_err} pages errored -- rerun the same command to retry just "
+              f"those (completed pages are skipped).")
 
     print(f"\n{n_claims} claims -> {out_path}")
     if n_dropped:
@@ -597,6 +614,9 @@ if __name__ == "__main__":
                     help="env var holding the key; NONE for a keyless local server")
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--sleep", type=float, default=0.0)
+    ap.add_argument("--workers", type=int, default=8,
+                    help="concurrent page requests (sync path). 8 is polite and "
+                         "~8x faster than serial; raise if the provider allows.")
     ap.add_argument("--batch", action="store_true",
                     help="submit via the Gemini Batch API: 50%% off input and "
                          "output, target turnaround 24h (usually far less). "

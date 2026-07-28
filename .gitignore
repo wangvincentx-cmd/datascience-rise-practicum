@@ -14,6 +14,7 @@ __pycache__/
 # Scraper/API response caches
 cache/
 **/data/raw/
+JeremysShit/data/monthly/
 
 # Large regenerable corpora. Every one of these is rebuildable from cache/ or
 # re-downloadable, and they run from tens to hundreds of MB:

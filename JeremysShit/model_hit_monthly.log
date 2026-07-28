@@ -1,0 +1,51 @@
+claims: 14251  hit rate: 0.513  groups: 22
+
+=== descriptive: hit rate by claim feature ===
+  by confidence:
+    assertive          n=8905  hit=0.520
+    hedged             n=5346  hit=0.500
+  by voice:
+    expert             n=6826  hit=0.523
+    unclear            n=68    hit=0.515
+    layperson          n=351   hit=0.504
+    journalist         n=5212  hit=0.504
+    official           n=1786  hit=0.499
+  by topic:
+    general_business   n=8713  hit=0.561
+    other              n=870   hit=0.479
+    markets            n=2219  hit=0.449
+    prices             n=2275  hit=0.415
+    employment         n=174   hit=0.328
+  by predicted_norm:
+    improve            n=8962  hit=0.597
+    up                 n=1359  hit=0.510
+    worsen             n=2577  hit=0.364
+    down               n=868   hit=0.267
+    flat               n=485   hit=0.194
+
+=== descriptive: hit rate by DERIVED feature ===
+  by swims against press consensus:
+    0              n=12284 hit=0.533
+    1              n=1967  hit=0.387
+  by press disagreement that month:
+    low            n=4858  hit=0.537
+    mid            n=4733  hit=0.486
+    high           n=4660  hit=0.514
+
+=== nested ROC-AUC (LeaveOneGroupOut, out-of-fold) ===
+  1. base rate                0.513  (always-majority accuracy, for reference)
+  2. macro-only               AUC 0.505
+  3. claim-only               AUC 0.561
+  4. claim + macro + derived  AUC 0.588
+  5. gradient boosting        AUC 0.573
+
+  DELTA (claim features add, over macro alone): +0.083
+
+  ** macro baseline AUC 0.505 is at/below chance.
+     Reading: GENUINE NULL, not an artefact. Across 22 time blocks
+     the economy's state at print time carries almost no information about
+     whether a forecast came true (every macro feature correlates |r|<0.10).
+     So the nested DELTA is not a meaningful 'improvement over macro' --
+     but the claim-only AUC (0.561) IS interpretable on its own:
+     HOW a forecast is written predicts its accuracy better than the
+     economy does. That is the finding.
