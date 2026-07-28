@@ -5,13 +5,21 @@ Each figure answers one question and is designed to be read at poster distance:
 big marks, direct labels, one idea per panel. Palette is Okabe-Ito (CVD-safe,
 validated with the dataviz skill's checker).
 
+Figures carry NO titles or subtitles -- the headline and caption for each panel
+live in the poster deck, so the wording can be edited there without re-running
+this script. Numbers that used to sit in a subtitle are printed to stdout.
+
   fig_A  the mechanism: forecast mix doesn't respond to the economy
+         (two files: A1 boom-vs-bust bars, A2 the same series over time)
   fig_B  the consequence: accuracy collapses in recessions
   fig_C  no learning across six decades
   fig_D  what predicts a hit (feature ladder)
+  fig_L  which papers were most accurate -- and why the ranking is mostly era
 
 Usage: python make_poster_figures.py
 """
+import re
+
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -34,13 +42,6 @@ plt.rcParams.update({
 REC = set()
 for a, b in NBER_RECESSIONS:
     REC.update(pd.period_range(a, b, freq="M"))
-
-
-def title(ax, t, sub):
-    n = 1 + sub.count("\n")
-    ax.set_title(t, fontsize=15, fontweight="bold", loc="left", pad=18 + 15 * n)
-    ax.text(0, 1.012, sub, transform=ax.transAxes, fontsize=10.5,
-            color=MUTED, va="bottom")
 
 
 def load_scored():
@@ -75,13 +76,16 @@ def gap_ci(s, reps=2000, seed=0):
 
 # --- A. THE MECHANISM ------------------------------------------------------
 def fig_mechanism(s):
-    """Forecast mix is identical in booms and busts -- the press does not react."""
-    g = (s.assign(pess=s["predicted_norm"].isin(["worsen", "down"]))
-           .groupby("in_rec")
-           .agg(pess=("pess", "mean"), n=("pess", "size")))
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4.6),
-                                   gridspec_kw={"width_ratios": [1, 1.35]})
-    # left: the share that predicted a downturn
+    """Forecast mix is identical in booms and busts -- the press does not react.
+
+    Two files. A1 is the boom-vs-bust comparison, A2 is the same quantity month
+    by month; they were one figure until the poster wanted them placed apart."""
+    pess = s["predicted_norm"].isin(["worsen", "down"])
+    g = (s.assign(pess=pess).groupby("in_rec")
+          .agg(pess=("pess", "mean"), n=("pess", "size")))
+
+    # A1: the share that predicted a downturn, expansion vs recession
+    fig, ax1 = plt.subplots(figsize=(6, 4.6))
     labels = ["Expansion", "Recession"]
     vals = [g.loc[False, "pess"], g.loc[True, "pess"]]
     ax1.bar(labels, vals, color=[GRAY, VERM], width=.55, zorder=3)
@@ -92,12 +96,16 @@ def fig_mechanism(s):
     ax1.set_yticks([0, .1, .2, .3, .4])
     ax1.set_yticklabels(["0", "10%", "20%", "30%", "40%"])
     ax1.grid(axis="x", visible=False)
+    fig.tight_layout()
+    fig.savefig(OUT / "figA1_mechanism_bars.png", bbox_inches="tight")
+    plt.close(fig)
 
-    # right: monthly pessimism share over time with recession shading
-    m = (s.assign(pess=s["predicted_norm"].isin(["worsen", "down"]))
-           .groupby("p").agg(pess=("pess", "mean"), n=("pess", "size")))
+    # A2: monthly pessimism share over time with recession shading
+    m = (s.assign(pess=pess).groupby("p")
+          .agg(pess=("pess", "mean"), n=("pess", "size")))
     m = m[m["n"] >= 5]
     dt = m.index.to_timestamp()
+    fig, ax2 = plt.subplots(figsize=(8, 4.6))
     for a, b in NBER_RECESSIONS:
         p0, p1 = pd.Timestamp(a), pd.Timestamp(b)
         if p1 >= pd.Timestamp("1900-01") and p0 <= pd.Timestamp("1963-12"):
@@ -109,17 +117,12 @@ def fig_mechanism(s):
     ax2.set_yticks([0, .2, .4, .6, .8])
     ax2.set_yticklabels(["0", "20%", "40%", "60%", "80%"])
     ax2.set_xlabel("grey bands = NBER recessions")
-    fig.suptitle("The press forecast the same mix of good and bad news, "
-                 "boom or bust", fontsize=15, fontweight="bold", x=.008, ha="left",
-                 y=.995)
-    fig.text(.008, .875, "Share of forecasts predicting a downturn: 24.1% in "
-             "expansions, 24.3% in recessions — statistically identical.\n"
-             "The right panel shows the same series month by month: it does not "
-             "rise when the economy turns.", fontsize=10.5, color=MUTED, ha="left",
-             va="top")
-    fig.tight_layout(rect=[0, 0, 1, .80])
-    fig.savefig(OUT / "figA_mechanism.png", bbox_inches="tight")
+    fig.tight_layout()
+    fig.savefig(OUT / "figA2_mechanism_timeline.png", bbox_inches="tight")
     plt.close(fig)
+
+    print(f"   figA: pessimistic share {g.loc[False, 'pess']:.1%} in expansions, "
+          f"{g.loc[True, 'pess']:.1%} in recessions")
 
 
 # --- B. THE CONSEQUENCE ----------------------------------------------------
@@ -159,16 +162,13 @@ def fig_consequence(s):
     ax.text(.98, len(rows) - .95, "in recessions", color=VERM, fontsize=11,
             ha="right", fontweight="bold")
     ax.invert_yaxis()
-    e, r, lo, hi = gap_ci(s)
-    title(ax, "Pessimists were right in recessions — there were just never enough of them",
-          "Downbeat forecasts did far BETTER once a downturn arrived; upbeat ones "
-          "collapsed. Because roughly\nthree in four forecasts were upbeat "
-          f"regardless of conditions, overall accuracy still fell from {e:.1%} to "
-          f"{r:.1%}\n(gap {e - r:+.1%} points, 95% CI [{lo:+.1f}, {hi:+.1f}], "
-          "block-bootstrapped by 3-year period).")
     fig.tight_layout()
     fig.savefig(OUT / "figB_consequence.png", bbox_inches="tight")
     plt.close(fig)
+    # The caption numbers now live in the poster deck, so print them here.
+    e, r, lo, hi = gap_ci(s)
+    print(f"   figB: accuracy {e:.1%} in expansions vs {r:.1%} in recessions "
+          f"(gap {e - r:+.1%} pts, 95% CI [{lo:+.1f}, {hi:+.1f}] pts)")
 
 
 # --- C. NO LEARNING --------------------------------------------------------
@@ -190,10 +190,6 @@ def fig_no_learning(s):
     ax.text(1901, .52, "coin flip", fontsize=10, color=MUTED)
     ax.text(1941, np.poly1d(z)(1941) + .06, "trend", color=VERM, fontsize=11,
             fontweight="bold")
-    title(ax, "Sixty years, no improvement: forecasting never got better",
-          "Annual accuracy of US-national economic forecasts, 1900–1963 "
-          "(years with ≥40 scorable forecasts).\nThe fitted trend is flat. "
-          "Grey bands are NBER recessions — accuracy dips inside almost every one.")
     fig.tight_layout()
     fig.savefig(OUT / "figC_no_learning.png", bbox_inches="tight")
     plt.close(fig)
@@ -234,10 +230,6 @@ def fig_feature_ladder(s):
             ha="right", fontweight="bold")
     ax.text(.79, -.1, "how the forecast was written", color=BLUE, fontsize=11,
             ha="right", fontweight="bold")
-    title(ax, "What the economy was doing mattered more than how a forecast was written",
-          "Accuracy split by one feature at a time. The widest gap by far is "
-          "expansion vs recession —\nnot hedging, not a named forecaster, not "
-          "confident wording.")
     fig.tight_layout()
     fig.savefig(OUT / "figD_what_predicts.png", bbox_inches="tight")
     plt.close(fig)
@@ -271,6 +263,54 @@ def fig_method_narrow():
     plt.close(fig)
 
 
+# --- H. CORPUS SIZE BY DECADE ----------------------------------------------
+def fig_corpus_by_decade():
+    """How much data the whole study rests on, decade by decade.
+
+    Reads the raw scored file rather than load_scored(), because the point of
+    this panel is the unscorable share -- the forecasts that had no resolvable
+    direction or horizon -- which load_scored() drops."""
+    d = pd.read_csv("data/scored/monthly_scored.csv")
+    d["decade"] = pd.to_datetime(d["date"]).dt.year // 10 * 10
+    d["scored"] = d["scorable"] == True
+    g = d.groupby("decade").agg(n=("scored", "size"), scorable=("scored", "sum"))
+
+    # bars live left of BAR_END; the two number columns sit right of it
+    BAR_END, C_TOT, C_SC = 7000, 8100, 9500
+    fig, ax = plt.subplots(figsize=(10, 4.4))
+    y = np.arange(len(g))
+    ax.barh(y, g["scorable"], height=.62, color=BLUE, zorder=3)
+    ax.barh(y, g["n"] - g["scorable"], left=g["scorable"] + 60, height=.62,
+            color=GRAY, zorder=3)
+    for i, (_, r) in enumerate(g.iterrows()):
+        ax.text(C_TOT, i, f"{int(r['n']):,}", va="center", fontsize=13.5,
+                ha="right", fontweight="bold", color=INK)
+        ax.text(C_SC, i, f"{int(r['scorable']):,}", va="center", fontsize=13.5,
+                ha="right", color=BLUE, fontweight="bold")
+    for x, lab, col in [(C_TOT, "extracted", MUTED), (C_SC, "scorable", BLUE)]:
+        ax.text(x, -.9, lab, fontsize=11.5, color=col, ha="right", va="center",
+                fontweight="bold")
+    labels = [f"{int(x)}s" for x in g.index]
+    labels[-1] += "\n(to 1963)"
+    ax.set_yticks(y); ax.set_yticklabels(labels, fontsize=13)
+    ax.set_ylim(len(g) - .4, -1.4)
+    ax.set_xlim(0, C_SC + 200)
+    ax.set_xticks([0, 2000, 4000, 6000])
+    ax.set_xticklabels(["0", "2,000", "4,000", "6,000"], fontsize=11)
+    ax.spines["bottom"].set_bounds(0, BAR_END)
+    ax.grid(axis="y", visible=False)
+    for gl in ax.get_xgridlines():
+        gl.set_visible(gl.get_xdata()[0] <= BAR_END)
+    ax.text(g["scorable"].iloc[0] / 2, -.9, "scorable", color=BLUE,
+            fontsize=11.5, fontweight="bold", ha="center", va="center")
+    ax.text((g["n"].iloc[0] + g["scorable"].iloc[0]) / 2, -.9,
+            "no resolvable direction or horizon", color=MUTED, fontsize=11.5,
+            ha="center", va="center")
+    fig.tight_layout()
+    fig.savefig(OUT / "figH_corpus_by_decade.png", bbox_inches="tight")
+    plt.close(fig)
+
+
 # --- F. ACCURACY BY TOPIC --------------------------------------------------
 PRETTY_TOPIC = {"general_business": "General business", "markets": "Stock markets",
                 "prices": "Prices / inflation", "employment": "Jobs / unemployment",
@@ -280,16 +320,17 @@ PRETTY_TOPIC = {"general_business": "General business", "markets": "Stock market
 def fig_topics(s):
     """Accuracy varies far more by SUBJECT than by how a forecast was written.
 
-    Left: hit rate per topic against the coin-flip line. Right: the reason the
-    topic effect does not generalise -- price accuracy is the inflation REGIME,
-    not skill. "Prices up" and "prices down" hit rates sum to roughly 1 in every
-    decade, which is what a zero-sum regime effect looks like."""
+    Two files. F1 is the hit rate per topic against the coin-flip line. F2 is
+    the reason the topic effect does not generalise -- price accuracy is the
+    inflation REGIME, not skill. "Prices up" and "prices down" hit rates sum to
+    roughly 1 in every decade, which is what a zero-sum regime effect looks
+    like."""
     g = (s[s["topic"].isin(PRETTY_TOPIC)]
          .groupby("topic")["hit"].agg(["size", "mean"]))
     g = g[g["size"] >= 150].sort_values("mean")
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 4.3),
-                                   gridspec_kw={"width_ratios": [1.15, 1]})
+    # F1: accuracy by topic
+    fig, ax1 = plt.subplots(figsize=(7.5, 4.3))
     colors = [VERM if v < .5 else BLUE for v in g["mean"]]
     ax1.barh(range(len(g)), g["mean"], color=colors, height=.62, zorder=3)
     for i, (v, n) in enumerate(zip(g["mean"], g["size"])):
@@ -305,7 +346,12 @@ def fig_topics(s):
     ax1.text(.5, len(g) - .35, "coin flip", fontsize=11, color=MUTED,
              ha="center", va="bottom")
     ax1.grid(axis="y", visible=False)
+    fig.tight_layout()
+    fig.savefig(OUT / "figF1_topic_accuracy.png", bbox_inches="tight")
+    plt.close(fig)
 
+    # F2: price forecasts by decade -- the regime effect
+    fig, ax2 = plt.subplots(figsize=(6.5, 4.3))
     pr = s[(s["topic"] == "prices") & (s["predicted_norm"].isin(["up", "down"]))].copy()
     pr["dec"] = (pr["year"] // 10) * 10
     piv = pr.groupby(["dec", "predicted_norm"])["hit"].agg(["mean", "size"])
@@ -330,20 +376,10 @@ def fig_topics(s):
     ax2.set_yticklabels(["0", "50%", "100%"], fontsize=12)
     ax2.set_ylabel("share that came true", fontsize=12)
     ax2.legend(fontsize=11, loc="upper center", ncol=2, frameon=False,
-               bbox_to_anchor=(.5, 1.16))
+               bbox_to_anchor=(.5, 1.13))
     ax2.grid(axis="x", visible=False)
-
-    fig.suptitle("Worse than a coin flip on prices, markets and jobs",
-                 fontsize=15, fontweight="bold", x=.008, ha="left", y=.995)
-    fig.text(.008, .905,
-             "Left: the only subject the press beat chance on was vague talk about "
-             "“business” in general.\nRight: why that edge does not last — price "
-             "accuracy tracks the era’s inflation regime, not skill. The two bars "
-             "sum to about 100% in\nevery decade. Out of sample, topic predicts "
-             "nothing (AUC 0.495, leave-one-block-out).",
-             fontsize=10.5, color=MUTED, ha="left", va="top")
-    fig.tight_layout(rect=[0, 0, 1, .845])
-    fig.savefig(OUT / "figF_topics.png", bbox_inches="tight")
+    fig.tight_layout()
+    fig.savefig(OUT / "figF2_prices_by_decade.png", bbox_inches="tight")
     plt.close(fig)
 
 
@@ -385,14 +421,173 @@ def fig_1929(s):
     ax.set_yticklabels(["0", "25%", "50%", "75%", "100%"], fontsize=12)
     ax.set_ylabel("share predicting improvement", fontsize=12)
     ax.grid(axis="x", visible=False)
-    title(ax, "In the month of the Great Crash, the press was more bullish than in June",
-          "Share of US-national forecasts predicting improvement, month by month. "
-          "Nothing in the pipeline was told\nthat 1929 mattered. Forecasts printed "
-          f"August–December 1929 came true {hit_band:.1%} of the time "
-          f"(n={len(band):,}) — four in five were wrong.")
     fig.tight_layout()
     fig.savefig(OUT / "figG_1929.png", bbox_inches="tight")
     plt.close(fig)
+    print(f"   figG: Aug–Dec 1929 forecasts came true {hit_band:.1%} of the time "
+          f"(n={len(band):,})")
+
+
+# --- L. WHICH PAPERS WERE MOST ACCURATE ------------------------------------
+MIN_CLAIMS = 100   # below this a paper's interval is too wide to rank at all
+
+
+def _wilson(k, n, z=1.96):
+    if n == 0:
+        return (np.nan, np.nan)
+    p = k / n
+    d = 1 + z * z / n
+    c = p + z * z / (2 * n)
+    h = z * np.sqrt(p * (1 - p) / n + z * z / (4 * n * n))
+    return ((c - h) / d, (c + h) / d)
+
+
+def pretty_paper(name):
+    """'evening star (washington, d.c.) 1854-1972' -> ('Evening Star',
+    'Washington, D.C.'). Chronicling America titles all carry the city and the
+    run of years; the years are the paper's whole run, not our sample, so they
+    are dropped -- the label carries OUR window instead."""
+    m = re.match(r"^(.*?)\s*\((.*?)\)", name)
+    if not m:
+        return name.title(), ""
+    return m.group(1).strip().title(), m.group(2).strip().title()
+
+
+def publisher_table(s, min_claims=MIN_CLAIMS):
+    """Observed hit rate per paper, next to the era it published in.
+
+    Two baselines, for two different jobs:
+
+    `exp_period` -- what the chart shows. The arithmetic mean of the corpus-wide
+    hit rate in each 3-year period the paper published in, over the periods it
+    actually has claims in (unweighted: every period the paper appears in counts
+    once). "How hard were the years this paper was forecasting in?"
+
+    The 3-year grid is not cosmetic: it is what lets the baseline skip years the
+    paper was absent for. San Antonio Light spans 1923-1937 but has no claims in
+    1927-32, the two hardest stretches in the corpus -- baselined on its whole
+    span it scores 47.4%, baselined on the periods it actually appears in, 58.8%.
+
+    `exp_cell` -- the stricter control used by paper_spread_test only. Same idea
+    but the bucket is period x predicted direction, so it also absorbs the fact
+    that upbeat and downbeat forecasts have opposite hit rates in the same year.
+    """
+    d = s.copy()
+    d["period"] = (d["year"] - 1900) // 3
+    d["cell"] = d["period"].astype(str) + "|" + d["predicted_norm"].astype(str)
+    d["exp"] = d.groupby("cell")["hit"].transform("mean")
+
+    prate = d.groupby("period")["hit"].mean()
+    exp_period = (d.groupby(["publisher", "period"]).size().reset_index()
+                   .assign(r=lambda t: t["period"].map(prate))
+                   .groupby("publisher")["r"].mean())
+
+    g = d.groupby("publisher").agg(n=("hit", "size"), k=("hit", "sum"),
+                                   obs=("hit", "mean"), exp_cell=("exp", "mean"),
+                                   y0=("year", "min"), y1=("year", "max"))
+    g["exp_period"] = exp_period
+    g = g[g["n"] >= min_claims].sort_values("obs", ascending=False)
+    g[["lo", "hi"]] = [_wilson(int(k), int(n)) for k, n in zip(g["k"], g["n"])]
+    return g, d[d["publisher"].isin(g.index)]
+
+
+def paper_spread_test(b, reps=1000, seed=0):
+    """Do papers differ by more than chance, once era and mix are held fixed?
+
+    Shuffles `hit` WITHIN each (period x direction) cell, so the null keeps every
+    paper's era and forecast mix and destroys only the paper label. Returns the
+    observed between-paper SD of (observed - expected), the null mean, and p."""
+    cell = pd.factorize(b["cell"])[0]
+    pub = pd.factorize(b["publisher"])[0]
+    hit = b["hit"].values.astype(float)
+    dev0 = hit - b["exp"].values
+    npub = pub.max() + 1
+    cnt = np.bincount(pub, minlength=npub)
+
+    def sd(dev):
+        return (np.bincount(pub, dev, minlength=npub) / cnt).std()
+
+    base = np.argsort(cell, kind="stable")
+    rng = np.random.default_rng(seed)
+    null = np.empty(reps)
+    for i in range(reps):
+        perm = np.lexsort((rng.random(len(cell)), cell))
+        hp = np.empty_like(hit)
+        hp[base] = hit[perm]
+        null[i] = sd(hp - b["exp"].values)
+    obs = sd(dev0)
+    return obs, null.mean(), float((null >= obs).mean())
+
+
+def fig_publishers(s):
+    """Ranked accuracy by newspaper, against the era each one published in.
+
+    Papers are ordered by raw hit rate because that is the question people ask
+    ("which paper was best?"). The grey diamond is the reply: it is the average
+    hit rate of the 3-year periods that paper published in, so a bar standing
+    well clear of its own diamond is the only thing that looks like a house
+    effect."""
+    g, b = publisher_table(s)
+    fig, ax = plt.subplots(figsize=(15, 7.6))
+    x = np.arange(len(g))
+    TOP = .88
+
+    ax.bar(x, g["obs"], width=.66, color=BLUE, zorder=3)
+    ax.errorbar(x, g["obs"], yerr=[g["obs"] - g["lo"], g["hi"] - g["obs"]],
+                fmt="none", ecolor="#5a5a5a", elinewidth=1.4, capsize=4,
+                zorder=5)
+    ax.plot(x, g["exp_period"], marker="D", ms=9, ls="none", color=GRAY,
+            mec="white", mew=1.8, zorder=6)
+    for i, (_, r) in enumerate(g.iterrows()):
+        # Clear whichever is higher, the whisker or the diamond -- on the weakest
+        # papers the diamond sits above the interval.
+        ax.text(i, max(r["hi"], r["exp_period"]) + .018, f"{r['obs']:.0%}",
+                ha="center", va="bottom", fontsize=11.5, fontweight="bold",
+                color=INK)
+        # n rides inside the bar so it never competes with the value label
+        ax.text(i, .022, f"n={int(r['n']):,}", ha="center", va="bottom",
+                rotation=90, fontsize=9.5, color="white", zorder=4)
+    ax.axhline(.5, color="#555555", lw=1.2, ls="--", zorder=7)
+
+    labels = []
+    for name, r in g.iterrows():
+        t, _ = pretty_paper(name)
+        labels.append(f"{t}\n{int(r['y0'])}–{int(r['y1'])}")
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, fontsize=9.5, rotation=38, ha="right",
+                       rotation_mode="anchor")
+    ax.set_xlim(-.75, len(g) - .25)
+    ax.set_ylim(0, TOP)
+    ax.set_yticks([0, .2, .4, .6, .8])
+    ax.set_yticklabels(["0", "20%", "40%", "60%", "80%"])
+    ax.set_ylabel("share of that paper's forecasts that came true")
+    ax.grid(axis="x", visible=False)
+    # Below the line, where the weakest papers' labels are not.
+    ax.text(len(g) - .35, .489, "coin flip", fontsize=10.5, color=MUTED,
+            ha="right", va="top")
+
+    # Legend above the tallest whisker, inside the axes.
+    bar_key = ax.bar([0], [0], color=BLUE,
+                     label="the paper's own hit rate (bar; 95% Wilson interval)")
+    # The legend has to say ALL PAPERS -- a reader who thinks the diamond is
+    # also this paper's own number cannot read the chart at all.
+    dia_key, = ax.plot([], [], marker="D", ms=9, ls="none", color=GRAY,
+                       mec="white", mew=1.8,
+                       label="all papers' average hit rate, in the years this "
+                             "one published")
+    ax.legend(handles=[bar_key, dia_key], frameon=False, fontsize=11, ncol=1,
+              loc="upper right", handlelength=1.6, borderaxespad=.2)
+    fig.tight_layout()
+    fig.savefig(OUT / "figL_publishers.png", bbox_inches="tight")
+    plt.close(fig)
+
+    obs, null, p = paper_spread_test(b)
+    print(f"   figL: {len(g)} papers with >={MIN_CLAIMS} scored forecasts "
+          f"({b.shape[0] / len(s):.0%} of the corpus); raw rates "
+          f"{g['obs'].min():.1%}–{g['obs'].max():.1%}, field average "
+          f"{s['hit'].mean():.1%}")
+    print(f"   figL: between-paper SD after removing era and mix {obs:.3f} vs "
+          f"{null:.3f} expected by chance (p={p:.3f})")
 
 
 if __name__ == "__main__":
@@ -404,6 +599,8 @@ if __name__ == "__main__":
     fig_topics(s)
     fig_1929(s)
     fig_method_narrow()
+    fig_corpus_by_decade()
+    fig_publishers(s)
     print(f"poster figures -> {OUT}/")
     for f in sorted(OUT.glob("*.png")):
         print("  ", f.name)

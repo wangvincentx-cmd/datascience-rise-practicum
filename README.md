@@ -49,7 +49,7 @@ series' coverage — are marked with a reason and left unscored, never guessed.
 pip install pandas numpy scikit-learn matplotlib requests openpyxl python-pptx truststore
 
 # everything runs from the repo root
-python tests/test_offline.py      # 90 checks
+python tests/test_offline.py      # 118 checks
 python tests/test_scoring.py      # 33 known-answer scorer proofs
 python tests/test_forecasts.py    # 33 checks
 
@@ -58,6 +58,11 @@ python src/score_predictions.py --claims data/claims/claims_monthly.jsonl \
     --out data/scored/monthly_scored.csv
 python src/make_poster_figures.py
 python src/build_poster.py        # -> RISE_Poster_2026.pptx
+
+# the economy-at-print-time layer and the forecast-credibility model
+python src/macro_context.py       # -> data/scored/macro_context.csv + attribution
+python src/hit_predictor.py       # -> data/models/hit_predictor.joblib
+python src/make_macro_figures.py  # -> figures/poster_figures/figI, figJ, figK
 ```
 
 Rebuilding the *corpus* from scratch (a ~24 h scrape plus a paid extraction pass)
@@ -69,13 +74,15 @@ is documented in [`CLAUDE.md`](CLAUDE.md) and
 | path | what it holds |
 |---|---|
 | `src/` | all Python — collection, extraction, scoring, analysis, figures |
-| `tests/` | three suites, 156 checks total |
+| `tests/` | three suites, 184 checks total |
 | `data/claims/` | extracted forecasts (the expensive artifact) |
 | `data/scored/` | scored claims + the monthly press-expectations index |
 | `data/corpus/` | raw newspaper pages — **gitignored**, 738 MB, regenerable |
 | `validation/` | the gold standard, its eval harness, and human hand-grading |
 | `figures/` | poster figures and exploratory plots |
 | `docs/` | poster text, results, methods, operational runbooks |
+| `data/models/` | the fitted forecast-credibility model and its held-out predictions |
+| `notebooks/` | Livingston survey analysis, and `hit_model.ipynb` — the credibility model end to end |
 
 **Data sources**, all public: Library of Congress *Chronicling America*; NBER
 business-cycle chronology; Federal Reserve FRED (INDPRO, CPIAUCNS, UNRATE,
