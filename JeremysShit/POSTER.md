@@ -19,12 +19,17 @@ keyword search, turns out to lose most of the evidence.
 real economic data.**
 
 ```
-15,721 LOC newspaper pages          every month, 1900-01 … 1963-12 (768/768, no gaps)
+15,721 LOC newspaper pages          sampled from all 768 months, 1900-01 … 1963-12, no gaps
         ↓  LLM reads each full page, returns structured forecasts
 30,765 extracted forecasts          direction, topic, horizon, hedging, speaker, scope
         ↓  deterministic scorer — NBER + Federal Reserve series, no model judgement
 14,251 scorable US-national claims  each marked hit / miss / honestly unscorable
+   761 months in the press index     months yielding ≥1 scorable US-national claim
 ```
+
+Note the distinction: **pages were sampled in every one of the 768 months**, but
+**761 months** yield at least one scorable US-national forecast. Earlier drafts
+wrote "768/768" for both.
 
 **The split that makes this a measurement, not an opinion:** the language model
 decides *what was predicted*; real economic data decides *whether it came true*.
@@ -81,9 +86,16 @@ were upbeat**, in booms and busts alike.
 |---|---|---|
 | **overall accuracy** | **58.8%** | **39.7%** |
 
-Gap **+18.7 points**, 95% CI **[+12.1, +24.8]** — block-bootstrapped by 3-year
+Gap **+19.1 points**, 95% CI **[+12.9, +24.4]** — block-bootstrapped by 3-year
 period, so the interval accounts for the fact that forecasts within an era are
-not independent.
+not independent. (Recomputed 2026-07-28; `build_poster.py` and
+`make_poster_figures.py` now derive this live rather than hardcoding it.)
+
+**Present this as a consequence of Panel 2, not as an independent finding.**
+NBER dates are both the scoring ground truth and the split variable: in
+recessions 65% of claims are "improve" and 68.3% of all misses are "improve"
+claims. The free-standing empirical fact is the *mix* (Panel 2); the accuracy
+gap follows from it.
 
 The breakdown shows *why*, and it is not that everyone got worse:
 
@@ -137,6 +149,57 @@ corpus is close to irreducible.
 
 ---
 
+## PANEL 6 — Worse than chance on prices, markets and jobs
+
+**`poster_figures/figF_topics.png`**
+
+Accuracy varies far more by *subject* than by how a forecast was written — a
+23-point spread, against 2 points for hedging and 1.4 for a named forecaster.
+
+| topic | n scorable | hit rate | vs 50% |
+|---|---|---|---|
+| general business | 8,713 | **56.1%** | p = 2e-30 |
+| other | 870 | 47.9% | — |
+| stock markets | 2,219 | **44.9%** | p = 2e-06 |
+| prices / inflation | 2,275 | **41.5%** | p = 5e-16 |
+| jobs / unemployment | 174 | **32.8%** | p = 6e-06 |
+
+**Markets, prices and employment forecasts are all significantly worse than a
+coin flip**, and the press published 10,400 of them. The only above-chance
+category is vague optimism about "business" in general — and only because
+"business will improve" is right most years by default.
+
+**Why that edge does not generalise.** Price accuracy is the era's inflation
+*regime*, not skill: "prices up" and "prices down" hit rates sum to roughly 1 in
+every decade (1910s 0.85/0.01, 1940s 0.83/0.07, 1920s 0.27/0.48). After 1948,
+"prices will fall" was right **0 times out of 93**. Consistent with this, topic
+scores **AUC 0.495 — chance — out of fold** (leave-one-block-out). It separates
+in sample and predicts nothing forward.
+
+*Caveat for the jobs row:* only 174 of 1,663 employment claims (10.5%) are
+scorable, because UNRATE starts in 1948. State the n.
+
+---
+
+## PANEL 7 — October 1929: no one saw it coming
+
+**`poster_figures/figG_1929.png`**
+
+Share of US-national forecasts predicting improvement, month by month:
+
+| 1929-06 | 07 | 08 | 09 | **10 (Crash)** | 11 | 12 | 1930-01 |
+|---|---|---|---|---|---|---|---|
+| 76.5% | 93.3% | 86.4% | 64.3% | **86.1%** | 78.4% | 76.2% | 79.2% |
+
+**In the month of the Great Crash the press was more bullish than it had been in
+June.** Forecasts printed August–December 1929 came true **20.8%** of the time
+(n = 168) — four in five were wrong.
+
+Found with no episode labels and no outcome information, on the same continuous
+corpus as every other panel.
+
+---
+
 ## A finding that reversed — and why we report it
 
 On a smaller, crisis-only corpus (n = 232), forecasts that **swam against the
@@ -147,19 +210,37 @@ On the full continuous corpus (n = 1,967 — eight times the sample) it
 
 The first result was small-sample noise from an outcome-selected sample. This is
 the strongest argument for why the continuous corpus was worth building: it
-overturned a finding that the smaller one had suggested. We also tested whether
-**forecaster disagreement** predicts accuracy (the Baker–Bloom–Davis
-"uncertainty" hypothesis) — it does not (low 53.7% / mid 48.6% / high 51.4%).
+overturned a finding that the smaller one had suggested.
+
+> ⚠️ **Unresolved — do not print either way yet.** We also tested whether
+> **forecaster disagreement** predicts accuracy (the Baker–Bloom–Davis
+> "uncertainty" hypothesis). The answer depends on which of two disagreement
+> measures in this repo is used, and they disagree:
+>
+> | measure | low | mid | high |
+> |---|---|---|---|
+> | `model_hit.py:165` — divides by **all** claims that month | 53.7% | 48.6% | 51.4% |
+> | `build_press_index.py:92` — divides by **directional** claims | 56.6% | 49.9% | 47.3% |
+>
+> The first gives the "no relationship" null currently claimed. The second is
+> cleanly monotone, is not a recession proxy (corr with `in_recession` = −0.012),
+> and holds within expansions (66.2→58.6→51.7) and within "improve" claims alone
+> (64.7→57.4→55.8). Decide which measure is intended before making any claim
+> about uncertainty and accuracy.
 
 ---
 
 ## Limitations, stated plainly
 
 - **Extraction quality.** The monthly corpus was extracted with a cheaper model
-  (gold-standard F1 ≈ 0.61) to fit a $30 budget; the methods comparison used a
-  stronger one (F1 ≈ 0.79). Aggregate monthly series tolerate this — per-claim
-  error partly averages out over ~40 claims/month — but the two are different
-  instruments.
+  (gold-standard **F1 ≈ 0.53–0.61**) to fit a $30 budget; the methods comparison
+  used a stronger one (F1 ≈ 0.79). Aggregate monthly series tolerate this —
+  per-claim error partly averages out over ~40 claims/month — but the two are
+  different instruments. **The range is unresolved:** `result_oss120b_low.json`
+  measures F1 = 0.527 for gpt-oss-120b at *low* reasoning effort, while
+  `result_gptoss120b.json` gives 0.612 at default effort, and
+  `monthly_extract.log` does not record which setting ran. Confirm and collapse
+  this to one number before publication.
 - **The gold standard is model-adjudicated, not human.** A two-person recode of
   ~40 claims is the outstanding step before publication.
 - **Coverage thins after 1940.** LOC digitization drops from ~600 claims/year
@@ -193,11 +274,17 @@ python score_predictions.py --claims claims_monthly.jsonl --out monthly_scored.c
 python build_press_index.py --claims claims_monthly.jsonl \
     --pages data/monthly/pages_monthly.jsonl --out data/press_index.csv
 python model_hit.py --scored monthly_scored.csv --perm 0
-python make_poster_figures.py          # panels 2-5
+python make_poster_figures.py          # all seven poster figures
 python make_index_figures.py           # the monthly index series
+python build_poster.py                 # -> RISE_Poster_2026.pptx
 python test_scoring.py                 # 33 known-answer scorer tests
 python test_offline.py                 # 90 offline pipeline tests
 ```
+
+`build_poster.py` no longer needs `data/monthly/*.jsonl` (untracked, 385 MB) —
+it recomputes every headline number from the committed `monthly_scored.csv`,
+`data/press_index.csv` and `greenbook_scored.csv`, and asserts that the results
+column fits rather than silently overlapping panels.
 
 **Data:** Library of Congress *Chronicling America* (public API, no key), NBER
 business-cycle chronology, Federal Reserve FRED series. **Total compute cost:

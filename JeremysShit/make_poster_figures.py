@@ -52,6 +52,27 @@ def load_scored():
     return s
 
 
+def gap_ci(s, reps=2000, seed=0):
+    """Expansion-minus-recession accuracy gap with a block bootstrap.
+
+    Forecasts cluster hard within an era, so resampling individual claims would
+    understate the interval. Resample whole 3-year blocks instead -- the same
+    grouping the models use for cross-validation. Returned as (exp, rec, lo, hi)
+    with the interval in PERCENTAGE POINTS."""
+    blk = (s["year"] - 1900) // 3
+    blocks = blk.unique()
+    rng = np.random.default_rng(seed)
+    out = []
+    for _ in range(reps):
+        pick = rng.choice(blocks, len(blocks), replace=True)
+        bs = pd.concat([s[blk == b] for b in pick])
+        if bs["in_rec"].nunique() < 2:
+            continue
+        out.append(bs[~bs["in_rec"]]["hit"].mean() - bs[bs["in_rec"]]["hit"].mean())
+    lo, hi = np.percentile(out, [2.5, 97.5]) * 100
+    return (s[~s["in_rec"]]["hit"].mean(), s[s["in_rec"]]["hit"].mean(), lo, hi)
+
+
 # --- A. THE MECHANISM ------------------------------------------------------
 def fig_mechanism(s):
     """Forecast mix is identical in booms and busts -- the press does not react."""
@@ -138,12 +159,13 @@ def fig_consequence(s):
     ax.text(.98, len(rows) - .95, "in recessions", color=VERM, fontsize=11,
             ha="right", fontweight="bold")
     ax.invert_yaxis()
+    e, r, lo, hi = gap_ci(s)
     title(ax, "Pessimists were right in recessions — there were just never enough of them",
           "Downbeat forecasts did far BETTER once a downturn arrived; upbeat ones "
           "collapsed. Because roughly\nthree in four forecasts were upbeat "
-          "regardless of conditions, overall accuracy still fell from 58.8% to "
-          "39.7%\n(gap +18.7 points, 95% CI [+12.1, +24.8], block-bootstrapped by "
-          "3-year period).")
+          f"regardless of conditions, overall accuracy still fell from {e:.1%} to "
+          f"{r:.1%}\n(gap {e - r:+.1%} points, 95% CI [{lo:+.1f}, {hi:+.1f}], "
+          "block-bootstrapped by 3-year period).")
     fig.tight_layout()
     fig.savefig(OUT / "figB_consequence.png", bbox_inches="tight")
     plt.close(fig)
@@ -249,13 +271,139 @@ def fig_method_narrow():
     plt.close(fig)
 
 
+# --- F. ACCURACY BY TOPIC --------------------------------------------------
+PRETTY_TOPIC = {"general_business": "General business", "markets": "Stock markets",
+                "prices": "Prices / inflation", "employment": "Jobs / unemployment",
+                "other": "Other"}
+
+
+def fig_topics(s):
+    """Accuracy varies far more by SUBJECT than by how a forecast was written.
+
+    Left: hit rate per topic against the coin-flip line. Right: the reason the
+    topic effect does not generalise -- price accuracy is the inflation REGIME,
+    not skill. "Prices up" and "prices down" hit rates sum to roughly 1 in every
+    decade, which is what a zero-sum regime effect looks like."""
+    g = (s[s["topic"].isin(PRETTY_TOPIC)]
+         .groupby("topic")["hit"].agg(["size", "mean"]))
+    g = g[g["size"] >= 150].sort_values("mean")
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 4.3),
+                                   gridspec_kw={"width_ratios": [1.15, 1]})
+    colors = [VERM if v < .5 else BLUE for v in g["mean"]]
+    ax1.barh(range(len(g)), g["mean"], color=colors, height=.62, zorder=3)
+    for i, (v, n) in enumerate(zip(g["mean"], g["size"])):
+        ax1.text(v + .012, i, f"{v:.1%}", va="center", fontsize=13,
+                 fontweight="bold", color=INK)
+    ax1.axvline(.5, color="#999999", lw=1.4, ls="--", zorder=4)
+    ax1.set_yticks(range(len(g)))
+    ax1.set_yticklabels([f"{PRETTY_TOPIC[t]}\n(n={n:,})"
+                         for t, n in zip(g.index, g["size"])], fontsize=12)
+    ax1.set_xlim(0, .72); ax1.set_xticks([0, .25, .5])
+    ax1.set_xticklabels(["0", "25%", "50%"], fontsize=12)
+    ax1.set_xlabel("share of forecasts that came true", fontsize=12)
+    ax1.text(.5, len(g) - .35, "coin flip", fontsize=11, color=MUTED,
+             ha="center", va="bottom")
+    ax1.grid(axis="y", visible=False)
+
+    pr = s[(s["topic"] == "prices") & (s["predicted_norm"].isin(["up", "down"]))].copy()
+    pr["dec"] = (pr["year"] // 10) * 10
+    piv = pr.groupby(["dec", "predicted_norm"])["hit"].agg(["mean", "size"])
+    decs = sorted(pr["dec"].unique()); w = .38
+    for j, (key, col, lab) in enumerate([("up", VERM, "“prices will rise”"),
+                                         ("down", BLUE, "“prices will fall”")]):
+        vals = [piv.loc[(d, key), "mean"] if (d, key) in piv.index else np.nan
+                for d in decs]
+        xs = np.arange(len(decs)) + (j - .5) * w
+        ax2.bar(xs, vals, width=w, color=col, zorder=3, label=lab)
+        # A hit rate of exactly 0 draws no bar and reads as missing data -- but
+        # "prices will fall" being right ZERO times after 1948 is the finding,
+        # so label those explicitly.
+        for xi, v in zip(xs, vals):
+            if v == v and v < .02:
+                ax2.text(xi, .02, "0%", ha="center", va="bottom", fontsize=10.5,
+                         fontweight="bold", color=col)
+    ax2.axhline(.5, color="#999999", lw=1.2, ls="--", zorder=2)
+    ax2.set_xticks(range(len(decs)))
+    ax2.set_xticklabels([f"{d}s" for d in decs], fontsize=12)
+    ax2.set_ylim(0, 1); ax2.set_yticks([0, .5, 1])
+    ax2.set_yticklabels(["0", "50%", "100%"], fontsize=12)
+    ax2.set_ylabel("share that came true", fontsize=12)
+    ax2.legend(fontsize=11, loc="upper center", ncol=2, frameon=False,
+               bbox_to_anchor=(.5, 1.16))
+    ax2.grid(axis="x", visible=False)
+
+    fig.suptitle("Worse than a coin flip on prices, markets and jobs",
+                 fontsize=15, fontweight="bold", x=.008, ha="left", y=.995)
+    fig.text(.008, .905,
+             "Left: the only subject the press beat chance on was vague talk about "
+             "“business” in general.\nRight: why that edge does not last — price "
+             "accuracy tracks the era’s inflation regime, not skill. The two bars "
+             "sum to about 100% in\nevery decade. Out of sample, topic predicts "
+             "nothing (AUC 0.495, leave-one-block-out).",
+             fontsize=10.5, color=MUTED, ha="left", va="top")
+    fig.tight_layout(rect=[0, 0, 1, .845])
+    fig.savefig(OUT / "figF_topics.png", bbox_inches="tight")
+    plt.close(fig)
+
+
+# --- G. OCTOBER 1929 -------------------------------------------------------
+def fig_1929(s):
+    """The press stayed bullish straight through the Great Crash.
+
+    Uses ALL national directional claims (not just the scorable ones) so the
+    share is a clean picture of what readers were being told that month."""
+    raw = pd.read_csv("monthly_scored.csv")
+    raw["p"] = pd.PeriodIndex(pd.to_datetime(raw["date"]), freq="M")
+    nat = raw[(raw["scope"] == "national")
+              & (raw["direction"].isin(["improve", "worsen"]))].copy()
+    lo, hi = pd.Period("1929-01", freq="M"), pd.Period("1930-06", freq="M")
+    w = nat[(nat["p"] >= lo) & (nat["p"] <= hi)].copy()
+    w["imp"] = w["direction"].eq("improve").astype(int)
+    m = w.groupby("p")["imp"].agg(["size", "mean"])
+
+    band = s[(s["p"] >= pd.Period("1929-08", freq="M"))
+             & (s["p"] <= pd.Period("1929-12", freq="M"))]
+    hit_band = band["hit"].mean()
+
+    fig, ax = plt.subplots(figsize=(13, 4.4))
+    x = np.arange(len(m))
+    crash = list(m.index).index(pd.Period("1929-10", freq="M"))
+    cols = [VERM if i == crash else GRAY for i in range(len(m))]
+    ax.bar(x, m["mean"], color=cols, width=.68, zorder=3)
+    ax.axhline(.5, color="#999999", lw=1.2, ls="--", zorder=2)
+    ax.text(crash, m["mean"].iloc[crash] + .035, f"{m['mean'].iloc[crash]:.0%}",
+            ha="center", fontsize=14, fontweight="bold", color=VERM)
+    ax.annotate("Wall Street crash\n24–29 Oct 1929", xy=(crash, .30),
+                xytext=(crash + 1.5, .18), fontsize=11.5, color=VERM,
+                fontweight="bold", ha="left",
+                arrowprops=dict(arrowstyle="->", color=VERM, lw=1.6))
+    ax.set_xticks(x)
+    ax.set_xticklabels([str(p)[:7] for p in m.index], fontsize=10.5, rotation=45,
+                       ha="right")
+    ax.set_ylim(0, 1.02); ax.set_yticks([0, .25, .5, .75, 1])
+    ax.set_yticklabels(["0", "25%", "50%", "75%", "100%"], fontsize=12)
+    ax.set_ylabel("share predicting improvement", fontsize=12)
+    ax.grid(axis="x", visible=False)
+    title(ax, "In the month of the Great Crash, the press was more bullish than in June",
+          "Share of US-national forecasts predicting improvement, month by month. "
+          "Nothing in the pipeline was told\nthat 1929 mattered. Forecasts printed "
+          f"August–December 1929 came true {hit_band:.1%} of the time "
+          f"(n={len(band):,}) — four in five were wrong.")
+    fig.tight_layout()
+    fig.savefig(OUT / "figG_1929.png", bbox_inches="tight")
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     s = load_scored()
     fig_mechanism(s)
     fig_consequence(s)
     fig_no_learning(s)
     fig_feature_ladder(s)
+    fig_topics(s)
+    fig_1929(s)
     fig_method_narrow()
-    print(f"4 poster figures -> {OUT}/")
+    print(f"poster figures -> {OUT}/")
     for f in sorted(OUT.glob("*.png")):
         print("  ", f.name)
