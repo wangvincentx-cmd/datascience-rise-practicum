@@ -34,8 +34,9 @@ from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.inspection import permutation_importance
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, roc_auc_score
-from sklearn.model_selection import LeaveOneGroupOut, cross_val_score
+from sklearn.metrics import (accuracy_score, classification_report,
+                             confusion_matrix, roc_auc_score)
+from sklearn.model_selection import LeaveOneGroupOut, cross_val_predict, cross_val_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 
@@ -256,6 +257,12 @@ def main(args):
         results[name] = proba
         print(f"\n=== {name} ===")
         print(f"  held-out accuracy {acc:.3f}  (majority-class baseline {maj:.3f})   AUC {auc:.3f}")
+        pred = (proba > 0.5).astype(int)
+        tn, fp, fn, tp = confusion_matrix(test["hit"], pred).ravel()
+        print(f"  confusion matrix (held-out test episodes): "
+             f"TN={tn} FP={fp} FN={fn} TP={tp}")
+        print(classification_report(test["hit"], pred, target_names=["miss", "hit"],
+                                    digits=3, zero_division=0))
 
         if name == "logistic regression":
             coef_series = pd.Series(pipe.named_steps["clf"].coef_[0], index=feature_names(pipe))
@@ -293,6 +300,18 @@ def main(args):
           f"(± {scores.std():.3f} across {len(scores)} episodes)")
     for e, sc in zip(eps, scores):
         print(f"  {e:22s} {sc:.2f}")
+
+    # Pooled out-of-fold confusion matrix / F1: the honest per-class breakdown
+    # to go with the honest overall accuracy number above. Pooling every
+    # held-out episode's predictions (rather than averaging per-fold reports)
+    # avoids letting tiny episodes (e.g. n=10) dominate a per-fold F1 average.
+    oof_pred = cross_val_predict(pipe, df, df["hit"], groups=df["episode"],
+                                 cv=LeaveOneGroupOut(), method="predict_proba")[:, 1]
+    oof_class = (oof_pred > 0.5).astype(int)
+    tn, fp, fn, tp = confusion_matrix(df["hit"], oof_class).ravel()
+    print(f"\nPooled LOEO out-of-fold confusion matrix: TN={tn} FP={fp} FN={fn} TP={tp}")
+    print(classification_report(df["hit"], oof_class, target_names=["miss", "hit"],
+                                digits=3, zero_division=0))
 
     if args.permutation_test:
         permutation_test(df, LogisticRegression(max_iter=2000, C=LOGIT_C),

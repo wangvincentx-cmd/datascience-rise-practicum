@@ -226,6 +226,33 @@ git history for full CHANGELOG detail pre-pivot):
 
 ## Done so far
 
+- [x] **Confusion matrix + classification_report (precision/recall/F1) added to
+      both shipped logistic regressions — and it exposed a real problem
+      (2026-07-28, user: "do we need evaluation for the 2 logreg models... if
+      so do so").** `model.py`'s `hit`-prediction logreg and `model_hit.py`'s
+      wording-vs-macro logreg previously reported only accuracy/AUC (`model.py`)
+      or AUC/Brier (`model_hit.py`) — no per-class breakdown. Added
+      `confusion_matrix`/`classification_report` at both the fixed-episode
+      held-out split and the pooled `LeaveOneGroupOut` out-of-fold predictions
+      (`cross_val_predict`) in `model.py`; same pattern added to `model_hit.py`
+      reusing its existing `oof_full` array. `model.py` run and verified
+      end-to-end (`bill_arm/.venv`); `model_hit.py`'s edit is `py_compile`-clean
+      but NOT run end-to-end here — needs `cache/fred_M1109BUSM293NNBR.csv` or
+      network access neither available in this sandbox.
+      **Real finding, not just a formatting change: `model.py`'s shipped
+      logistic regression (the one behind `fig_model_importances.png`) does not
+      clearly beat chance.** On the fixed held-out test episodes (1945/1948/
+      1955/1957) it scores **43.6%, BELOW the 55.7% majority-class baseline**
+      — it predicts "hit" for only 27 of 429 claims (confusion matrix TN=175
+      FP=15 FN=227 TP=12, hit-class recall 0.05). Pooled across all 19 LOEO
+      folds it sits exactly at the base rate (48.4% accuracy vs. 48.3% base
+      rate; hit-class precision/recall ~0.47/0.46 — indistinguishable from
+      guessing). Gradient boosting beats baseline on both (55.9% held-out vs.
+      55.7%). **Poster implication: `fig_model_importances.png`'s coefficients
+      should be framed as descriptive/associational, not "the model works" —
+      GB's permutation-importance panel is the better-supported choice if a
+      single model's feature ranking goes on the poster.**
+
 - [x] **Three new analyses built to turn the optimism gap into a thesis
       (2026-07-22, user: "expand the project," ideas #1/#2/#3). All standalone
       scripts reading `claims_scored.csv`, same convention as
@@ -1753,6 +1780,19 @@ reportable until a human fills in `human_narrative` and kappa is computed.)
 
 ## Not done / next up
 
+- [ ] **Decide how to caveat/replace `fig_model_importances.png`** given the
+      logistic regression it's drawn from doesn't clearly beat chance on
+      held-out data (see confusion-matrix finding above, 2026-07-28) — either
+      add an explicit "associational, not validated" caveat, swap to GB's
+      permutation-importance panel as the headline model figure, or dig into
+      why logreg is so skewed specifically on the 1945-57 held-out split
+      (`region_unknown`/`kind_control` are its two strongest coefficients —
+      worth checking whether those categories are just rare/absent in the
+      held-out episodes, which would make the intercept-driven collapse toward
+      "miss" a train/test distribution-shift artifact rather than a real model
+      failure) before trusting either framing on the poster. Run `model_hit.py`
+      with the new eval (needs `cache/fred_M1109BUSM293NNBR.csv` or network) to
+      see whether its logreg has the same problem.
 - [ ] **Re-extract the ProQuest corpus with `extract_llm.py` (in progress,
       2026-07-24).** The 9-window ProQuest export on branch
       `proquest-tdm-integration` (commit `9da000e`) was labelled by the crude
@@ -2058,8 +2098,25 @@ confusion pair, if this strand gets more investment.)
   disagreement to fake independence — either makes kappa measure a system
   against itself. Legitimate levers only: clearer rubric, objective removal of
   ungradeable rows, a stronger/better-suited grader model, more validation
-  claims, a tune/report split. This discipline is *why* the 6-model bake-off
-  and the final 0.89/0.90 are trustworthy — don't relax it going forward.
+  claims, a tune/report split.
+- **UNRESOLVED (found 2026-07-28, pre-symposium review) — the "gpt-4.1,
+  κ=0.89/0.90" grading-validation number cited in `EXTENDED_ABSTRACT.md` (and
+  asserted as settled in this bullet's previous wording) has no traceable
+  source file in the repo.** The only grading validation actually on disk is
+  `handgrade_newspapers/KAPPA_RESULTS.md`: grader **Llama-3.3-70b** (not
+  gpt-4.1), κ=0.87 (is_prediction) / 0.78 (direction), n=80 — and that file
+  itself flags the gold standard as reconciled TOWARD the LLM's disagreements
+  (14/15 changes moved gold→LLM) and recommends a fresh BLIND ~40-80-claim
+  re-validation "before presenting," which does not appear to have happened.
+  The "6-model"/"seven-model bake-off" language elsewhere in this repo refers
+  to the separate claim-EXTRACTION bake-off (`gold_extraction/RESULTS.md`),
+  whose own gold standard is explicitly "model-adjudicated, not human" — a
+  different pipeline stage, not the grading kappa. **Before the poster goes
+  out: locate the real gpt-4.1 grading run behind 0.89/0.90 if one exists, or
+  re-run the blind validation `KAPPA_RESULTS.md` itself calls for, and correct
+  `EXTENDED_ABSTRACT.md`'s Data-and-methods section to the real number/model/
+  caveats.** This is the single highest-priority fix before symposium — it's
+  the sentence meant to establish the pipeline's credibility.
 - **`voice` is an unvalidated feature.** The LLM labels it (5-bucket taxonomy:
   journalist/expert/official/layperson/unclear) and `score_claims.py`'s
   hit-rate-by-voice breakdown uses it (experts 62.3%, officials 46.0%), but it
