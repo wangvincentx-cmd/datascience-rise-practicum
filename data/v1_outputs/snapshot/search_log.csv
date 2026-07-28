@@ -1,0 +1,24 @@
+episode,term,start,end,total_hits,pages_taken
+1907 Panic,financial panic,1907-10-01,1908-06-30,2908,100
+1907 Panic,business outlook,1907-10-01,1908-06-30,433,100
+1907 Panic,return of prosperity,1907-10-01,1908-06-30,339,100
+1920 Depression,business depression,1920-06-01,1921-03-31,1563,100
+1920 Depression,business outlook,1920-06-01,1921-03-31,384,100
+1920 Depression,return of prosperity,1920-06-01,1921-03-31,133,100
+1929 Crash,business outlook,1929-11-01,1930-12-31,310,100
+1929 Crash,return of prosperity,1929-11-01,1930-12-31,208,100
+1929 Crash,business revival,1929-11-01,1930-12-31,181,100
+1929 Crash,business depression,1929-11-01,1930-12-31,1823,100
+1937 Recession,business recession,1937-09-01,1938-03-31,889,100
+1937 Recession,business outlook,1937-09-01,1938-03-31,93,93
+1937 Recession,business revival,1937-09-01,1938-03-31,33,33
+1945 Reconversion,postwar depression,1945-08-01,1946-06-30,31,31
+1945 Reconversion,business outlook,1945-08-01,1946-06-30,32,32
+1945 Reconversion,unemployment will,1945-08-01,1946-06-30,4005,100
+1945 Reconversion,reconversion,1945-08-01,1946-06-30,6214,100
+1948 Recession,business outlook,1948-07-01,1949-06-30,42,42
+1948 Recession,recession,1948-07-01,1949-06-30,412,100
+1948 Recession,business slump,1948-07-01,1949-06-30,14,14
+1957 Recession,recession,1957-08-01,1958-06-30,2119,100
+1957 Recession,business outlook,1957-08-01,1958-06-30,40,40
+1957 Recession,recovery will,1957-08-01,1958-06-30,2477,100
