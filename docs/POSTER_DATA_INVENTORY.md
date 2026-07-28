@@ -249,27 +249,32 @@ one genuine win), 2001 Dot-com 0.182, 2008 GFC 0.471 (n=17, too thin).
 
 This is what stops the poster reading as "old newspapers were dumb."
 
-**7a. Era-matched comparison, 1946–63 — already plotted in
-`figures/fig_three_way_benchmark.png`. Use this one.**
+**7a. Era-matched comparison, 1946–63 — CORRECTED 2026-07-28.**
 
-| forecaster | window | n | hit rate |
-|---|---|---|---|
-| **Newspapers (this project)** | 1946–63 | 314 | **≈0.56** |
-| **Livingston survey economists** | 1946–63 | 68 | ≈0.545 |
-| US households (Michigan SRC) | 1953–63 | 29 | ≈0.55 |
-| US households (Michigan SRC) | 1953–2010 | 477 | ≈0.475 |
+> ⚠️ **The numbers previously printed here were wrong and have been removed.**
+> They were read off `figures/v1_episode/fig_three_way_benchmark.png` rather
+> than from data, because the figure's input had been deleted in commit
+> `daf1724`. That file is now restored to
+> `data/reference/scored_livingston.csv` (161 rows), and it does **not**
+> reproduce the claim "newspapers ≈ economists, 0.56 vs 0.545, n = 314 / 68."
+> Do not use that figure.
 
-**In the one window where all three can be compared on the same variable, the
-newspapers were not worse than professional economists — everyone sat at a coin
-flip.** That is a far stronger claim than the cross-era version below because
-the period, variable, and scoring rule are held fixed.
+Recomputed from the restored file by `src/analysis_v2.py`:
 
-> ⚠️ **This figure is currently orphaned.** Its input,
-> `election_arm/data/scored_livingston.csv` (162 rows), was deleted in commit
-> `daf1724`. Recover before relying on it:
-> `git show daf1724^:JeremysShit/election_arm/data/scored_livingston.csv > …`
-> Verify the plotted numbers against the restored file before printing — I read
-> them off the chart, not the data.
+| forecaster | window | n | raw hit | naive "always improve" | **skill** |
+|---|---|---|---|---|---|
+| Newspapers (this project) | 1946–63 | 1,384 | 0.590 | 0.702 | **−0.112** |
+| Livingston survey economists | 1946–63 | 36 | 0.722 | 0.833 | **−0.111** |
+
+**On raw accuracy the economists beat the newspapers by 13 points (p = 0.008).
+On skill over the naive rule the gap is 0.001.** The entire apparent advantage
+is the base rate of the window each forecaster happened to be scored in — which
+is why *skill*, not accuracy, is the only comparable quantity across sources.
+Newspaper rows are restricted to general-business directional calls, the closest
+match to Livingston's industrial-production question.
+
+Caveats to print with it: n = 36 in the matched window, and the two sources
+score different variables under different rules.
 
 **7b. Modern professional forecasters (secondary, cross-era)**
 
@@ -326,23 +331,29 @@ controlled comparison — which is exactly why 7a should lead.
 
 ## 9. Fix before printing (tier C)
 
-1. **The disagreement null is definition-dependent.** `model_hit.py:165` divides
-   by *all* claims that month; `build_press_index.py:92` divides by
-   *directional* claims. The poster's "no relationship" (0.537/0.486/0.514)
-   uses the first. With the index's own definition it is cleanly monotone —
-   **0.566 / 0.499 / 0.473** — and it is not a recession proxy
-   (corr with in_recession = −0.012), holds within expansions
-   (0.662→0.586→0.517) and within "improve" claims alone (0.647→0.574→0.558).
-   Decide which measure is intended before printing "uncertainty does not
-   predict accuracy."
-2. **Stated extraction quality may be too high.** `RESULTS_MONTHLY.md` says the
-   monthly corpus was extracted with gpt-oss-120b at *low reasoning effort*,
-   F1 ≈ 0.61. The measured F1 for `oss120b_low` is **0.527**; 0.612 is the
-   default-effort row. `monthly_extract.log` does not record the model. Confirm
-   which ran and correct the caveat.
-3. **768 vs 761.** The poster says "768/768 months, no gaps"; the index has 761
-   rows and `RESULTS_MONTHLY.md` §5 says 761. Pick one and define it (pages
-   sampled vs months with a scorable national claim).
+**Items 1–3 were resolved on 2026-07-28 by `src/analysis_v2.py`.** See
+`POSTER_V2_OUTLINE.md` §1.2.
+
+1. ~~The disagreement null is definition-dependent.~~ **RESOLVED — use the
+   `build_press_index.py` measure** (divide by *directional* claims). Dividing
+   by *all* claims, as `model_hit.py:165` does, is contaminated by how many
+   non-directional claims a month happened to contain. On the correct measure
+   the relationship is cleanly monotone — **0.574 / 0.501 / 0.460** — survives
+   dropping the n ≥ 5 filter (0.574/0.500/0.459), holds within expansions
+   (0.693/0.595/0.482), and is not a recession proxy (corr = −0.019). The v1
+   "no relationship" claim was an artefact of the wrong denominator.
+   *Caveat that must be printed with it:* low disagreement means near-unanimous
+   optimism, and optimism usually pays, so the effect is partly mechanical.
+   Within "improve" claims alone it shrinks from 11.4 to 6.8 points but persists
+   (0.641/0.570/0.573).
+2. ~~Stated extraction quality may be too high.~~ **RESOLVED — report F1 =
+   0.527.** 0.612 is the default-effort row; both `CLAUDE.md` and
+   `RESULTS_MONTHLY.md` record the shipped run as `--reasoning-effort low`,
+   which measures 0.527 (`result_oss120b_low.json`). The run log was not
+   retained, so 0.527 is the conservative reading. Stop citing 0.61.
+3. ~~768 vs 761.~~ **RESOLVED — they are different quantities.** 768 months were
+   *sampled*; **761** yield at least one scorable US-national claim. State both,
+   never one as the other.
 4. **The recession accuracy gap is partly mechanical.** NBER dates are both the
    scoring ground truth and the split variable; in recessions 65% of claims are
    "improve" and 68.3% of all misses are "improve" claims. Lead with the *mix*

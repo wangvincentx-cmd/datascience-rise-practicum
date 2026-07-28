@@ -8,8 +8,10 @@ months, no gaps), sampled with a fixed direction-neutral query set.
 **Claims:** 30,765 extracted → **14,251 scorable US-national** claims.
 
 > **Quality caveat, state it on the poster.** This corpus was extracted with
-> gpt-oss-120b (gold-standard F1 ≈ 0.61), not the Gemini extractor used for the
-> crisis corpus (F1 ≈ 0.79). Aggregate monthly series tolerate this — per-claim
+> gpt-oss-120b at low reasoning effort — gold-standard **F1 = 0.527**
+> (`result_oss120b_low.json`), not the 0.61 previously stated here, which is
+> the *default*-effort figure. It is not the Gemini extractor used for the
+> crisis corpus (F1 = 0.784). Aggregate monthly series tolerate this — per-claim
 > error partly averages out over ~40 claims/month — but the two corpora are
 > different instruments and must not be compared claim-for-claim.
 
@@ -97,9 +99,18 @@ noise. **Do not put the contrarian claim on the poster.** This is the clearest
 argument in the project for why the continuous corpus was worth building: it
 overturned a finding that a smaller, outcome-selected sample had suggested.
 
-Press disagreement shows no clean monotone relationship with accuracy either
-(low 0.537 / mid 0.486 / high 0.514) — the Baker-Bloom-Davis "uncertainty
-carries the signal" hypothesis is **not supported** at claim level here.
+> **Superseded 2026-07-28.** This section previously reported that press
+> disagreement has no clean relationship with accuracy (0.537 / 0.486 / 0.514).
+> That used the `model_hit.py` measure, which divides by *all* claims in a
+> month and is therefore contaminated by how many non-directional claims that
+> month happened to contain. On the `build_press_index.py` measure — divide by
+> *directional* claims, the coherent one — the relationship **is** monotone:
+> **0.574 / 0.501 / 0.460**. It survives dropping the n ≥ 5 filter, holds
+> within expansions (0.693 / 0.595 / 0.482), and is not a recession proxy
+> (corr = −0.019). Partly mechanical, though: low disagreement means
+> near-unanimous optimism and optimism usually pays — within "improve" claims
+> alone the effect shrinks to 0.641 / 0.570 / 0.573. See
+> `docs/POSTER_V2_OUTLINE.md` §1.2 and `src/analysis_v2.py`.
 
 ## 5. What to claim, and what not to
 
