@@ -45,7 +45,8 @@ import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import brier_score_loss, roc_auc_score
+from sklearn.metrics import (brier_score_loss, classification_report,
+                             confusion_matrix, roc_auc_score)
 from sklearn.model_selection import LeaveOneGroupOut
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -359,6 +360,12 @@ def run(args):
     ok = ~np.isnan(oof_full)
     if ok.sum():
         print(f"\n  calibration (full model): Brier {brier_score_loss(y[ok], oof_full[ok]):.3f}")
+        oof_class = (oof_full[ok] > 0.5).astype(int)
+        tn, fp, fn, tp = confusion_matrix(y[ok], oof_class).ravel()
+        print(f"  pooled LOEO out-of-fold confusion matrix (full model): "
+             f"TN={tn} FP={fp} FN={fn} TP={tp}")
+        print(classification_report(y[ok], oof_class, target_names=["miss", "hit"],
+                                    digits=3, zero_division=0))
 
     print("\n  Interpretation: a small, non-significant delta is the EXPECTED and "
           "\n  honest outcome -- it says forecast accuracy is driven by the economy, "
