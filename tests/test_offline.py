@@ -432,4 +432,142 @@ check("alignment: Democratic paper under a Republican president -> opposed",
 check("alignment: independent paper has no alignment -> None",
       pa.alignment("independent", "R") is None)
 
+# ---------- macro_context: the economy-at-print-time layer ----------
+# Everything here runs on SYNTHETIC series, so the checks prove the arithmetic
+# rather than agreeing with whatever FRED happens to hold today.
+print("macro_context:")
+import macro_context as mc
+
+syn = pd.Series([100.0, 110.0, 121.0],
+                index=pd.PeriodIndex(["1930-01", "1930-07", "1931-01"], freq="M"))
+check("_pct_change: +10% over the trailing 6 months",
+      abs(mc._pct_change(syn, pd.Period("1930-07", "M"), 6) - 10.0) < 1e-9)
+check("_pct_change: returns NaN before the series starts",
+      pd.isna(mc._pct_change(syn, pd.Period("1929-06", "M"), 6)))
+check("_pct_change: returns NaN past the series end (never extrapolates)",
+      pd.isna(mc._pct_change(syn, pd.Period("1932-01", "M"), 6)))
+
+# THE LEAKAGE CHECK. A publication lag must make a claim BLIND to the month it
+# was printed in: after shifting forward by 2, the value read at 1930-07 is the
+# one the series held at 1930-05, not the contemporaneous one.
+# NOTE the shift is by POSITION, so it only equals "2 months" on a gap-free
+# monthly index -- which is why the next check exists.
+mrange = pd.period_range("1930-01", "1930-12", freq="M")
+contig = pd.Series(np.arange(len(mrange), dtype=float), index=mrange)
+check("publication lag hides contemporaneous data from the claim",
+      contig.shift(2).asof(pd.Period("1930-07", "M"))
+      == contig.asof(pd.Period("1930-05", "M")))
+
+# If a real series had missing months, load_fred's dropna would close the gap
+# and shift(2) would silently mean MORE than two months -- understating the lag
+# and leaking. Assert the gap-free assumption over the era this project reads
+# (LOC full text ends 1963). CPIAUCNS and UNRATE are each missing 2025-10 in the
+# current FRED vintage, which is outside the corpus and harmless here -- but it
+# is exactly the failure this check exists to catch, so anyone extending the
+# corpus past 1970 must re-check rather than assume.
+_ERA_END = pd.Period("1970-12", "M")
+for _sid in ("INDPRO", "CPIAUCNS", "UNRATE"):
+    try:
+        _s = mc.load_fred(_sid)
+    except Exception:
+        print(f"  [skip] {_sid} not cached locally; contiguity unchecked")
+        continue
+    _s = _s[_s.index <= _ERA_END]
+    _full = pd.period_range(_s.index.min(), _s.index.max(), freq="M")
+    check(f"{_sid} has no month gaps through 1970, so a positional shift "
+          f"really is a lag", len(_s) == len(_full))
+check("LAGS: stock prices take no lag (same day's ticker), CPI/INDPRO do",
+      mc.LAGS["STOCK"] == 0 and mc.LAGS["INDPRO"] > 0 and mc.LAGS["CPIAUCNS"] > 0)
+
+check("wilson: interval brackets the point estimate and stays inside [0,1]",
+      (lambda lo, hi: lo < 0.5 < hi and lo >= 0 and hi <= 1)(*mc.wilson(50, 100)))
+check("wilson: a 0-of-n cell gives a non-negative lower bound",
+      mc.wilson(0, 30)[0] >= 0)
+check("wilson: interval narrows as n grows",
+      (mc.wilson(50, 100)[1] - mc.wilson(50, 100)[0])
+      > (mc.wilson(500, 1000)[1] - mc.wilson(500, 1000)[0]))
+
+q = mc.bh_qvalues([0.001, 0.02, 0.5, 0.9])
+check("bh_qvalues: monotone non-decreasing and >= the raw p-values",
+      all(q[i] <= q[i + 1] + 1e-12 for i in range(len(q) - 1))
+      and q[0] >= 0.001 - 1e-12)
+check("bh_qvalues: q never exceeds 1", max(q) <= 1.0)
+check("bh_qvalues: NaN p-values stay NaN, others still computed",
+      pd.isna(mc.bh_qvalues([0.01, float("nan")])[1])
+      and not pd.isna(mc.bh_qvalues([0.01, float("nan")])[0]))
+
+# The hindsight flag must be reachable for FIGURES but never sit in FACTORS,
+# because NBER dates recessions 6-21 months late -- it is an outcome.
+check("FACTORS carries no hindsight (NBER) column",
+      not any("hindsight" in f for f in mc.FACTORS))
+check("every factor has a human-readable label for the figures",
+      all(f in mc.PRETTY for f in mc.FACTORS))
+
+# ---------- hit_predictor ----------
+print("hit_predictor:")
+import hit_predictor as hp
+
+check("no hindsight feature can reach the model's feature lists",
+      not any("hindsight" in c for c in hp.MACRO_NUM + hp.INTER_NUM + hp.CLAIM_NUM))
+check("DIR_SIGN: optimistic +1, pessimistic -1, 'flat' is not a directional bet",
+      hp.DIR_SIGN["improve"] == 1.0 and hp.DIR_SIGN["up"] == 1.0
+      and hp.DIR_SIGN["worsen"] == -1.0 and hp.DIR_SIGN["down"] == -1.0
+      and hp.DIR_SIGN["flat"] == 0.0)
+
+hp_df = pd.DataFrame({"predicted_norm": ["improve", "worsen", "flat"]})
+hp_ctx = pd.DataFrame({f: [2.0, 2.0, 2.0] for f in mc.FACTORS})
+inter = hp.interaction_block(hp_df, hp_ctx)
+check("interaction_block: same economy, opposite sign by forecast direction",
+      inter["x_dir_stock_ret6"].tolist() == [2.0, -2.0, 0.0])
+check("interaction_block: an unknown direction contributes 0, never NaN",
+      hp.interaction_block(pd.DataFrame({"predicted_norm": ["nonsense"]}),
+                           hp_ctx.head(1))["x_dir_epu"].tolist() == [0.0])
+
+# Scoring a NEW forecast is the point of the model, and a new forecast rarely
+# carries every column the training CSV had. This broke once (DataFrame.get
+# returns a bare scalar, not a Series, for a missing column).
+_bare = pd.DataFrame({"direction": ["improve"], "topic": ["markets"],
+                      "date": ["1929-06-15"]})
+_cf = hp.claim_features(_bare)
+check("claim_features: works on a forecast missing most optional columns",
+      len(_cf) == 1 and _cf["c_named"].iloc[0] == 0 and _cf["c_horizon"].iloc[0] == 12)
+check("claim_features: an absent categorical becomes 'na', not a crash",
+      _cf["c_voice"].iloc[0] == "na")
+
+# A load-bearing factor going missing at predict time must FAIL LOUDLY. It
+# silently inverted a demo prediction once (0.608 -> 0.269) because macro_block
+# fills missing factors with 0.0, which is correct in training and catastrophic
+# at predict time against a model trained with that factor.
+check("LOAD_BEARING names the two interaction terms the model actually leans on",
+      "epu" in hp.LOAD_BEARING and "stock_ret6" in hp.LOAD_BEARING)
+_saved_epu = mc._epu_or_none
+try:
+    mc._epu_or_none = lambda: None          # simulate the data source failing
+    try:
+        hp.predict_new(hp.DEMO)
+        _guarded = False
+    except RuntimeError:
+        _guarded = True
+    except Exception:
+        _guarded = False                     # any OTHER error is not the guard
+finally:
+    mc._epu_or_none = _saved_epu
+check("predict_new refuses to score when a load-bearing factor is missing",
+      _guarded)
+
+mb = hp.macro_block(pd.DataFrame({f: [float("nan")] for f in mc.FACTORS}))
+check("macro_block: a missing factor is flagged, not silently read as zero",
+      mb["has_epu"].iloc[0] == 0 and mb["m_epu"].iloc[0] == 0.0)
+
+# Output namespacing -- a replication or ablation run overwrote the primary
+# model's artefacts twice during development; these pin the fix.
+check("out_paths: the primary corpus keeps the un-prefixed filenames",
+      hp.out_paths("macro_context.csv")["model"].name == "hit_predictor.joblib")
+check("out_paths: a second corpus cannot overwrite the primary model",
+      hp.out_paths("crisis_context.csv")["model"].name
+      == "crisis_context_hit_predictor.joblib")
+check("out_paths: an ablation run cannot overwrite the primary model",
+      hp.out_paths("macro_context.csv", "epu")["model"].name
+      == "no_epu_hit_predictor.joblib")
+
 print(f"\nALL {PASS} CHECKS PASSED")
