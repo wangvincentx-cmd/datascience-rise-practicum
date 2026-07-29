@@ -24,7 +24,11 @@ import json
 import os
 from pathlib import Path
 
-import anthropic
+# `anthropic` is imported inside main() instead of here: it is only needed to
+# make live API calls, but a module-level import made this file -- and therefore
+# test_offline.py, which imports it -- fail outright on any machine without the
+# SDK. The offline suite is the gate that runs BEFORE spending API budget, so it
+# must not depend on the API client being installed.
 
 MODEL = "claude-haiku-4-5"   # bump to a sonnet model if quality lags on hard pages
 MAX_OCR_CHARS = 12000
@@ -157,6 +161,8 @@ def main():
     if not os.environ.get("ANTHROPIC_API_KEY"):
         raise SystemExit("Set ANTHROPIC_API_KEY first.")
 
+    import anthropic          # lazy: see note at the imports
+
     client = anthropic.Anthropic()
     in_path = Path(f"data/raw/{args.source}_{args.arm}_{args.window}.jsonl")
     if not in_path.exists():
@@ -175,7 +181,7 @@ def main():
                 continue
             try:
                 claims = extract_from_page(client, record, args.arm)
-            except anthropic.APIError as e:
+            except anthropic.APIError as e:   # noqa: F821 -- imported in main()
                 print(f"API error on {record['page_id']}: {e}")
                 continue
             if not claims:

@@ -29,10 +29,17 @@ def load_claims(source, window):
         with open(path) as f:
             for line in f:
                 r = json.loads(line)
-                if r.get("no_predictions") or not r.get("claim_text"):
+                if r.get("no_predictions") or not claim_text(r):
                     continue
                 rows.append(r)
     return rows
+
+
+def claim_text(r):
+    """The forecast sentence. Schema v2 (main's vocabulary) calls it `quote`;
+    v1 files still on disk call it `claim_text`. Never present in a
+    *.export.jsonl -- the text is stripped before anything leaves the VM."""
+    return r.get("quote") or r.get("claim_text") or ""
 
 
 def main():
@@ -55,11 +62,17 @@ def main():
     for i, c in enumerate(sample, 1):
         head = (f"[{i}] {c.get('window')}  {c.get('date')}  "
                 f"{c.get('newspaper_title')}")
-        meta = (f"    -> {c.get('predicted_direction')} / "
-                f"{c.get('predicted_state_at_horizon')} "
-                f"@ {c.get('horizon_months')}mo  "
-                f"voice={c.get('voice')} hedged={c.get('hedged')}")
-        body = textwrap.fill(c.get("claim_text", ""), width=88,
+        # v2 labels, falling back to v1's names so old files still print.
+        direction = c.get("direction") or c.get("predicted_direction")
+        confidence = c.get("confidence") or (
+            "hedged" if c.get("hedged") else "assertive")
+        h = c.get("horizon_months")
+        horizon = f"{h}mo" if str(h).isdigit() else str(h)
+        meta = (f"    -> {direction} / {c.get('topic', '?')} / "
+                f"scope={c.get('scope', '?')} "
+                f"@ {horizon} ({c.get('horizon_hint', '?')})  "
+                f"voice={c.get('voice')} {confidence}")
+        body = textwrap.fill(claim_text(c), width=88,
                              initial_indent="    ", subsequent_indent="    ")
         print(head)
         print(body)

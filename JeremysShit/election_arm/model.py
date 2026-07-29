@@ -35,13 +35,42 @@ def load_elections():
     return df, cats, nums
 
 
+def resolve_claim_text(df):
+    """Put the forecast sentence in `claim_text`, whatever the file calls it.
+
+    Schema v2 names it `quote`; v1 named it `claim_text`. Neither exists in a
+    text-stripped export, so a Mac-side run gets an empty column and the TF-IDF
+    block contributes nothing -- which is the honest outcome (the text never
+    left the VM) and beats a KeyError. Run in the VM for the text features."""
+    if "claim_text" not in df.columns:
+        df["claim_text"] = df["quote"] if "quote" in df.columns else ""
+    df["claim_text"] = df["claim_text"].fillna("")
+    if not df["claim_text"].str.strip().any():
+        print("NOTE: no claim text in this file (text-stripped export). "
+              "TF-IDF features are empty -- run in the VM for the text model.")
+    return df
+
+
 def load_economy():
     df = pd.read_csv("data/scored_economy.csv").dropna(subset=["hit"]).copy()
+    df = resolve_claim_text(df)
     df["y"] = df["hit"].astype(int)
     cats = ["voice", "source", "window_kind", "predicted_state_at_horizon"]
     nums = ["horizon_months", "hedged"]
     if "epu" in df.columns:   # policy uncertainty at claim time (see analyze_economy.load_epu)
         nums.append("epu")
+    # Length and "cites a number" are the two text signals that survive the TDM
+    # export (extract_gpt computes them in-VM, where the quote still exists).
+    # They are also exactly main's c_len / c_has_number, so a model fitted here
+    # uses the same features as one fitted on the LOC corpus. On a Mac-side run
+    # they are the ONLY text signal there is -- the TF-IDF block is empty.
+    for c in ["quote_n_words", "quote_has_number"]:
+        if c in df.columns:
+            df[c] = pd.to_numeric(df[c], errors="coerce").fillna(0)
+            nums.append(c)
+    # NOTE: `window_kind` is in `cats` for the RETROSPECTIVE model. It is not
+    # knowable at print time (NBER dates recessions 6-21 months late), so drop it
+    # for anything framed as a deployable forecast-credibility scorer.
     return df, cats, nums
 
 

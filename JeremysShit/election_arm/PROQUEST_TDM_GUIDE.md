@@ -25,7 +25,7 @@ mechanism only ships derived data, under a shared **~15 MB / rolling 7-day** cap
 
 Consequence — the pipeline is split at the text boundary:
 - **Inside the VM:** parse XML → extract forecasts with an LLM → strip the text.
-- **Leaves the VM:** only the label-only `pred_*.export.jsonl` (no `claim_text`).
+- **Leaves the VM:** only the label-only `pred_*.export.jsonl` (no `quote`).
 - **On the Mac:** scoring and analysis run on those labels (they're text-free).
 
 Anything that needs the article text — reading claims, kappa validation, the
@@ -39,7 +39,8 @@ text-feature model — **must run in the VM**. Only numbers/labels come out.
 |---|---|---|
 | `tdm_parse.py` | VM | ProQuest XML folder → `data/raw/proquest_{arm}_{window}.jsonl` |
 | `extract_gpt.py` | VM | raw jsonl → `data/predictions/pred_proquest_economy_{window}.jsonl` (via in-VM GPT proxy) |
-| `strip_for_export.py` | VM | pred jsonl → `pred_*.export.jsonl` (removes `claim_text`) |
+| `strip_for_export.py` | VM | pred jsonl → `pred_*.export.jsonl` (removes `quote`) |
+| `adapt_proquest_claims.py` | Mac | `pred_*.export.jsonl` → `pred_proquestllm_economy_*.jsonl` (main's adapter: derives `predicted_state_at_horizon`, `hedged`) |
 | `run_all_economy.sh` | VM | batches parse→extract→strip over all 9 windows, bundles `proquest_exports.tar.gz` |
 | `sample_claims.py` | VM | prints N random claims to eyeball extraction quality |
 | `validate_kappa.py` | VM | draws a sample + computes Cohen's kappa (human validation) |
@@ -48,7 +49,126 @@ text-feature model — **must run in the VM**. Only numbers/labels come out.
 
 `extract_predictions.py` is the **non-ProQuest** extractor (loc/nyt sources, runs
 outside the VM, now uses gpt-4.1 per the gold bake-off). `extract_gpt.py` is the
-ProQuest-proxy twin; keep their `ECONOMY_PROMPT` in sync.
+ProQuest-proxy twin — but it is no longer a copy of `extract_predictions.py`'s
+`ECONOMY_PROMPT`. It now mirrors **main's `src/extract_llm.py`**; see below.
+
+---
+
+## 2a. Label schema v2 — what `extract_gpt.py` emits, and why it changed
+
+`extract_gpt.py` emits **main's extraction schema**, not a private one, so
+ProQuest claims are checked by the same machinery as the rest of the project:
+
+| Consumer (on main) | Reads |
+|---|---|
+| `src/score_predictions.py` | `topic`, `direction`, `price_direction`, `unemployment_direction`, `scope`, `horizon_months`, `date` |
+| `src/adapt_proquest_claims.py` | `scope`, `direction`, `confidence` → **derives** `predicted_state_at_horizon`, `hedged` |
+| `validation/gold_extraction/eval_extraction.py` | `topic`, `direction`, `horizon_months`, `confidence`, `voice` |
+
+Four things v1 did that `docs/SCORING.md` forbids, now fixed:
+
+1. **No outcome leakage.** v1 put `Window: crash_1929` in the model's context —
+   window ids name the outcome. Only newspaper and date are passed now. Window
+   is still attached to the output *record* (the scorer needs it); it never
+   reaches the prompt.
+2. **The model no longer states the outcome.** v1 asked it for
+   `predicted_state_at_horizon: recession | expansion`. It now reports only a
+   direction; `adapt_proquest_claims.py` maps direction → recession/expansion
+   by a fixed table. This is SCORING.md's one rule.
+3. **No manufactured horizons.** v1's prompt said "use 6 if unstated", which
+   inflates the RIGID stratum. The schema is `6 | 12 | "vague"`.
+4. **Hallucination guard.** Quotes must be verbatim and are dropped unless their
+   tokens really appear in the source text. This matters more here than on main:
+   the in-VM proxy only offers gpt-4o-mini, the weakest extractor in the bake-off.
+
+### Everything derived from the quote must be computed in-VM
+
+The quote cannot leave the VM, so anything downstream computes *from* the quote
+has to be computed here and exported as a number. Three such fields exist, and
+each replaces a calculation main would otherwise do at scoring/modelling time:
+
+| exported field | replaces, on main | if it were missing |
+|---|---|---|
+| `horizon_hint` | `resolve_horizon()` reading the quote's time language | every claim collapses to the neutral default; the RIGID stratum disappears |
+| `quote_n_words` | `c_len` = `quote.split()` word count | 0 for every ProQuest row |
+| `quote_has_number` | `c_has_number` = quote contains a digit | 0 for every ProQuest row |
+
+The last two matter more than they look. They are not *missing* — they are
+**wrong in a way perfectly correlated with the source**, so a model pooling LOC
+and ProQuest claims can read `c_len == 0` as "this row is ProQuest" and learn
+the data source instead of the forecast. `quote_n_words` is exported unclipped;
+main's 80-word clip is a modelling choice and stays on main, applied identically
+to both corpora.
+
+### The modelling contract
+
+`claim_features()` in main's `src/model_hit.py` and `src/hit_predictor.py` reads
+exactly these columns. All are present post-export:
+
+| model feature | source column | ProQuest post-export |
+|---|---|---|
+| `c_direction`, `c_topic`, `c_voice`, `c_scope` | `direction`, `topic`, `voice`, `scope` | ✅ |
+| `c_confidence` / `c_hedged` | `confidence` | ✅ |
+| `c_quoted` | `is_quoted_forecaster` | ✅ |
+| `c_named` | `speaker_name` | ✅ |
+| `c_has_number`, `c_len` | `quote` | ✅ **via `quote_has_number` / `quote_n_words`** |
+| `c_horizon` | `horizon_used` (from the scorer) | ✅ **via `horizon_hint`** |
+
+**main needs a three-file patch to read them** — it currently reaches for the
+quote directly. `main_pooling.patch` in this folder does it (verified to apply
+cleanly to `main`):
+```
+git checkout main && git apply JeremysShit/election_arm/main_pooling.patch
+```
+It teaches `score_predictions.resolve_horizon` to prefer `horizon_hint`, and both
+`claim_features()` to prefer the precomputed numbers, each falling back to the
+quote when it IS present — so LOC behaviour is unchanged. Without the patch
+`model_hit.py` **crashes** on a ProQuest frame (`df.get("quote","")` returns a
+scalar) and `hit_predictor.py` silently produces the 0/0 columns above.
+
+**Columns ProQuest does not have:** `quote` (never exportable), and
+`conditional_on` / `reasoning`. The latter two are on main's prompt but are not
+read by any scorer or model, and both are free text that could not be exported
+anyway; they are deliberately not in this prompt (main's own note flags their
+recall impact as unverified, and this arm runs the weakest extractor). Pooling
+into one DataFrame simply leaves them NaN for ProQuest rows.
+
+**Migrating the windows already extracted — use `migrate_v2.py`.** Every window
+extracted before this change is v1. Records are now stamped `schema_version`, and
+`extract_gpt.py` **refuses to append v2 records to a v1 file** rather than
+silently mixing two vocabularies into a file `analyze_economy.py` globs together.
+`migrate_v2.py` does the whole migration in the VM:
+```
+python migrate_v2.py            # DRY RUN: inventory every file, show the plan
+python migrate_v2.py --apply    # rename v1 files to *.v1.bak
+python migrate_v2.py --restore  # undo
+```
+It refuses to run if the v2 scripts were not pasted in first (migrating against
+the old extractor would burn a day of quota re-creating v1), skips files already
+on v2, is safe to re-run, and prints the `run_all_economy.sh` line for the
+windows that need redoing. It also counts the **fake `no_predictions`** rows the
+pre-fix extractor wrote for FAILED calls — indistinguishable from real empties in
+v1, and one more reason those windows are worth redoing.
+
+**It renames; it never deletes — and that distinction matters.** The label-only
+exports of all nine v1 windows (29,267 claims) are already committed on `main`
+at `data/proquest/*.export.jsonl`, so the v1 LABELS are safe either way. But the
+in-VM copies are the only ones that still contain `claim_text`, and article text
+can never leave the VM. Human kappa validation, the TF-IDF text model and
+`sample_claims.py` all need it; delete it and the only way back is to spend the
+extraction quota again. Disk is free, the daily quota is not.
+
+Only v2 lines are scorable by main. `--allow-mixed` exists but is not recommended.
+
+**Measuring this model against the gold standard.** Now that the vocabulary
+matches, gpt-4o-mini can be scored on main's gold pages — the disclosure gap
+noted in the labelling-model comparison. 16 calls:
+```
+python extract_gpt.py --pages gold_pages.jsonl --out pred_gpt4omini_gold.jsonl
+# then, on the Mac, against main's harness:
+python validation/gold_extraction/eval_extraction.py \
+    --pred pred_gpt4omini_gold.jsonl --name gpt-4o-mini
+```
 
 ---
 
@@ -115,6 +235,16 @@ echo <PASTE_BLOB_HERE> | base64 -d | tar xzf -
 That recreates every script and the `data/` CSVs in the right layout. (Datasets and
 prediction outputs are NOT transferred — datasets get built in the dashboard, §4;
 predictions get generated in §5.)
+
+`test_offline.py` is deliberately **not** in the bundle: it is the pre-flight gate and
+runs on the **Mac**, before you ship anything. It covers the VM-side logic that has no
+business failing in the VM — prompt hygiene (no window id reaches the model), the
+hallucination guard, horizon inference, the schema-mixing refusal, and the export
+tripwire — all without an API key or the `openai` SDK. Run it before every transfer:
+```
+python test_offline.py     # from JeremysShit/election_arm
+```
+If it fails, do not paste anything into the VM.
 
 **B. Find the Python env name and confirm its packages.** The env name has a version
 suffix that differs per workbench, so read it off `conda env list`:

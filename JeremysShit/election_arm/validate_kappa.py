@@ -39,7 +39,13 @@ import pandas as pd
 
 SAMPLE_FRAC = 0.20
 SAMPLE_CAP = 200
-LABEL_COL = {"economy": "predicted_state_at_horizon", "elections": "predicted_winner"}
+# The label humans double-code. For the economy arm this is `direction` -- the
+# thing the LLM actually decides. (v1 validated `predicted_state_at_horizon`,
+# but under schema v2 that is DERIVED from direction by adapt_proquest_claims.py,
+# so grading it would be grading a lookup table, not the model.) v1 files that
+# still carry the old column are handled in load_claims.
+LABEL_COL = {"economy": "direction", "elections": "predicted_winner"}
+V1_LABEL_COL = {"economy": "predicted_direction"}
 
 
 def cohen_kappa(a, b):
@@ -59,17 +65,26 @@ def cohen_kappa(a, b):
 def load_claims(arm, source=None):
     """Load extracted claims for an arm, optionally only one source (e.g.
     'proquest'). Skips *.export.jsonl (the text-stripped export copies) so
-    validation runs on the in-VM files that still carry claim_text."""
+    validation runs on the in-VM files that still carry the claim text.
+
+    Normalizes the two schema generations onto v2's names, so a mixed
+    data/predictions/ still yields one coherent sample: v1's `claim_text`
+    becomes `quote`, v1's `predicted_direction` becomes `direction`."""
     rows = []
     pattern = f"data/predictions/pred_{source or '*'}_{arm}_*.jsonl"
+    v1_label = V1_LABEL_COL.get(arm)
     for path in glob.glob(pattern):
         if path.endswith(".export.jsonl"):
             continue
         with open(path) as f:
             for line in f:
                 r = json.loads(line)
-                if not r.get("no_predictions"):
-                    rows.append(r)
+                if r.get("no_predictions"):
+                    continue
+                r.setdefault("quote", r.get("claim_text"))
+                if v1_label and not r.get(LABEL_COL[arm]):
+                    r[LABEL_COL[arm]] = r.get(v1_label)
+                rows.append(r)
     return pd.DataFrame(rows)
 
 
@@ -83,7 +98,7 @@ def mode_sample(arm, source=None):
     sample["sample_id"] = range(1, n + 1)
 
     # Graders see the claim text and context but NOT the LLM's label.
-    blind = sample[["sample_id", "claim_text", "date", "newspaper_title",
+    blind = sample[["sample_id", "quote", "date", "newspaper_title",
                     "window"]].copy()
     blind["grader_A"] = ""
     blind["grader_B"] = ""
