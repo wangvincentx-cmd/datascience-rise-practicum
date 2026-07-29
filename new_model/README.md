@@ -60,7 +60,9 @@ between old and new is a real comparison rather than a replacement.
 | file | what |
 |---|---|
 | `stock_series.py` | fetch, parse and cache Shiller's series; `--refresh` re-downloads |
-| `build_context.py` | rebuild a scored table's context using it; refuses to write into `data/scored/` |
+| `rate_factors.py` | `credit_spread` (Baa−Aaa, 1919+) and `term_spread` (10y−3m, 1953+) from FRED |
+| `build_context.py` | rebuild a scored table's context using both; refuses to write into `data/scored/` |
+| `fit_hit.py` | run main's ladder with the new factors; refuses to fit ProQuest with `epu` |
 | `data/shiller_sp500_monthly.csv` | the parsed series, committed so this reproduces offline |
 | `data/ie_data.xls` | Shiller's workbook as downloaded, kept for provenance |
 
@@ -79,6 +81,11 @@ python src/score_predictions.py --claims <proquest.export.jsonl> \
     --out data/scored/proquest_scored.csv
 python new_model/build_context.py --scored data/scored/proquest_scored.csv \
     --out new_model/data/macro_context_proquest.csv
+
+# 4. fit. `--exclude epu` is mandatory on ProQuest and fit_hit.py enforces it.
+python new_model/fit_hit.py --context new_model/data/macro_context_loc.csv
+python new_model/fit_hit.py --context new_model/data/macro_context_proquest.csv \
+    --exclude epu
 ```
 
 Step 3 needs the ProQuest export from the TDM Studio VM. See
@@ -87,7 +94,8 @@ Step 3 needs the ProQuest export from the TDM Studio VM. See
 ## Pooling: still opt-in, and still not the default
 
 Having the stock factor defined for both corpora removes ONE of the three
-reasons not to pool. Two remain:
+reasons not to pool. Three remain — the EPU one was found after this folder was
+written:
 
 1. **Era.** 1900–1963 and 1965–2009 do not overlap. The CV holds out 3-year
    blocks, so ProQuest adds ~15 new folds rather than strengthening the
@@ -95,12 +103,20 @@ reasons not to pool. Two remain:
 2. **Labeller.** gpt-4.1 for LOC, gpt-4o-mini + a self-verify pass for ProQuest
    (gold F1 0.512, precision 0.700, direction kappa 0.81). `source` is
    confounded with labeller, so a `source` coefficient cannot be attributed.
+3. **EPU means different things on the two sides.** The index counts
+   policy-uncertainty language in six newspapers; those six are **0%** of the
+   LOC corpus and **94%** of the ProQuest corpus (measured 2026-07-29, see
+   `rate_factors.py`). So it is outside information for the pre-1963 rows and
+   partly self-measurement for the post-1965 rows, and one coefficient cannot be
+   both. `fit_hit.py` refuses to fit a ProQuest model with `epu` included.
 
 The two defensible designs:
 
-- **Report separately.** Fit the same ladder on each corpus and compare. If
-  `direction × EPU` carries signal in both, that is a replication across a
-  40-year gap and a different labelling model — stronger than one pooled number.
+- **Report separately.** Fit the same ladder on each corpus and compare. The
+  term to compare is `direction × stock` — return, drawdown, volatility — not
+  `direction × EPU`, which is only legitimate on one of the two. If the market
+  scissors carry signal in both, that is a replication across a 40-year gap and
+  a different labelling model — stronger than one pooled number.
 - **Train LOC → test ProQuest.** Directly tests whether the skill generalises
   out of era, which is the deployable-scorer question. A null is a real result.
 

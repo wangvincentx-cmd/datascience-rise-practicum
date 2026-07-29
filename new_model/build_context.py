@@ -38,6 +38,8 @@ import pandas as pd  # noqa: E402
 
 import macro_context as mc  # noqa: E402
 import truth_data  # noqa: E402
+from rate_factors import FACTORS as RATE_FACTORS  # noqa: E402
+from rate_factors import build_rate_factors  # noqa: E402
 from stock_series import load_stocks  # noqa: E402
 
 
@@ -71,6 +73,9 @@ def main():
     ap.add_argument("--source", default=None,
                     help="value for the `source` column (default: inferred)")
     ap.add_argument("--lag-scale", type=float, default=1.0)
+    ap.add_argument("--no-rate-factors", dest="rate_factors",
+                    action="store_false", default=True,
+                    help="omit credit_spread/term_spread (needs FRED access)")
     args = ap.parse_args()
 
     out = Path(args.out)
@@ -93,7 +98,18 @@ def main():
     print(f"{len(df):,} scorable claims (of {n_all:,}) from {args.scored}")
 
     ctx = mc.build_context(df["date"], lag_scale=args.lag_scale)
-    for f in mc.FACTORS:
+
+    # The newspaper-free uncertainty factors. Added as extra COLUMNS rather than
+    # by editing mc.FACTORS, so a table built here still reads correctly in any
+    # published script that only knows about mc.FACTORS.
+    factors = list(mc.FACTORS)
+    if args.rate_factors:
+        rates = build_rate_factors(df["date"])
+        for f in RATE_FACTORS:
+            ctx[f] = rates[f].values
+        factors += RATE_FACTORS
+
+    for f in factors:
         ctx[f"has_{f}"] = ctx[f].notna().astype(int)
     both = pd.concat([df.reset_index(drop=True), ctx.reset_index(drop=True)], axis=1)
 
@@ -110,6 +126,19 @@ def main():
     print(f"stock_ret6 coverage: {have:.1%}"
           + ("   <- the whole point" if have > 0.95 else
              "   <- still incomplete, check the date range"))
+
+    # Coverage decides eligibility for the interaction block downstream, so it is
+    # printed here rather than left for fit_hit.py to discover.
+    for f in (RATE_FACTORS if args.rate_factors else []):
+        c = both[f].notna().mean()
+        print(f"{f} coverage: {c:.1%}"
+              + ("" if c >= 0.90 else
+                 "   <- too thin to interact with direction on this corpus"))
+
+    if source == "proquest":
+        print("\n*** ProQuest: 94% of these claims come from the six newspapers "
+              "the EPU\n*** index is built from. Fit with --exclude epu. "
+              "See new_model/rate_factors.py.")
 
 
 if __name__ == "__main__":
