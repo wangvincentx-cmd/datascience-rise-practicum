@@ -64,8 +64,16 @@ def resolve_horizon(claim, scale=1.0):
     h = str(claim.get("horizon_months", "")).strip()
     if h in ("6", "12", "24"):
         return int(h), "stated"
+    # ProQuest rows have no quote to read (stripped before export), but carry
+    # this same verdict precomputed in-VM by extract_gpt.horizon_hint(). Without
+    # it every exported claim collapses to "default" and the RIGID stratum -- the
+    # honest basis for the accuracy model -- silently disappears.
+    hint = str(claim.get("horizon_hint", "") or "")
     q = str(claim.get("quote", ""))
-    if LONG_HORIZON.search(q):
+    if hint in ("inferred_long", "inferred_short", "default"):
+        m, basis = ({"inferred_long": H_LONG, "inferred_short": H_SHORT,
+                     "default": H_DEFAULT}[hint], hint)
+    elif LONG_HORIZON.search(q):
         m, basis = H_LONG, "inferred_long"
     elif SHORT_HORIZON.search(q):
         m, basis = H_SHORT, "inferred_short"

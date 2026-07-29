@@ -125,9 +125,19 @@ def claim_features(df):
                        .isin(["True", "true", "1"]).astype(int))
     out["c_named"] = (_col(df, "speaker_name", "na").astype(str)
                       .str.lower().ne("na").astype(int))
+    # Text-derived features. ProQuest rows arrive with `quote` stripped -- the
+    # verbatim text may not leave ProQuest's TDM VM -- but they carry these two
+    # numbers precomputed IN the VM (extract_gpt.quote_features). Preferring them
+    # keeps both corpora on identical features; without this the ProQuest rows
+    # get c_len=0/c_has_number=0, which is not missing data but a perfect
+    # "this row is ProQuest" tell for the model to latch onto.
     q = _col(df, "quote", "").astype(str)
-    out["c_has_number"] = q.str.contains(NUM_RE).astype(int)
-    out["c_len"] = q.str.split().apply(len).clip(0, 80)
+    n_words = pd.to_numeric(_col(df, "quote_n_words", np.nan), errors="coerce")
+    has_num = pd.to_numeric(_col(df, "quote_has_number", np.nan), errors="coerce")
+    out["c_has_number"] = (has_num.fillna(q.str.contains(NUM_RE).astype(int))
+                           .astype(int))
+    out["c_len"] = (n_words.fillna(q.str.split().apply(len))
+                    .clip(0, 80).astype(int))
     out["c_horizon"] = pd.to_numeric(_col(df, "horizon_used", 12),
                                      errors="coerce").fillna(12)
     return out

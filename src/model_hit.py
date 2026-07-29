@@ -119,6 +119,17 @@ def macro_features(dates):
     return m.fillna(0.0)
 
 
+def _col(df, name, default):
+    """A column as a Series, or `default` broadcast to one.
+
+    df.get(name, default) returns the raw SCALAR when the column is missing,
+    so every .str/.astype call downstream explodes. Needed because ProQuest
+    rows legitimately lack `quote`."""
+    if name in df.columns:
+        return df[name]
+    return pd.Series([default] * len(df), index=df.index)
+
+
 def claim_features(df):
     """Features known at print time from the forecast itself."""
     out = pd.DataFrame(index=df.index)
@@ -129,9 +140,19 @@ def claim_features(df):
         ["True", "true", "1"]).astype(int)
     out["c_named"] = (df.get("speaker_name", "na").astype(str)
                       .str.lower().ne("na")).astype(int)
-    q = df.get("quote", "").astype(str)
-    out["c_has_number"] = q.str.contains(NUM_RE).astype(int)
-    out["c_len"] = q.str.split().apply(len).clip(0, 80)
+    # Text-derived features. ProQuest rows arrive with `quote` stripped -- the
+    # verbatim text may not leave ProQuest's TDM VM -- but they carry these two
+    # numbers precomputed IN the VM (extract_gpt.quote_features). Preferring them
+    # keeps both corpora on identical features; without this the ProQuest rows
+    # get c_len=0/c_has_number=0, which is not missing data but a perfect
+    # "this row is ProQuest" tell for the model to latch onto.
+    q = _col(df, "quote", "").astype(str)
+    n_words = pd.to_numeric(_col(df, "quote_n_words", np.nan), errors="coerce")
+    has_num = pd.to_numeric(_col(df, "quote_has_number", np.nan), errors="coerce")
+    out["c_has_number"] = (has_num.fillna(q.str.contains(NUM_RE).astype(int))
+                           .astype(int))
+    out["c_len"] = (n_words.fillna(q.str.split().apply(len))
+                    .clip(0, 80).astype(int))
     out["c_horizon"] = pd.to_numeric(df.get("horizon_used"), errors="coerce").fillna(12)
     return out
 
