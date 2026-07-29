@@ -38,10 +38,11 @@ Usage (in the VM, from election_arm/):
         --pages gold_extraction/gold_pages.jsonl \
         --out pred_gpt4omini_gold_verified.jsonl
 
-    # then a real window
+    # then a real window -- NOTE the output goes to data/verified/, NOT
+    # data/predictions/ (see the guard in check_out_path below)
     python verify_gpt.py --claims data/predictions/pred_proquest_economy_gulf_1990.jsonl \
         --pages data/raw/proquest_economy_gulf_1990.jsonl \
-        --out data/predictions/pred_proquest_economy_gulf_1990.verified.jsonl
+        --out data/verified/pred_proquest_economy_gulf_1990.jsonl
 
 Resume-safe: pages already judged are skipped on a rerun, and the daily cap
 stops it cleanly with exit 2 like extract_gpt.py.
@@ -139,6 +140,30 @@ def parse_verdicts(raw):
     return out
 
 
+def check_out_path(out_path):
+    """Refuse to write inside data/predictions/.
+
+    analyze_economy.py globs `data/predictions/pred_*_economy_*.jsonl` with no
+    exclusions, so a verified file written there is loaded ALONGSIDE the
+    unverified original -- and `<out>.dropped.jsonl` matches that glob too. The
+    result is every claim counted twice and the rejects silently readmitted,
+    with nothing to notice: the run succeeds and the totals just quietly inflate.
+
+    Verified output belongs outside that directory. A one-line mistake here
+    would corrupt every downstream table, so it is a hard stop rather than a
+    warning."""
+    parts = {p.lower() for p in out_path.parts}
+    if "predictions" in parts:
+        raise SystemExit(
+            f"\n*** Refusing to write to {out_path}\n"
+            f"*** data/predictions/ is globbed by analyze_economy.py as\n"
+            f"***   pred_*_economy_*.jsonl\n"
+            f"*** which would match BOTH this file and its .dropped.jsonl,\n"
+            f"*** double-counting every claim and re-admitting the rejects.\n\n"
+            f"Write to data/verified/ instead:\n"
+            f"  --out data/verified/{out_path.name.replace('.verified', '')}\n")
+
+
 def judged_pages(out_path, dropped_path):
     """page_ids already judged, from BOTH output files -- a page whose claims
     were all dropped appears only in the dropped file, and would otherwise be
@@ -191,6 +216,7 @@ def main():
         by_page.setdefault(c.get("page_id"), []).append(c)
 
     out_path = Path(args.out)
+    check_out_path(out_path)
     dropped_path = out_path.with_suffix(out_path.suffix + ".dropped.jsonl")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     done = judged_pages(out_path, dropped_path)
