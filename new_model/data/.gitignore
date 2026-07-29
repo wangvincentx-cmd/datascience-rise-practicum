@@ -1,0 +1,4 @@
+# Derived context tables: regenerable in ~1 minute from the committed
+# shiller_sp500_monthly.csv plus a scored file, and ~9 MB each. The inputs are
+# committed; the outputs are not.
+macro_context_*.csv
