@@ -26,6 +26,7 @@ import download_loc
 import download_nyt
 import extract_gpt
 import extract_predictions
+import extraction_status
 import strip_for_export
 from analyze_economy import load_recessions, state_at
 
@@ -390,6 +391,77 @@ try:
 except SystemExit:
     caught = True
 check("an unlisted prose field trips the tripwire", caught)
+
+# ---------------------------------------------------------------------------
+# The batch-status tally. Its whole value is that the numbers are right after a
+# quota stop, i.e. on half-finished, mixed-schema files.
+print("\n[7] extraction_status.py (per-window claims / empties / drops)")
+
+with sandbox_cwd() as d:
+    for sub in ("data/raw", "data/predictions", "data/verified"):
+        (d / sub).mkdir(parents=True, exist_ok=True)
+
+    def write_jsonl(path, records):
+        (d / path).write_text("".join(json.dumps(r) + "\n" for r in records))
+
+    write_jsonl("data/raw/proquest_economy_gulf_1990.jsonl",
+                [{"page_id": f"g{i}"} for i in range(5)])
+    write_jsonl("data/predictions/pred_proquest_economy_gulf_1990.jsonl", [
+        {"schema_version": 2, "page_id": "g0", "quote": "a"},
+        {"schema_version": 2, "page_id": "g0", "quote": "b"},
+        {"schema_version": 2, "page_id": "g1", "quote": "c"},
+        {"schema_version": 2, "page_id": "g2", "no_predictions": True},
+        {"schema_version": 2, "page_id": "g3", "no_predictions": True,
+         "empty_source_text": True},
+        {"page_id": "g4", "claim_text": "old"},                       # v1
+    ])
+    write_jsonl("data/verified/pred_proquest_economy_gulf_1990.jsonl",
+                [{"schema_version": 2, "page_id": "g0", "quote": "a",
+                  "verify_reason": "forecast"}])
+    write_jsonl("data/verified/pred_proquest_economy_gulf_1990.jsonl.dropped.jsonl",
+                [{"schema_version": 2, "page_id": "g0", "quote": "b",
+                  "verify_reason": "past tense"}])
+
+    raw, unver, ver, dropped = extraction_status.discover(".")
+    row = extraction_status.row_for("gulf_1990", raw, unver, ver, dropped)
+
+check("counts claims, not the pages or empties they sit among", row["claims"] == 3)
+check("counts pages that came back with no prediction", row["no_pred"] == 2)
+check("separates the pages that had no text to read", row["empty_text"] == 1)
+check("pages parsed but not yet extracted are visible",
+      row["pages"] == 5 and row["read"] == 4)
+check("v1 records are excluded from every count, and flagged",
+      any("v1" in n for n in row["notes"]))
+check("dropped claims come from the verifier's .dropped.jsonl",
+      row["kept"] == 1 and row["dropped"] == 1 and not row["derived"])
+check("claims the verifier never ruled on are not silently called kept",
+      row["unjudged"] == 1)
+
+# The export tarball has no data/raw and no .dropped.jsonl, so the drop count
+# has to be derived -- and marked as derived, because it absorbs the unjudged.
+with sandbox_cwd() as d:
+    (d / "unverified").mkdir()
+    (d / "verified").mkdir()
+    (d / "unverified/pred_proquest_economy_gulf_1990.export.jsonl").write_text(
+        "".join(json.dumps({"schema_version": 2, "page_id": "g0"}) + "\n"
+                for _ in range(3)))
+    (d / "verified/pred_proquest_economy_gulf_1990.export.jsonl").write_text(
+        json.dumps({"schema_version": 2, "page_id": "g0"}) + "\n")
+    raw, unver, ver, dropped = extraction_status.discover(".")
+    exported = extraction_status.row_for("gulf_1990", raw, unver, ver, dropped)
+
+check("reads the exported tarball layout too", exported["claims"] == 3)
+check("a derived drop count is marked derived",
+      exported["dropped"] == 2 and exported["derived"])
+check("absent pages read as unknown, not as zero parsed",
+      exported["pages"] is None)
+check("window ids survive every filename variant",
+      [extraction_status.window_of(p) for p in (
+          "data/raw/proquest_economy_gulf_1990.jsonl",
+          "data/predictions/pred_proquest_economy_gulf_1990.jsonl",
+          "verified/pred_proquest_economy_gulf_1990.export.jsonl",
+          "data/verified/pred_proquest_economy_gulf_1990.jsonl.dropped.jsonl",
+      )] == ["gulf_1990"] * 4)
 
 # Last, so it covers every block above: the suite must be hermetic.
 check("the committed search_log.csv is not touched by a test run",

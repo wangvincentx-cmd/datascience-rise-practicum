@@ -42,6 +42,7 @@ text-feature model — **must run in the VM**. Only numbers/labels come out.
 | `strip_for_export.py` | VM | pred jsonl → `pred_*.export.jsonl` (removes `quote`) |
 | `adapt_proquest_claims.py` | Mac | `pred_*.export.jsonl` → `pred_proquestllm_economy_*.jsonl` (main's adapter: derives `predicted_state_at_horizon`, `hedged`) |
 | `run_all_economy.sh` | VM | batches parse→extract→strip over all 9 windows, bundles `proquest_exports.tar.gz` |
+| `extraction_status.py` | VM or Mac | the pred/verified files on disk → per-window table: claims, no-prediction pages, verifier drops, pages still to do |
 | `sample_claims.py` | VM | prints N random claims to eyeball extraction quality |
 | `validate_kappa.py` | VM | draws a sample + computes Cohen's kappa (human validation) |
 | `analyze_economy.py` | Mac | pred jsonl (text-free) → NBER scoring, crisis-vs-placebo table |
@@ -370,10 +371,15 @@ tail -f batch.log
 - `PYTHONUNBUFFERED=1` → the log updates live (see §6).
 - Test a single window first with `extract_gpt.py --source proquest --window <w> --limit 10`.
 
-Monitor with the **pred file line count**, not the log (see §6):
+Monitor with the **files on disk**, not the log (see §6):
 ```
-wc -l data/predictions/pred_proquest_economy_*.jsonl
+python extraction_status.py
 ```
+Per window: claims, pages that came back with no prediction, claims the verifier
+dropped, and pages still to do — so a quota stop shows up as a `left` column that
+stops shrinking. (`wc -l data/predictions/pred_proquest_economy_*.jsonl` is the
+crude version: it counts empties and v1 leftovers as if they were claims.)
+
 Quality check anytime: `python sample_claims.py --n 10`.
 
 ---
