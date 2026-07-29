@@ -19,9 +19,21 @@
 set -u
 
 # One interpreter for the whole pipeline: the sample env has openai (extract_gpt)
-# and lxml (tdm_parse). Verify once: $PY -c "import lxml, openai".
-PY=/home/ec2-user/SageMaker/.conda/envs/sample-2025.12.578/bin/python
+# and lxml (tdm_parse).
+#
+# Honours an exported $PY, so `python vm_doctor.py` -> `export PY=...` just works
+# and nothing here has to be edited. The fallback is the binary that is actually
+# present in the current image: note it is python3.12, NOT python -- hardcoding
+# `bin/python` is what produced a run of "No module named openai" against an
+# interpreter that existed but was the wrong one. If this fallback ever goes
+# stale again, run vm_doctor.py rather than guessing.
+PY="${PY:-/home/ec2-user/SageMaker/.conda/envs/sample-2025.12.578/bin/python3.12}"
 GPT_PY="$PY"
+if [ ! -x "$PY" ]; then
+    echo "Interpreter not found: $PY"
+    echo "Run:  python vm_doctor.py   and export the PY= line it prints."
+    exit 1
+fi
 DATA=/home/ec2-user/SageMaker/data
 
 DEFAULT_WINDOWS="oil_1973 volcker_1980 crash_1987 gulf_1990 dotcom_2001 gfc_2008 calm_1965 calm_1995 calm_2005"

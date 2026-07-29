@@ -178,13 +178,25 @@ python validation/gold_extraction/eval_extraction.py \
 - Scripts / working dir: `/home/ec2-user/SageMaker/election_arm/`
 - Datasets land at: `/home/ec2-user/SageMaker/data/{dataset_name}/` (one XML per article)
 
-**Python:** use the sample conda env — it has `openai`, `lxml`, `pandas`. The default
-`python` intermittently lacks them.
+**Python: don't guess the path — run `vm_doctor.py`.**
 ```
-/home/ec2-user/SageMaker/.conda/envs/sample-2025.12.578/bin/python
+python vm_doctor.py        # plain python is fine; that is the point
 ```
-(The env name may differ on another workbench — find it with `conda env list` and test
-`<path>/bin/python -c "import lxml, openai"`.)
+It probes every interpreter and Jupyter kernel on the box, reports which have
+`openai` / `lxml` / `pandas`, and prints the exact `export PY=...` line to use. It
+also checks `gpt_sample.txt` and whether the discovered key file exists.
+
+As of 2026-07-28 the answer on this workbench is:
+```
+/home/ec2-user/SageMaker/.conda/envs/sample-2025.12.578/bin/python3.12
+```
+**Note `python3.12`, not `python`.** The env name was never the problem — the
+binary name was. Hardcoding `bin/python` is what produced a long run of
+"No module named openai" against an interpreter that existed but was the wrong
+one. The error is misleading: a wrong *path* says "no such file or directory",
+so "no module named openai" makes you hunt for the package when the real fault
+is the interpreter. `run_all_economy.sh` now honours an exported `$PY` and falls
+back to the path above, so there is nothing to edit by hand.
 
 **Installing packages:** `pip` is blocked (no internet). `conda` works via ProQuest's
 internal mirror:
@@ -256,7 +268,7 @@ Pick the **`sample-*` env that is NOT `-r`** (the `-r` one is R, not Python) —
 `source /home/ec2-user/SageMaker/.conda/etc/profile.d/conda.sh`. Then test that the exact
 interpreter the scripts call has both packages:
 ```
-/home/ec2-user/SageMaker/.conda/envs/<sample-env>/bin/python -c "import lxml, openai; print('ok')"
+$PY -c "import lxml, openai; print('ok')"     # $PY from vm_doctor.py
 ```
 Prints `ok` → good. Errors on `lxml` → install into *that* env (`conda`, not `pip` — no
 internet), then re-test:
@@ -265,7 +277,9 @@ conda install -n <sample-env> lxml -y
 ```
 Finally, point `run_all_economy.sh` at that interpreter:
 ```
-sed -i 's|^PY=.*|PY=/home/ec2-user/SageMaker/.conda/envs/<sample-env>/bin/python|' run_all_economy.sh
+# run_all_economy.sh now honours an exported $PY -- nothing to edit.
+# Only needed if you want to bake a different default into the file:
+sed -i "s|^PY=.*|PY=\"\${PY:-$PY}\"|" run_all_economy.sh
 ```
 
 **C. Create `gpt_sample.txt` so `extract_gpt.py` can auto-discover the proxy.** It needs the
@@ -295,7 +309,7 @@ EOF
 **D. Smoke-test the proxy** (one throwaway call — proves the key/URL/model resolve and the
 quota isn't already spent):
 ```
-/home/ec2-user/SageMaker/.conda/envs/<sample-env>/bin/python -c "
+$PY -c "
 from extract_gpt import make_client
 class A: sample='gpt_sample.txt'; base_url=key_file=model=None
 client, model = make_client(A)
@@ -394,9 +408,16 @@ empty. If duplicates happened, dedup by `page_id` before scoring.
 `jailbreak detected` filter (a 400). They yield no claims — a recall leak. Occasional is
 fine; if frequent, note it as a caveat.
 
-**`lxml` / wrong-python errors.** `ModuleNotFoundError: lxml` almost always means a script
-ran under the default `python`. Use the full sample-env path everywhere; check
-`run_all_economy.sh`'s `PY=` line.
+**`ModuleNotFoundError: openai` / `lxml` — the wrong-interpreter trap.** Almost always a
+script ran under the default `python`, not the sample env. The error is actively
+misleading: a wrong *path* would say "no such file or directory", so "no module named
+openai" sends you hunting for a missing package when the interpreter is the fault.
+On this image the working binary is **`python3.12`, not `python`** — that one character
+cost a long debugging detour. Don't guess:
+```
+python vm_doctor.py        # prints the exact `export PY=...` to use
+```
+`run_all_economy.sh` honours an exported `$PY`, so there is nothing to edit by hand.
 
 **iCloud eviction on the Mac side.** This repo lives in an iCloud-synced folder. Symptoms:
 ProQuest files "disappear" from disk, or the checkout silently switches to `main` (where
