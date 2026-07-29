@@ -1,0 +1,9 @@
+{
+  "name": "qwen3next80b",
+  "overall": 0.7727272727272727,
+  "n": 44,
+  "include_ok": 8,
+  "include_n": 12,
+  "exclude_ok": 26,
+  "exclude_n": 32
+}

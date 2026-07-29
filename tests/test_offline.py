@@ -1,0 +1,633 @@
+"""
+Offline test harness for the economy arm (design adopted from Vincent's pipeline).
+
+Feeds mock loc.gov responses through the REAL parsing/scoring functions — no
+network, no API keys. Run any time something changes:
+
+    python test_offline.py
+"""
+
+
+import sys, pathlib  # noqa: E402  -- make src/ importable and run from repo root
+_ROOT = pathlib.Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_ROOT / "src"))
+import os; os.chdir(_ROOT)   # data paths in the modules are repo-root-relative
+
+import json
+
+import numpy as np
+import pandas as pd
+
+import newspaper_scraper as ns
+import score_claims as sc
+from grade_claims import cohens_kappa
+
+PASS = 0
+
+
+def check(name, cond):
+    global PASS
+    status = "ok" if cond else "FAIL"
+    print(f"  [{status}] {name}")
+    if not cond:
+        raise SystemExit(f"TEST FAILED: {name}")
+    PASS += 1
+
+
+# ---------- extract_claims ----------
+print("extract_claims:")
+text = ("Local notes and weather. The financial panic will pass before spring, "
+        "bankers here agree. Corn prices were steady last week. "
+        "Great sale prices reduced call on us today for bargains on financial panic insurance. "
+        "Short. " + "x" * 700 + ". The panic of last year is now history.")
+claims = ns.extract_claims(text, "financial panic")
+check("finds future-marker sentence near phrase",
+      any("will pass before spring" in c for c in claims))
+check("drops ad/junk sentences", not any("Great sale" in c for c in claims))
+check("drops too-short and too-long sentences",
+      not any(c == "Short." or len(c) > 600 for c in claims))
+check("ignores retrospective sentence without future marker",
+      not any("now history" in c for c in claims))
+
+# ---------- search_pages pagination (mocked _get) ----------
+print("search_pages pagination:")
+
+
+def fake_get_factory(total, per_page, fail_past_end=True):
+    def fake_get(url):
+        sp = int(url.split("sp=")[1].split("&")[0]) if "sp=" in url else 1
+        start = (sp - 1) * per_page
+        if start >= total:
+            if fail_past_end:
+                raise RuntimeError(f"failed after retries: {url} (HTTP Error 404: Not Found)")
+            return json.dumps({"results": [], "pagination": {"of": total}}).encode()
+        n = min(per_page, total - start)
+        return json.dumps({"results": [{"id": f"http://page/{start + i}"} for i in range(n)],
+                           "pagination": {"of": total}}).encode()
+    return fake_get
+
+
+class DummyLog:
+    def writerow(self, row):
+        pass
+
+
+orig_get = ns._get
+ns._get = fake_get_factory(total=14, per_page=30)
+hits = list(ns.search_pages("business slump", "1948-07-01", "1949-06-30", 30, DummyLog(), "t"))
+check("stops at reported total instead of paging past the end (the 404 bug)", len(hits) == 14)
+
+ns._get = fake_get_factory(total=50, per_page=30)
+hits = list(ns.search_pages("recession", "1957-08-01", "1958-06-30", 30, DummyLog(), "t"))
+check("respects max_pages cap when results exceed it", len(hits) == 30)
+
+ns._get = fake_get_factory(total=0, per_page=30)
+hits = list(ns.search_pages("nothing", "1905-01-01", "1905-12-31", 30, DummyLog(), "t"))
+check("empty result set yields nothing", hits == [])
+
+# ---------- fetch_full_text (mocked _get) ----------
+print("fetch_full_text:")
+
+
+def fake_get_resource(url):
+    if "fo=json" in url:
+        return json.dumps({"resource": {"fulltext_file": "https://tile.loc.gov/xyz"}}).encode()
+    return "THE FULL OCR TEXT".encode()
+
+
+ns._get = fake_get_resource
+check("pulls text via resource.fulltext_file",
+      ns.fetch_full_text("http://www.loc.gov/resource/sn1/1907-11-23/ed-1/?sp=4") == "THE FULL OCR TEXT")
+
+
+def fake_get_no_fulltext(url):
+    return json.dumps({"resource": {}}).encode()
+
+
+ns._get = fake_get_no_fulltext
+check("missing fulltext_file returns empty string, not crash",
+      ns.fetch_full_text("http://www.loc.gov/resource/sn1/x/?sp=1") == "")
+ns._get = orig_get
+
+# ---------- scoring rules ----------
+print("scoring rules:")
+idx = pd.period_range("1900-01", "1965-12", freq="M")
+flat = pd.Series(100.0, index=idx)
+cpi_up = flat.copy()
+cpi_up.loc[idx >= pd.Period("1930-01", "M")] = 110.0  # +10% step
+
+lab, ok, basis = sc.realized_direction("prices", "", "", pd.Timestamp("1929-12-15"), 6,
+                                       cpi_up, flat, flat)
+check("prices: CPI step up -> 'up'", (lab, ok, basis) == ("up", True, "CPI"))
+
+lab, ok, basis = sc.realized_direction("prices", "", "", pd.Timestamp("1907-10-25"), 12,
+                                       flat[idx >= pd.Period("1913-01", "M")], flat, flat)
+check("prices before 1913 unscorable", not ok)
+
+ip_crash = flat.copy()
+ip_crash.loc[idx >= pd.Period("1930-06", "M")] = 70.0
+lab, ok, basis = sc.realized_direction("general_business", "", "", pd.Timestamp("1930-01-15"), 12,
+                                       flat, ip_crash, flat)
+check("general business: INDPRO crash -> 'worsen'", (lab, basis) == ("worsen", "INDPRO"))
+
+empty = pd.Series(dtype=float, index=pd.PeriodIndex([], freq="M"))
+lab, ok, basis = sc.realized_direction("general_business", "", "", pd.Timestamp("1907-10-25"), 6,
+                                       empty, empty, empty)
+check("pre-1919 falls back to NBER; May 1908 in recession -> 'worsen'",
+      (lab, basis) == ("worsen", "NBER"))
+
+lab, ok, basis = sc.realized_direction("general_business", "", "", pd.Timestamp("1907-10-25"), 12,
+                                       empty, empty, empty)
+check("NBER: Oct 1908 after trough -> 'improve'", (lab, basis) == ("improve", "NBER"))
+
+check("predicted_label maps employment 'improve' to unemployment 'down'",
+      sc.predicted_label({"topic": "employment", "unemployment_direction": "na",
+                          "direction": "improve"}) == "down")
+check("predicted_label passes general direction through",
+      sc.predicted_label({"topic": "general_business", "direction": "worsen"}) == "worsen")
+
+# ---------- heuristic grading ----------
+print("heuristic grading:")
+h = sc.heuristic_grade(pd.DataFrame({"quote": [
+    "Prosperity and recovery will come soon.",
+    "A panic and depression will engulf us.",
+    "The weather was fine on Tuesday."]}))
+check("optimistic keywords -> improve", h.loc[0, "direction"] == "improve")
+check("pessimistic keywords -> worsen", h.loc[1, "direction"] == "worsen")
+check("no signal -> not a prediction", h.loc[2, "is_prediction"] == "no")
+
+# ---------- tier 2: geography mapping ----------
+print("tier2 geography:")
+from tier2_analysis import STATE_TO_REGION, FIN_CENTERS
+
+check("all four census regions present",
+      set(STATE_TO_REGION.values()) == {"northeast", "midwest", "south", "west"})
+check("covers 50 states + DC", len(STATE_TO_REGION) == 51)
+check("sample mappings correct",
+      STATE_TO_REGION["ohio"] == "midwest" and STATE_TO_REGION["alaska"] == "west"
+      and STATE_TO_REGION["district of columbia"] == "south")
+check("financial centers are a subset of known states",
+      FIN_CENTERS <= set(STATE_TO_REGION))
+
+# ---------- Cohen's kappa ----------
+print("cohens_kappa:")
+check("perfect agreement -> 1.0",
+      abs(cohens_kappa([("a", "a"), ("b", "b"), ("a", "a")]) - 1.0) < 1e-9)
+rng = np.random.default_rng(0)
+rand_pairs = [(str(rng.integers(2)), str(rng.integers(2))) for _ in range(2000)]
+check("random labels -> kappa near 0", abs(cohens_kappa(rand_pairs)) < 0.08)
+
+# ---------- disagreement.py ----------
+print("disagreement:")
+from disagreement import add_disagreement_features, episode_disagreement_rate
+
+da_df = pd.DataFrame([
+    {"episode": "test_ep", "date": "2000-01-01", "direction": "improve", "claim_id": "A"},
+    {"episode": "test_ep", "date": "2000-01-15", "direction": "improve", "claim_id": "B"},
+    {"episode": "test_ep", "date": "2000-01-20", "direction": "no_change", "claim_id": "F"},
+    {"episode": "test_ep", "date": "2000-02-01", "direction": "worsen", "claim_id": "C"},
+    {"episode": "test_ep", "date": "2000-02-15", "direction": "worsen", "claim_id": "D"},
+    {"episode": "test_ep", "date": "2000-06-01", "direction": "improve", "claim_id": "E"},
+])
+da_rate = episode_disagreement_rate(da_df)
+check("episode_disagreement_rate: 3 improve/2 worsen -> minority share 0.4",
+      abs(da_rate["test_ep"] - 0.4) < 1e-9)
+
+da_out = add_disagreement_features(da_df, window_months=3).set_index("claim_id")
+check("first claim in episode (no prior claims) imputed to episode rate",
+      abs(da_out.loc["A", "local_disagreement"] - 0.4) < 1e-9)
+check("second claim sees only claim A (improve) -> full agreement, 0.0",
+      abs(da_out.loc["B", "local_disagreement"] - 0.0) < 1e-9)
+check("no_change claim still gets a local_disagreement computed from context "
+     "(A, B both improve, no worsen -> 0.0), it's just excluded from COUNTING",
+      abs(da_out.loc["F", "local_disagreement"] - 0.0) < 1e-9)
+check("claim C sees A, B (both improve) -> full agreement, 0.0",
+      abs(da_out.loc["C", "local_disagreement"] - 0.0) < 1e-9)
+check("claim D sees A, B (improve) + C (worsen) -> minority share 1/3",
+      abs(da_out.loc["D", "local_disagreement"] - 1 / 3) < 1e-9)
+check("claim E is >3 months after D (backward window empty) -> imputed to "
+     "episode rate, not leaking from claims before the window OR the empty "
+     "window silently becoming 0",
+      abs(da_out.loc["E", "local_disagreement"] - 0.4) < 1e-9)
+
+da_future = pd.DataFrame([
+    {"episode": "fwd_ep", "date": "2000-01-01", "direction": "improve", "claim_id": "X"},
+    {"episode": "fwd_ep", "date": "2000-01-02", "direction": "worsen", "claim_id": "Y"},
+])
+da_future_out = add_disagreement_features(da_future, window_months=3).set_index("claim_id")
+check("backward-only window: claim X must NOT see claim Y, which comes after it "
+     "-- X has no prior claims so it's imputed to the episode rate (0.5 here), "
+     "not contaminated by Y's later, opposite-direction claim",
+      abs(da_future_out.loc["X", "local_disagreement"] - 0.5) < 1e-9)
+check("claim Y correctly sees X (the one claim strictly before it, improve) "
+     "-> full agreement, 0.0",
+      abs(da_future_out.loc["Y", "local_disagreement"] - 0.0) < 1e-9)
+
+# ---------- optimism_timeline.py ----------
+print("optimism_timeline:")
+import optimism_timeline as ot
+
+ot_df = pd.DataFrame([
+    # test_ep, Jan 2000: 3 improve, 1 worsen -> net = (3-1)/4 = 0.5
+    {"episode": "e", "kind": "crisis", "date": "2000-01-05", "predicted_label": "improve"},
+    {"episode": "e", "kind": "crisis", "date": "2000-01-10", "predicted_label": "improve"},
+    {"episode": "e", "kind": "crisis", "date": "2000-01-20", "predicted_label": "improve"},
+    {"episode": "e", "kind": "crisis", "date": "2000-01-25", "predicted_label": "worsen"},
+    # Feb 2000: 1 improve, 1 worsen -> net 0; plus a price 'up' that must be ignored
+    {"episode": "e", "kind": "crisis", "date": "2000-02-05", "predicted_label": "improve"},
+    {"episode": "e", "kind": "crisis", "date": "2000-02-10", "predicted_label": "worsen"},
+    {"episode": "e", "kind": "crisis", "date": "2000-02-15", "predicted_label": "up"},
+])
+oi = ot.optimism_index(ot_df).set_index("period")
+check("optimism_index: Jan net optimism (3 improve,1 worsen) = 0.5",
+      abs(oi.loc[pd.Period("2000-01", "M"), "net_optimism"] - 0.5) < 1e-9)
+check("optimism_index: Feb net optimism (1,1) = 0.0",
+      abs(oi.loc[pd.Period("2000-02", "M"), "net_optimism"] - 0.0) < 1e-9)
+check("optimism_index: price 'up' claim excluded from the count (Feb n=2, not 3)",
+      int(oi.loc[pd.Period("2000-02", "M"), "n"]) == 2)
+
+ip = pd.Series([100.0, 105.0, 103.0, 90.0],
+               index=pd.period_range("2000-01", "2000-04", freq="M"))
+peak, basis = ot.episode_peak_month(pd.Timestamp("2000-01-01"), pd.Timestamp("2000-04-30"), ip)
+check("episode_peak_month: INDPRO argmax picks Feb (105) as the peak",
+      (peak, basis) == (pd.Period("2000-02", "M"), "INDPRO"))
+empty_ip = pd.Series(dtype=float, index=pd.PeriodIndex([], freq="M"))
+peak2, basis2 = ot.episode_peak_month(pd.Timestamp("1907-06-01"),
+                                      pd.Timestamp("1908-06-30"), empty_ip)
+check("episode_peak_month: pre-INDPRO span falls back to the NBER peak (May 1907)",
+      (peak2, basis2) == (pd.Period("1907-05", "M"), "NBER"))
+check("months_to_peak: 3 months before the peak is -3",
+      ot.months_to_peak(pd.Period("2000-02", "M"), pd.Period("2000-05", "M")) == -3)
+check("weighted_slope: perfectly rising points give a positive slope",
+      ot.weighted_slope([-3, -2, -1, 0], [-0.3, -0.2, -0.1, 0.0], [1, 1, 1, 1]) > 0)
+
+# ---------- regret_scoring.py ----------
+print("regret_scoring:")
+import regret_scoring as rs
+
+check("classify_error: improve predicted, improve realized -> hit",
+      rs.classify_error("improve", "improve") == "hit")
+check("classify_error: improve predicted, worsen realized -> optimistic_error",
+      rs.classify_error("improve", "worsen") == "optimistic_error")
+check("classify_error: worsen predicted, improve realized -> pessimistic_error",
+      rs.classify_error("worsen", "improve") == "pessimistic_error")
+check("classify_error: improve predicted, no_change realized is still an optimistic error",
+      rs.classify_error("improve", "no_change") == "optimistic_error")
+check("classify_error: price up/down labels are out of scope -> na",
+      rs.classify_error("up", "down") == "na")
+check("regret: a hit costs nothing regardless of weights/severity",
+      rs.regret("hit", 1.0, 3.0, 1.0) == 0.0)
+check("regret: optimistic error scaled by w_opt and severity (3*0.5=1.5)",
+      abs(rs.regret("optimistic_error", 0.5, 3.0, 1.0) - 1.5) < 1e-9)
+check("regret: pessimistic error uses the smaller w_pess (1*0.5=0.5)",
+      abs(rs.regret("pessimistic_error", 0.5, 3.0, 1.0) - 0.5) < 1e-9)
+
+# ---------- hedging_lexicon.py ----------
+print("hedging_lexicon:")
+import hedging_lexicon as hl
+
+f_hedge = hl.hedging_features("Prosperity may perhaps return, though it seems uncertain.")
+check("hedging_features: hedge-heavy sentence classed 'hedged'", f_hedge["hedge_class"] == "hedged")
+check("hedging_features: counts multiple hedge terms (may, perhaps, seems, uncertain)",
+      f_hedge["hedge_count"] >= 4)
+f_boost = hl.hedging_features("Recovery will certainly come; a boom is inevitable and assured.")
+check("hedging_features: booster-heavy sentence classed 'assertive'",
+      f_boost["hedge_class"] == "assertive")
+check("hedging_features: assertive sentence has negative hedge_score",
+      f_boost["hedge_score"] < 0)
+f_neutral = hl.hedging_features("Corn was harvested across the county last week.")
+check("hedging_features: no markers -> neutral, zero score",
+      f_neutral["hedge_class"] == "neutral" and f_neutral["hedge_score"] == 0)
+
+# ---------- spf_benchmark.py ----------
+print("naive_skill (baseline-relative scoring):")
+# A perfectly optimistic forecaster in a mostly-expanding world: 7 of 10 periods
+# improve, and it says "improve" every time. Hit rate 70% looks strong but is
+# exactly the naive baseline, so skill must be 0 — this is the Greenbook case.
+_always_improve = pd.DataFrame({
+    "predicted_label": ["improve"] * 10,
+    "realized_label": ["improve"] * 7 + ["worsen"] * 3,
+    "hit": [1] * 7 + [0] * 3,
+})
+_h, _n, _sk, _k = sc.naive_skill(_always_improve)
+check("always-improve forecaster gets hit rate == naive baseline",
+      round(_h, 6) == 70.0 and round(_n, 6) == 70.0)
+check("...and therefore exactly zero skill", round(_sk, 6) == 0.0)
+check("counts only directional rows", _k == 10)
+
+# A forecaster that actually calls the downturns beats the same baseline.
+_skilled = pd.DataFrame({
+    "predicted_label": ["improve"] * 7 + ["worsen"] * 3,
+    "realized_label": ["improve"] * 7 + ["worsen"] * 3,
+    "hit": [1] * 10,
+})
+check("perfect forecaster shows positive skill", sc.naive_skill(_skilled)[2] > 0)
+
+# Price/unemployment label codes use a different vocabulary; including them
+# would make the "always improve" comparison meaningless, so they're dropped.
+_mixed = pd.DataFrame({
+    "predicted_label": ["improve", "up", "down"],
+    "realized_label": ["improve", "up", "stable"],
+    "hit": [1, 1, 0],
+})
+check("excludes up/down/stable price-direction rows", sc.naive_skill(_mixed)[3] == 1)
+check("empty input returns n=0 without raising", sc.naive_skill(_mixed.iloc[:0])[3] == 0)
+
+print("greenbook_analysis:")
+# Only the data-free logic is testable here: cache/greenbook_row_format.xlsx is
+# a manual download and gitignored, so anything touching the workbook would fail
+# on a fresh clone.
+import greenbook_analysis as gba
+
+_peaks = [pd.Timestamp(p) for p, _ in gba.NBER_MODERN]
+_troughs = [pd.Timestamp(t) for _, t in gba.NBER_MODERN]
+check("NBER_MODERN: every peak precedes its trough",
+      all(p < t for p, t in zip(_peaks, _troughs)))
+check("NBER_MODERN: recessions are in chronological order",
+      _peaks == sorted(_peaks))
+check("NBER_MODERN: no overlapping contractions",
+      all(_troughs[i] < _peaks[i + 1] for i in range(len(_peaks) - 1)))
+check("NBER_MODERN: covers the Greenbook era, picking up where score_claims stops",
+      _peaks[0].year > 1961 and _troughs[-1].year <= 2020)
+check("HORIZONS: nowcast through 8 quarters, in order",
+      gba.HORIZONS[0] == "gRGDPF0" and gba.HORIZONS[-1] == "gRGDPF8"
+      and len(gba.HORIZONS) == 9)
+
+print("spf_benchmark:")
+import spf_benchmark as spf
+
+check("direction_label: strong growth -> improve", spf.direction_label(3.0, 1.0) == "improve")
+check("direction_label: contraction -> worsen", spf.direction_label(-2.0, 1.0) == "worsen")
+check("direction_label: within band -> no_change", spf.direction_label(0.5, 1.0) == "no_change")
+check("direction_label: NaN forecast -> empty (unscorable)",
+      spf.direction_label(float("nan"), 1.0) == "")
+check("survey_date: 1970 Q2 starts in April 1970",
+      spf.survey_date(1970, 2) == pd.Timestamp("1970-04-01"))
+
+# score_spf with an injected realized fn (no FRED needed): forecast columns
+# average to +4.0 -> 'improve'; stub says reality also improved -> hit.
+spf_df = pd.DataFrame([{"YEAR": 1975, "QUARTER": 1,
+                        "DRGDP3": 3.0, "DRGDP4": 4.0, "DRGDP5": 5.0, "DRGDP6": 4.0},
+                       {"YEAR": 1980, "QUARTER": 1,
+                        "DRGDP3": -3.0, "DRGDP4": -2.0, "DRGDP5": -2.0, "DRGDP6": -1.0}])
+sc_spf = spf.score_spf(spf_df, realized_dir_fn=lambda d: "improve", band=1.0)
+check("score_spf: mean forecast +4 -> predicted 'improve'",
+      sc_spf.loc[0, "predicted_label"] == "improve")
+check("score_spf: predicted improve vs realized improve -> hit=1",
+      sc_spf.loc[0, "hit"] == 1)
+check("score_spf: mean forecast -1 -> predicted 'worsen', realized improve -> hit=0",
+      sc_spf.loc[1, "predicted_label"] == "worsen" and sc_spf.loc[1, "hit"] == 0)
+
+# ---------- narratives.py ----------
+print("narratives:")
+import narratives as nr
+
+check("classify_narrative: 'permanently high plateau' -> new_era",
+      nr.classify_narrative("Stocks have reached a permanently high plateau.") == "new_era")
+check("classify_narrative: 'fundamentally sound' -> sound_fundamentals",
+      nr.classify_narrative("Business is fundamentally sound, bankers say.") == "sound_fundamentals")
+check("classify_narrative: 'temporary readjustment' -> temporary_setback",
+      nr.classify_narrative("This is only a temporary readjustment.") == "temporary_setback")
+check("classify_narrative: 'panic and depression' -> panic_fear",
+      nr.classify_narrative("A panic and depression will engulf the nation.") == "panic_fear")
+check("classify_narrative: 'recovery is underway' -> recovery_normalcy",
+      nr.classify_narrative("Recovery is underway and revival is near.") == "recovery_normalcy")
+check("classify_narrative: no economic story -> none",
+      nr.classify_narrative("The county fair opens on Tuesday.") == "none")
+
+nr_df = pd.DataFrame({"quote": ["Business is fundamentally sound.",
+                                "A crash is coming.",
+                                "The weather was fine."]})
+nr_out = nr.add_narratives(nr_df)
+check("add_narratives: complacent flag true for sound_fundamentals",
+      bool(nr_out.loc[0, "complacent"]) is True)
+check("add_narratives: complacent flag false for panic_fear",
+      bool(nr_out.loc[1, "complacent"]) is False)
+
+# ---------- partisan_analysis.py ----------
+print("partisan_analysis:")
+import partisan_analysis as pa
+
+check("short_name: strips the (location) dates suffix",
+      pa.short_name("The New York Times (New York, N.Y.) 1900-2020") == "the new york times")
+check("short_name: strips a bare (location) suffix",
+      pa.short_name("Evening Star (Washington, D.C.)") == "evening star")
+check("simplify_lean: Socialist and Labor/left both -> left",
+      pa.simplify_lean("Socialist") == "left" and pa.simplify_lean("Labor/left") == "left")
+check("simplify_lean: Republican/Democratic/Independent pass through",
+      (pa.simplify_lean("Republican"), pa.simplify_lean("Democratic"),
+       pa.simplify_lean("Independent")) == ("republican", "democratic", "independent"))
+check("simplify_lean: 'None stated'/'UNKNOWN'/nan -> unknown",
+      pa.simplify_lean("None stated") == "unknown" and pa.simplify_lean("UNKNOWN") == "unknown"
+      and pa.simplify_lean(float("nan")) == "unknown")
+
+pa_climate = pd.DataFrame([{"start_year": 1953, "end_year": 1961, "president_party": "R"},
+                           {"start_year": 1961, "end_year": 1969, "president_party": "D"}])
+pby = pa.president_party_by_year(pa_climate)
+check("president_party_by_year: 1955 -> R, 1965 -> D", pby[1955] == "R" and pby[1965] == "D")
+check("alignment: Republican paper under a Republican president -> aligned",
+      pa.alignment("republican", "R") == "aligned")
+check("alignment: Democratic paper under a Republican president -> opposed",
+      pa.alignment("democratic", "R") == "opposed")
+check("alignment: independent paper has no alignment -> None",
+      pa.alignment("independent", "R") is None)
+
+# ---------- macro_context: the economy-at-print-time layer ----------
+# Everything here runs on SYNTHETIC series, so the checks prove the arithmetic
+# rather than agreeing with whatever FRED happens to hold today.
+print("macro_context:")
+import macro_context as mc
+
+syn = pd.Series([100.0, 110.0, 121.0],
+                index=pd.PeriodIndex(["1930-01", "1930-07", "1931-01"], freq="M"))
+check("_pct_change: +10% over the trailing 6 months",
+      abs(mc._pct_change(syn, pd.Period("1930-07", "M"), 6) - 10.0) < 1e-9)
+check("_pct_change: returns NaN before the series starts",
+      pd.isna(mc._pct_change(syn, pd.Period("1929-06", "M"), 6)))
+check("_pct_change: returns NaN past the series end (never extrapolates)",
+      pd.isna(mc._pct_change(syn, pd.Period("1932-01", "M"), 6)))
+
+# THE LEAKAGE CHECK. A publication lag must make a claim BLIND to the month it
+# was printed in: after shifting forward by 2, the value read at 1930-07 is the
+# one the series held at 1930-05, not the contemporaneous one.
+# NOTE the shift is by POSITION, so it only equals "2 months" on a gap-free
+# monthly index -- which is why the next check exists.
+mrange = pd.period_range("1930-01", "1930-12", freq="M")
+contig = pd.Series(np.arange(len(mrange), dtype=float), index=mrange)
+check("publication lag hides contemporaneous data from the claim",
+      contig.shift(2).asof(pd.Period("1930-07", "M"))
+      == contig.asof(pd.Period("1930-05", "M")))
+
+# If a real series had missing months, load_fred's dropna would close the gap
+# and shift(2) would silently mean MORE than two months -- understating the lag
+# and leaking. Assert the gap-free assumption over the era this project reads
+# (LOC full text ends 1963). CPIAUCNS and UNRATE are each missing 2025-10 in the
+# current FRED vintage, which is outside the corpus and harmless here -- but it
+# is exactly the failure this check exists to catch, so anyone extending the
+# corpus past 1970 must re-check rather than assume.
+_ERA_END = pd.Period("1970-12", "M")
+for _sid in ("INDPRO", "CPIAUCNS", "UNRATE"):
+    try:
+        _s = mc.load_fred(_sid)
+    except Exception:
+        print(f"  [skip] {_sid} not cached locally; contiguity unchecked")
+        continue
+    _s = _s[_s.index <= _ERA_END]
+    _full = pd.period_range(_s.index.min(), _s.index.max(), freq="M")
+    check(f"{_sid} has no month gaps through 1970, so a positional shift "
+          f"really is a lag", len(_s) == len(_full))
+check("LAGS: stock prices take no lag (same day's ticker), CPI/INDPRO do",
+      mc.LAGS["STOCK"] == 0 and mc.LAGS["INDPRO"] > 0 and mc.LAGS["CPIAUCNS"] > 0)
+
+check("wilson: interval brackets the point estimate and stays inside [0,1]",
+      (lambda lo, hi: lo < 0.5 < hi and lo >= 0 and hi <= 1)(*mc.wilson(50, 100)))
+check("wilson: a 0-of-n cell gives a non-negative lower bound",
+      mc.wilson(0, 30)[0] >= 0)
+check("wilson: interval narrows as n grows",
+      (mc.wilson(50, 100)[1] - mc.wilson(50, 100)[0])
+      > (mc.wilson(500, 1000)[1] - mc.wilson(500, 1000)[0]))
+
+q = mc.bh_qvalues([0.001, 0.02, 0.5, 0.9])
+check("bh_qvalues: monotone non-decreasing and >= the raw p-values",
+      all(q[i] <= q[i + 1] + 1e-12 for i in range(len(q) - 1))
+      and q[0] >= 0.001 - 1e-12)
+check("bh_qvalues: q never exceeds 1", max(q) <= 1.0)
+check("bh_qvalues: NaN p-values stay NaN, others still computed",
+      pd.isna(mc.bh_qvalues([0.01, float("nan")])[1])
+      and not pd.isna(mc.bh_qvalues([0.01, float("nan")])[0]))
+
+# The hindsight flag must be reachable for FIGURES but never sit in FACTORS,
+# because NBER dates recessions 6-21 months late -- it is an outcome.
+check("FACTORS carries no hindsight (NBER) column",
+      not any("hindsight" in f for f in mc.FACTORS))
+check("every factor has a human-readable label for the figures",
+      all(f in mc.PRETTY for f in mc.FACTORS))
+
+# ---------- hit_predictor ----------
+print("hit_predictor:")
+import hit_predictor as hp
+
+check("no hindsight feature can reach the model's feature lists",
+      not any("hindsight" in c for c in hp.MACRO_NUM + hp.INTER_NUM + hp.CLAIM_NUM))
+check("DIR_SIGN: optimistic +1, pessimistic -1, 'flat' is not a directional bet",
+      hp.DIR_SIGN["improve"] == 1.0 and hp.DIR_SIGN["up"] == 1.0
+      and hp.DIR_SIGN["worsen"] == -1.0 and hp.DIR_SIGN["down"] == -1.0
+      and hp.DIR_SIGN["flat"] == 0.0)
+
+hp_df = pd.DataFrame({"predicted_norm": ["improve", "worsen", "flat"]})
+hp_ctx = pd.DataFrame({f: [2.0, 2.0, 2.0] for f in mc.FACTORS})
+inter = hp.interaction_block(hp_df, hp_ctx)
+check("interaction_block: same economy, opposite sign by forecast direction",
+      inter["x_dir_stock_ret6"].tolist() == [2.0, -2.0, 0.0])
+check("interaction_block: an unknown direction contributes 0, never NaN",
+      hp.interaction_block(pd.DataFrame({"predicted_norm": ["nonsense"]}),
+                           hp_ctx.head(1))["x_dir_epu"].tolist() == [0.0])
+
+# Scoring a NEW forecast is the point of the model, and a new forecast rarely
+# carries every column the training CSV had. This broke once (DataFrame.get
+# returns a bare scalar, not a Series, for a missing column).
+_bare = pd.DataFrame({"direction": ["improve"], "topic": ["markets"],
+                      "date": ["1929-06-15"]})
+_cf = hp.claim_features(_bare)
+check("claim_features: works on a forecast missing most optional columns",
+      len(_cf) == 1 and _cf["c_named"].iloc[0] == 0 and _cf["c_horizon"].iloc[0] == 12)
+check("claim_features: an absent categorical becomes 'na', not a crash",
+      _cf["c_voice"].iloc[0] == "na")
+
+# A load-bearing factor going missing at predict time must FAIL LOUDLY. It
+# silently inverted a demo prediction once (0.608 -> 0.269) because macro_block
+# fills missing factors with 0.0, which is correct in training and catastrophic
+# at predict time against a model trained with that factor.
+check("LOAD_BEARING names the two interaction terms the model actually leans on",
+      "epu" in hp.LOAD_BEARING and "stock_ret6" in hp.LOAD_BEARING)
+_saved_epu = mc._epu_or_none
+try:
+    mc._epu_or_none = lambda: None          # simulate the data source failing
+    try:
+        hp.predict_new(hp.DEMO)
+        _guarded = False
+    except RuntimeError:
+        _guarded = True
+    except Exception:
+        _guarded = False                     # any OTHER error is not the guard
+finally:
+    mc._epu_or_none = _saved_epu
+check("predict_new refuses to score when a load-bearing factor is missing",
+      _guarded)
+
+mb = hp.macro_block(pd.DataFrame({f: [float("nan")] for f in mc.FACTORS}))
+check("macro_block: a missing factor is flagged, not silently read as zero",
+      mb["has_epu"].iloc[0] == 0 and mb["m_epu"].iloc[0] == 0.0)
+
+# Output namespacing -- a replication or ablation run overwrote the primary
+# model's artefacts twice during development; these pin the fix.
+check("out_paths: the primary corpus keeps the un-prefixed filenames",
+      hp.out_paths("macro_context.csv")["model"].name == "hit_predictor.joblib")
+check("out_paths: a second corpus cannot overwrite the primary model",
+      hp.out_paths("crisis_context.csv")["model"].name
+      == "crisis_context_hit_predictor.joblib")
+check("out_paths: an ablation run cannot overwrite the primary model",
+      hp.out_paths("macro_context.csv", "epu")["model"].name
+      == "no_epu_hit_predictor.joblib")
+
+# ---------- uncertainty on the AUCs ----------
+# Four blocks of wildly different difficulty, with model B beating model A INSIDE
+# every one of them. This is the shape of the real result (§6 of the notebook):
+# the two marginal intervals overlap heavily, and only the paired comparison can
+# see that one model is reliably ahead.
+print("hit_predictor (uncertainty):")
+from sklearn.metrics import roc_auc_score
+
+_rng = np.random.default_rng(0)
+_blk, _yb, _a, _b = [], [], [], []
+for _g, _sep in enumerate([0.05, 0.25, 0.55, 0.95]):   # easy blocks and hard ones
+    _yy = np.repeat([0, 1], 50)
+    _blk += [_g] * 100
+    _yb += list(_yy)
+    _a += list(_yy * _sep + _rng.normal(0, 1, 100))          # weaker model
+    _b += list(_yy * (_sep + 0.6) + _rng.normal(0, 1, 100))  # better, same blocks
+_blk, _yb = np.array(_blk), np.array(_yb)
+_a, _b = np.array(_a), np.array(_b)
+
+_obs, _lo, _hi = hp.block_boot_auc(_yb, _b, _blk, reps=400)
+check("block_boot_auc: the interval brackets the observed AUC",
+      _lo <= _obs <= _hi)
+check("block_boot_auc: the point estimate is the plain pooled AUC",
+      abs(_obs - roc_auc_score(_yb, _b)) < 1e-12)
+
+_a_nan = _a.copy()
+_a_nan[:10] = np.nan          # a fold that could not be predicted
+check("block_boot_auc: rows without a prediction are dropped, not crashed on",
+      np.isfinite(hp.block_boot_auc(_yb, _a_nan, _blk, reps=100)[0]))
+
+_d, _dlo, _dhi, _p = hp.block_boot_auc_delta(_yb, _a, _b, _blk, reps=400)
+_ma = hp.block_boot_auc(_yb, _a, _blk, reps=400)
+check("block_boot_auc_delta: sign is AUC(b) - AUC(a)",
+      abs(_d - (roc_auc_score(_yb, _b) - roc_auc_score(_yb, _a))) < 1e-12)
+check("block_boot_auc_delta: interval brackets the observed delta",
+      _dlo <= _d <= _dhi)
+# The point of pairing. The marginal intervals overlap, so reading them
+# side-by-side would say "no difference"; the paired one excludes zero.
+check("block_boot_auc_delta: paired CI sees a lift the overlapping marginals hide",
+      _ma[1] < _hi and _ma[2] > _lo and _dlo > 0)
+check("block_boot_auc_delta: identical predictions give exactly zero lift",
+      hp.block_boot_auc_delta(_yb, _b, _b, _blk, reps=50)[0] == 0.0)
+
+# The calibrator must never be fitted on rows its own classifier trained on.
+_isp = hp._inner_group_splits(np.array([0, 0, 1, 1, 2, 2, 3, 3]))
+check("_inner_group_splits: no period appears on both sides of an inner split",
+      all(not (set(np.array([0, 0, 1, 1, 2, 2, 3, 3])[tr])
+               & set(np.array([0, 0, 1, 1, 2, 2, 3, 3])[te]))
+          for tr, te in _isp))
+check("_inner_group_splits: one period cannot be split, so calibration is skipped",
+      hp._inner_group_splits(np.array([7, 7, 7])) is None)
+
+_Xc = pd.DataFrame({"v": _b})
+_oc = hp.oof_predict(_Xc, _yb, _blk, [], ["v"], calibrate="isotonic")
+check("oof_predict(calibrate=): returns one probability per row, all in [0, 1]",
+      len(_oc) == len(_yb) and np.nanmin(_oc) >= 0 and np.nanmax(_oc) <= 1)
+check("oof_predict(calibrate=): a calibrated run still predicts every fold",
+      np.isnan(_oc).sum() == np.isnan(
+          hp.oof_predict(_Xc, _yb, _blk, [], ["v"])).sum())
+
+print(f"\nALL {PASS} CHECKS PASSED")

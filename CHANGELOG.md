@@ -253,6 +253,81 @@ git history for full CHANGELOG detail pre-pivot):
       GB's permutation-importance panel is the better-supported choice if a
       single model's feature ranking goes on the poster.**
 
+- [x] **Economic-context layer + forecast-credibility model (2026-07-28, user:
+      score claims with economic factors as context, and build a model that
+      predicts whether a newspaper forecast is a hit). Scoring itself UNCHANGED
+      — `truth_data.py` still decides correctness by rule, with no economic data
+      and no LLM near it. Both new stages run after scoring. 28 new offline
+      tests, suite now 184/184 (was 156). Full writeup:
+      `docs/RESULTS_MACRO.md`; narrated end to end in
+      `notebooks/hit_model.ipynb`.**
+      - **`src/macro_context.py` → `data/scored/macro_context.csv`** — attaches
+        13 publication-lagged economic factors (per-series lags, not one uniform
+        number) to each of the 14,251 scored monthly claims, then attributes
+        accuracy factor by factor: block-bootstrap CIs over 3-year periods,
+        Wilson tercile intervals, Benjamini-Hochberg across the factor family.
+      - **It corrects a published reading.** `docs/RESULTS_MONTHLY.md` calls the
+        macro-only AUC of 0.505 a genuine null — "the state of the economy
+        carries almost no information about whether a forecast came true." That
+        is true of the POOLED sample and false within it. Split by what was
+        predicted, the same factors work in **opposite directions**: stock 6m
+        return correlates **+0.216** with accuracy for optimistic forecasts and
+        **−0.283** for pessimistic ones; EPU **+0.206 / −0.201**. They cancel
+        when pooled. Industrial output and inflation genuinely do nothing, in
+        every stratum — that part of the null stands.
+      - **`src/hit_predictor.py` → `data/models/hit_predictor.joblib`** —
+        P(forecast comes true) from claim features + pre-print economic data.
+        Out-of-fold, leave-one-3-year-period-out: claim-only 0.561, economy-only
+        0.538, additive 0.581, **+ direction×economy 0.647** (PR-AUC 0.652,
+        Brier 0.241); gradient boosting 0.617 does NOT beat it, so the linear
+        model stays primary. Block-permutation test (shuffle within period):
+        **p = 0.005**. `predict_new()` scores unresolved forecasts.
+      - **Permutation importance says the gain is two terms**: direction×EPU
+        (0.038) and direction×stock-return (0.016). Every macro MAIN effect is
+        ≈0 or negative. Same finding as the descriptive attribution, arrived at
+        independently.
+      - **Caveat that must ship with the number.** EPU carries ~0.060 of the
+        0.086 lift over claim-only. Ablating it (`--exclude epu`) gives **0.587**
+        — the interaction structure survives, but smaller. EPU is built by
+        counting uncertainty language *in newspapers*, the same instrument as
+        the corpus, so circularity is not ruled out; and it did NOT replicate on
+        the crisis corpus. **Report 0.587 / 0.647 together, not 0.647 alone.**
+      - **Crisis-corpus replication** (`data/scored/claims_v2_scored.csv`, 1,824
+        claims, Gemini, F1 ≈ 0.79): market conditions replicate in sign (stock
+        6m +0.278 / −0.175; stock-vs-peak +0.314 / −0.261); EPU does not;
+        nothing survives BH there. The model ladder on that corpus is
+        **non-diagnostic** — every model lands below chance (0.29–0.37), the
+        same few-blocks CV artefact `model_hit.py` documents. `hit_predictor.py`
+        now detects this and refuses to report the ladder rather than let the
+        −0.070 delta be misread.
+      - Figures `figures/poster_figures/figI_macro_scissors.png` (the crossing
+        lines), `figJ_macro_ledger.png` (all 13 factors both directions,
+        **including the ones that did nothing**), `figK_hit_model.png` (ladder +
+        calibration).
+      - **Five real bugs, all found by writing tests or by running the notebook:**
+        (1) `predict_new` silently returned WRONG probabilities when a
+        load-bearing factor failed to load — `macro_block` fills missing factors
+        with 0.0, correct in training and catastrophic at predict time, and the
+        1929 demo inverted from 0.608 to 0.269. It now raises unless
+        `allow_missing=True`. (2) Root cause of that: EPU was the only thing in
+        the pipeline reading an `.xlsx`, and `openpyxl` is present in the CLI
+        python but not in the Jupyter kernel — EPU is now cached to
+        `cache/epu_monthly.csv` on first load, removing the optional dependency
+        from the critical path. (3) A positional `shift()` silently means more
+        than N months if the monthly index has a gap (asserted gap-free through
+        1970; CPIAUCNS/UNRATE are each missing 2025-10 in the current vintage —
+        matters only if the corpus extends past 1970). (4) `DataFrame.get()`
+        returns a bare scalar for a missing column, so scoring a new forecast
+        without every optional field crashed. (5) The Wilson bound landed a hair
+        below 0 at k=0 and drew a whisker under the axis.
+      - Calibration is monotone but too extreme at both ends (says 0.90 where
+        truth is 0.78) — **report as a ranking, not as odds**. The built-in demo
+        is deliberately unflattering: in June 1929 it rates the bull 0.61 and
+        the bear 0.23, and the bear was right within four months.
+      - `data/scored/macro_context.csv` (8.6 MB) and `crisis_context.csv` are
+        regenerable in ~1 min and are gitignored, following the same rule the
+        restructure applied to the corpora.
+
 - [x] **Three new analyses built to turn the optimism gap into a thesis
       (2026-07-22, user: "expand the project," ideas #1/#2/#3). All standalone
       scripts reading `claims_scored.csv`, same convention as

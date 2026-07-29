@@ -1,0 +1,6 @@
+lean,n_pred,n_improve,n_worsen,net_optimism,n_scorable,hit_rate
+left,72,24,13,0.297,53,0.491
+democratic,105,56,16,0.556,79,0.671
+independent,633,343,176,0.322,590,0.427
+republican,51,32,7,0.641,47,0.426
+unknown,767,472,121,0.592,659,0.527

@@ -1,0 +1,23 @@
+publisher,n,hit_rate,brier
+"the washington herald (washington, d.c.) 1906-1939",11,0.818,0.17
+"the new york herald (new york, n.y.) 1920-1924",10,0.8,0.202
+"the wilmington morning star (wilmington, n.c.) 1909-1990",18,0.778,0.188
+"the waterbury democrat (waterbury, conn.) 1917-1946",16,0.75,0.195
+"the key west citizen (key west, fla.) 1879-current",26,0.615,0.299
+"the tri-county news (grand rapids, ohio) 1915-1949",15,0.6,0.277
+"the omaha guide (omaha, neb.) 1927-19??",20,0.55,0.306
+"toledo union journal (toledo, ohio) 1942-current",42,0.524,0.364
+the washington times (washington [d.c.]) 1902-1939,71,0.507,0.341
+"gadsden county times (quincy, fla.) 190?-current",16,0.5,0.37
+"the daily alaska empire (juneau, alaska) 1926-1964",13,0.462,0.441
+"the frontier (o'neill city, holt county, neb.) 1880-1965",18,0.444,0.388
+"the bismarck tribune (bismarck, n.d.) 1916-current",14,0.429,0.376
+"summit county labor news (akron, ohio) 1923-1976",14,0.429,0.427
+"the nome nugget (nome, alaska) 1938-current",12,0.417,0.463
+"evening star (washington, d.c.) 1854-1972",199,0.397,0.416
+the new york times,258,0.395,0.394
+"south bend news-times (south bend, ind.) 1913-1938",19,0.368,0.452
+"the milwaukee leader (milwaukee, wis.) 1911-1938",11,0.364,0.497
+new-york tribune (new york [n.y.]) 1866-1924,11,0.364,0.446
+"the birmingham age-herald (birmingham, ala.) 1902-1950",10,0.3,0.482
+"brownsville herald (brownsville, tex.) 1910-current",14,0.0,0.787

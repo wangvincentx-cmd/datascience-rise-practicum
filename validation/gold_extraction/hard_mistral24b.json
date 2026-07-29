@@ -1,0 +1,9 @@
+{
+  "name": "mistral24b",
+  "overall": 0.6590909090909091,
+  "n": 44,
+  "include_ok": 9,
+  "include_n": 12,
+  "exclude_ok": 20,
+  "exclude_n": 32
+}

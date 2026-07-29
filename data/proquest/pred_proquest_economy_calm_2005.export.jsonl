@@ -1,0 +1,799 @@
+{"page_id": "201033582", "no_predictions": true}
+{"page_id": "201036503", "no_predictions": true}
+{"page_id": "201039576", "no_predictions": true}
+{"page_id": "201039857", "no_predictions": true}
+{"page_id": "201041047", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Art Samberg", "page_id": "201042327", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-06-20", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Art Samberg", "page_id": "201042327", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-06-20", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Art Samberg", "page_id": "201042327", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-06-20", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 2, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Bob Book", "page_id": "201043045", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-05-23", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Shinu Murthy", "page_id": "201043045", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-05-23", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Jamie Greenough", "page_id": "201043045", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-05-23", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Ashok Bernard", "page_id": "201043045", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-05-23", "publisher_state": null}
+{"page_id": "201043851", "no_predictions": true}
+{"page_id": "201044264", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": null, "page_id": "201046694", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-09-05", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Goldman Sachs", "page_id": "201046694", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-09-05", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "reported_survey", "hedged": true, "attributed_to": null, "page_id": "201046694", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-09-05", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Marty Cohen", "page_id": "201047685", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-08-15", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Marty Cohen", "page_id": "201047685", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-08-15", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Marty Cohen", "page_id": "201047685", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-08-15", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Marty Cohen", "page_id": "201047685", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-08-15", "publisher_state": null}
+{"page_id": "201048331", "no_predictions": true}
+{"page_id": "201048505", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Nancy Lazar", "page_id": "201048512", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-06-27", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Nancy Lazar", "page_id": "201048512", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-06-27", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Nancy Lazar", "page_id": "201048512", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-06-27", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 12, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Tom Gallagher", "page_id": "201048512", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-06-27", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Tom Gallagher", "page_id": "201048512", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-06-27", "publisher_state": null}
+{"page_id": "201051845", "no_predictions": true}
+{"page_id": "201052754", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "reported_survey", "hedged": true, "attributed_to": "Jim Welsh", "page_id": "201053344", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-08-01", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "editorial", "hedged": true, "attributed_to": "Paul Nolte", "page_id": "201053344", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-08-01", "publisher_state": null}
+{"page_id": "201054218", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "reported_survey", "hedged": true, "attributed_to": null, "page_id": "201055060", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-07-18", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Jos\u00e9 Barrionuevo", "page_id": "201055060", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-07-18", "publisher_state": null}
+{"page_id": "201055957", "no_predictions": true}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "JiM WELSH", "page_id": "201057219", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-07-04", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "JiM WELSH", "page_id": "201057219", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-07-04", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Dixon Doll", "page_id": "201057297", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-07-04", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": null, "page_id": "201057297", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-07-04", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "201057297", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-07-04", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 12, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Gregory Gieber", "page_id": "201061720", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-03-21", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": "Goldman Sachs economists", "page_id": "201061720", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-03-21", "publisher_state": null}
+{"page_id": "201062110", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "IAN SHEPERDSON", "page_id": "201064199", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-04-18", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "IAN SHEPERDSON", "page_id": "201064199", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-04-18", "publisher_state": null}
+{"page_id": "201068396", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 60, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Martin Barnes", "page_id": "201075359", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-08-01", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 12, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Martin Barnes", "page_id": "201075359", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Barron's", "lccn": null, "date": "2005-08-01", "publisher_state": null}
+{"page_id": "2600676697", "no_predictions": true}
+{"page_id": "2600850385", "no_predictions": true}
+{"page_id": "2601000545", "no_predictions": true}
+{"page_id": "2601002303", "no_predictions": true}
+{"page_id": "2601020539", "no_predictions": true}
+{"page_id": "2601020556", "no_predictions": true}
+{"page_id": "2601029828", "no_predictions": true}
+{"page_id": "2601031143", "no_predictions": true}
+{"page_id": "2601031271", "no_predictions": true}
+{"page_id": "2601032284", "no_predictions": true}
+{"page_id": "2601048282", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Jeffrey W. Metzger", "page_id": "2601053981", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-03-30", "publisher_state": null}
+{"page_id": "2601054181", "no_predictions": true}
+{"page_id": "2601054410", "no_predictions": true}
+{"page_id": "2601054443", "no_predictions": true}
+{"page_id": "2601078979", "no_predictions": true}
+{"page_id": "2601079020", "no_predictions": true}
+{"page_id": "2601141711", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "politician", "hedged": false, "attributed_to": "President Bush", "page_id": "2601153768", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-02", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "politician", "hedged": false, "attributed_to": "President Bush", "page_id": "2601153768", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-02", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "politician", "hedged": false, "attributed_to": "President Bush", "page_id": "2601153778", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-02", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "politician", "hedged": false, "attributed_to": "President Bush", "page_id": "2601153778", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-02", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "politician", "hedged": false, "attributed_to": "President Bush", "page_id": "2601153778", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-02", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "politician", "hedged": false, "attributed_to": "President Bush", "page_id": "2601153778", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-02", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "politician", "hedged": false, "attributed_to": "President Bush", "page_id": "2601153806", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-02", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 1, "voice": "politician", "hedged": true, "attributed_to": "President Bush", "page_id": "2601153806", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-02", "publisher_state": null}
+{"page_id": "2601196367", "no_predictions": true}
+{"page_id": "2601197069", "no_predictions": true}
+{"page_id": "2601215120", "no_predictions": true}
+{"page_id": "2601230046", "no_predictions": true}
+{"page_id": "2601230629", "no_predictions": true}
+{"page_id": "2601230909", "no_predictions": true}
+{"page_id": "2601248227", "no_predictions": true}
+{"page_id": "2601248267", "no_predictions": true}
+{"page_id": "2601248322", "no_predictions": true}
+{"page_id": "2601255607", "no_predictions": true}
+{"page_id": "2601271671", "no_predictions": true}
+{"page_id": "2601305254", "no_predictions": true}
+{"page_id": "2601309401", "no_predictions": true}
+{"page_id": "2601385016", "no_predictions": true}
+{"page_id": "2601386571", "no_predictions": true}
+{"page_id": "2601387393", "no_predictions": true}
+{"page_id": "2601390982", "no_predictions": true}
+{"page_id": "2601395056", "no_predictions": true}
+{"page_id": "2601407636", "no_predictions": true}
+{"page_id": "2601409338", "no_predictions": true}
+{"page_id": "2601411279", "no_predictions": true}
+{"page_id": "2601442204", "no_predictions": true}
+{"page_id": "2601450583", "no_predictions": true}
+{"page_id": "2601469756", "no_predictions": true}
+{"page_id": "2601526812", "no_predictions": true}
+{"page_id": "2601538014", "no_predictions": true}
+{"page_id": "2601540112", "no_predictions": true}
+{"page_id": "2601541533", "no_predictions": true}
+{"page_id": "2601588592", "no_predictions": true}
+{"page_id": "2601588677", "no_predictions": true}
+{"page_id": "2601590238", "no_predictions": true}
+{"page_id": "2601746347", "no_predictions": true}
+{"page_id": "2601828112", "no_predictions": true}
+{"page_id": "2601828840", "no_predictions": true}
+{"page_id": "2601940875", "no_predictions": true}
+{"page_id": "2601941326", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 12, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Goldman Sachs", "page_id": "2601970931", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-04", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "2601970931", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-04", "publisher_state": null}
+{"page_id": "2604904582", "no_predictions": true}
+{"page_id": "2604904673", "no_predictions": true}
+{"page_id": "2604910652", "no_predictions": true}
+{"page_id": "2604911147", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "George Friedman", "page_id": "2604916401", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-03", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "William C. Dudley", "page_id": "2604916401", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-03", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "2604916401", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-03", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Ethan Harris", "page_id": "2604916401", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-03", "publisher_state": null}
+{"page_id": "2604931651", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Fed officials", "page_id": "2604967854", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-05-07", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "reported_survey", "hedged": true, "attributed_to": "analysts", "page_id": "2604967854", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-05-07", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Stuart G. Hoffman", "page_id": "2604967854", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-05-07", "publisher_state": null}
+{"page_id": "2604972008", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": null, "page_id": "2604974466", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-05-07", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "reported_survey", "hedged": true, "attributed_to": "Fed officials", "page_id": "2604974466", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-05-07", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "analysts", "page_id": "2604974466", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-05-07", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "analysts", "page_id": "2604974466", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-05-07", "publisher_state": null}
+{"page_id": "2605017783", "no_predictions": true}
+{"page_id": "2605062291", "no_predictions": true}
+{"page_id": "2605063241", "no_predictions": true}
+{"page_id": "2605067969", "no_predictions": true}
+{"page_id": "2605068269", "no_predictions": true}
+{"page_id": "2605069794", "no_predictions": true}
+{"page_id": "2605069901", "no_predictions": true}
+{"page_id": "2605074377", "no_predictions": true}
+{"page_id": "2605076114", "no_predictions": true}
+{"page_id": "2605076990", "no_predictions": true}
+{"page_id": "2605076994", "no_predictions": true}
+{"page_id": "2605114348", "no_predictions": true}
+{"page_id": "2605115099", "no_predictions": true}
+{"page_id": "2605119070", "no_predictions": true}
+{"page_id": "2605120371", "no_predictions": true}
+{"page_id": "2605166762", "no_predictions": true}
+{"page_id": "2605168036", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "2605187648", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-06-18", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Frank Nothaft", "page_id": "2605187648", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-06-18", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "David Berson", "page_id": "2605187648", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-06-18", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "David Berson", "page_id": "2605187648", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-06-18", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "2605188148", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-06-18", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "David Berson", "page_id": "2605188148", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-06-18", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "David Berson", "page_id": "2605188148", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-06-18", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "David Berson", "page_id": "2605188148", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-06-18", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Kevin C. Greenlief", "page_id": "2605224985", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-03-10", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 12, "voice": "government_official", "hedged": false, "attributed_to": null, "page_id": "2605224985", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-03-10", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Kevin C. Greenlief", "page_id": "2605226876", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-03-10", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 12, "voice": "government_official", "hedged": false, "attributed_to": null, "page_id": "2605226876", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-03-10", "publisher_state": null}
+{"page_id": "2605487079", "no_predictions": true}
+{"page_id": "2605526242", "no_predictions": true}
+{"page_id": "2605527277", "no_predictions": true}
+{"page_id": "2605651837", "no_predictions": true}
+{"page_id": "2605652429", "no_predictions": true}
+{"page_id": "2605657535", "no_predictions": true}
+{"page_id": "2605657654", "no_predictions": true}
+{"page_id": "2605658323", "no_predictions": true}
+{"page_id": "2605685369", "no_predictions": true}
+{"page_id": "2605688698", "no_predictions": true}
+{"page_id": "2605693616", "no_predictions": true}
+{"page_id": "2605693915", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "government_official", "hedged": false, "attributed_to": "E.R. Anderson", "page_id": "2605696460", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-08-31", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "government_official", "hedged": false, "attributed_to": "Anderson", "page_id": "2605696663", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-08-31", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "government_official", "hedged": false, "attributed_to": "E.R. Anderson", "page_id": "2605696687", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-08-31", "publisher_state": null}
+{"page_id": "2605697337", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": null, "page_id": "2605702869", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-07", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Phil Dow", "page_id": "2605702869", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-07", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": null, "page_id": "2605702869", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-09-07", "publisher_state": null}
+{"page_id": "2605703262", "no_predictions": true}
+{"page_id": "2605703663", "no_predictions": true}
+{"page_id": "2605704358", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": null, "page_id": "2605720433", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-06-24", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "reported_survey", "hedged": false, "attributed_to": null, "page_id": "2605720433", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-06-24", "publisher_state": null}
+{"page_id": "2605732943", "no_predictions": true}
+{"page_id": "2605740472", "no_predictions": true}
+{"page_id": "2605741360", "no_predictions": true}
+{"page_id": "2605741429", "no_predictions": true}
+{"page_id": "2605741439", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": "experts", "page_id": "2605746574", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-06-30", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Alan Greenspan", "page_id": "2605746574", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-06-30", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "government_official", "hedged": true, "attributed_to": "Fed officials", "page_id": "2605746574", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-06-30", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Stephen S. Roach", "page_id": "2605746574", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-06-30", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": "critics", "page_id": "2605746574", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-06-30", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Giovanni Bisignani", "page_id": "2605747176", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Washington Post  (1974-)", "lccn": null, "date": "2005-06-30", "publisher_state": null}
+{"page_id": "2605749247", "no_predictions": true}
+{"page_id": "2605750980", "no_predictions": true}
+{"page_id": "2605753528", "no_predictions": true}
+{"page_id": "2605753593", "no_predictions": true}
+{"page_id": "2605758034", "no_predictions": true}
+{"page_id": "2605768582", "no_predictions": true}
+{"page_id": "2605785839", "no_predictions": true}
+{"page_id": "2605828158", "no_predictions": true}
+{"page_id": "2605916029", "no_predictions": true}
+{"page_id": "2605935992", "no_predictions": true}
+{"page_id": "2606098011", "no_predictions": true}
+{"page_id": "2606101329", "no_predictions": true}
+{"page_id": "2606105626", "no_predictions": true}
+{"page_id": "2606106298", "no_predictions": true}
+{"page_id": "2606107560", "no_predictions": true}
+{"page_id": "2606112710", "no_predictions": true}
+{"page_id": "2606113349", "no_predictions": true}
+{"page_id": "2606113545", "no_predictions": true}
+{"page_id": "2606114945", "no_predictions": true}
+{"page_id": "2606139534", "no_predictions": true}
+{"page_id": "2606169340", "no_predictions": true}
+{"page_id": "2610290155", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Mr. Siegel", "page_id": "308586045", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-24", "publisher_state": null}
+{"page_id": "308588540", "no_predictions": true}
+{"page_id": "308592232", "no_predictions": true}
+{"page_id": "308593016", "no_predictions": true}
+{"page_id": "308594623", "no_predictions": true}
+{"page_id": "308595013", "no_predictions": true}
+{"page_id": "308596905", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "308597383", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-04-25", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Jason Trennert", "page_id": "308597383", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-04-25", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": "Alan Greenspan", "page_id": "308597383", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-04-25", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "reported_survey", "hedged": false, "attributed_to": null, "page_id": "308597383", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-04-25", "publisher_state": null}
+{"page_id": "308597995", "no_predictions": true}
+{"page_id": "308598029", "no_predictions": true}
+{"page_id": "308598672", "no_predictions": true}
+{"page_id": "308599039", "no_predictions": true}
+{"page_id": "308599606", "no_predictions": true}
+{"page_id": "308600524", "no_predictions": true}
+{"page_id": "308600794", "no_predictions": true}
+{"page_id": "308601609", "no_predictions": true}
+{"page_id": "308601913", "no_predictions": true}
+{"page_id": "308602021", "no_predictions": true}
+{"page_id": "308602226", "no_predictions": true}
+{"page_id": "308602939", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": null, "page_id": "308603462", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-31", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Marc Stern", "page_id": "308603462", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-31", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Richard Bernstein", "page_id": "308603462", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-31", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Richard Bernstein", "page_id": "308603462", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-31", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "William Gross", "page_id": "308603462", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-31", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Jack Ablin", "page_id": "308603462", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-31", "publisher_state": null}
+{"page_id": "308603582", "no_predictions": true}
+{"page_id": "308603999", "no_predictions": true}
+{"page_id": "308604040", "no_predictions": true}
+{"page_id": "308604796", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "reported_survey", "hedged": false, "attributed_to": "OECD", "page_id": "308605395", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-25", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "reported_survey", "hedged": false, "attributed_to": "OECD", "page_id": "308605395", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-25", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "reported_survey", "hedged": false, "attributed_to": "OECD", "page_id": "308605395", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-25", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "reported_survey", "hedged": false, "attributed_to": null, "page_id": "308605395", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-25", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Jean-Philippe Cotis", "page_id": "308605395", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-25", "publisher_state": null}
+{"page_id": "308605643", "no_predictions": true}
+{"page_id": "308606071", "no_predictions": true}
+{"page_id": "308606090", "no_predictions": true}
+{"page_id": "308606847", "no_predictions": true}
+{"page_id": "308606955", "no_predictions": true}
+{"page_id": "308607678", "no_predictions": true}
+{"page_id": "308607783", "no_predictions": true}
+{"page_id": "308608593", "no_predictions": true}
+{"page_id": "308609223", "no_predictions": true}
+{"page_id": "308609308", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "BIS", "page_id": "308610335", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-28", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Joachim Fels", "page_id": "308610335", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-28", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Mr. Malpass", "page_id": "308610805", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-22", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Mr. Malpass", "page_id": "308610805", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-22", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Mr. Malpass", "page_id": "308610805", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-22", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 12, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Mr. Malpass", "page_id": "308610805", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-22", "publisher_state": null}
+{"page_id": "308610956", "no_predictions": true}
+{"page_id": "308612214", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Douglas Holtz-Eakin", "page_id": "308612482", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-09", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Douglas Holtz-Eakin", "page_id": "308612482", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-09", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": null, "page_id": "308612552", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-09", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Donald Kohn", "page_id": "308612552", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-09", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Paul Volcker", "page_id": "308612552", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-09", "publisher_state": null}
+{"page_id": "308613797", "no_predictions": true}
+{"page_id": "308614162", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "reported_survey", "hedged": true, "attributed_to": null, "page_id": "308614182", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-30", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "editorial", "hedged": false, "attributed_to": null, "page_id": "308614182", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-30", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Al Reese Jr.", "page_id": "308614182", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-30", "publisher_state": null}
+{"page_id": "308614262", "no_predictions": true}
+{"page_id": "308614340", "no_predictions": true}
+{"page_id": "308614807", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "William Dwyer", "page_id": "308615227", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-06", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 4, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Chris Conkey", "page_id": "308615227", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-06", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Goldman Sachs economists", "page_id": "308615227", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-06", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Henry Herrmann", "page_id": "308615227", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-06", "publisher_state": null}
+{"page_id": "308615454", "no_predictions": true}
+{"page_id": "308616000", "no_predictions": true}
+{"page_id": "308616001", "no_predictions": true}
+{"page_id": "308616066", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Tim Hayes", "page_id": "308616337", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-20", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Kevin McClintock", "page_id": "308616337", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-20", "publisher_state": null}
+{"page_id": "308617206", "no_predictions": true}
+{"page_id": "308617422", "no_predictions": true}
+{"page_id": "308618013", "no_predictions": true}
+{"page_id": "308618578", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Gregory Mankiw", "page_id": "308619006", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-29", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Laurence Kantor", "page_id": "308619006", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-29", "publisher_state": null}
+{"page_id": "308619030", "no_predictions": true}
+{"page_id": "308619470", "no_predictions": true}
+{"page_id": "308619549", "no_predictions": true}
+{"page_id": "308619550", "no_predictions": true}
+{"page_id": "308619558", "no_predictions": true}
+{"page_id": "308619919", "no_predictions": true}
+{"page_id": "308620284", "no_predictions": true}
+{"page_id": "308620289", "no_predictions": true}
+{"page_id": "308620390", "no_predictions": true}
+{"page_id": "308620479", "no_predictions": true}
+{"page_id": "308620715", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 12, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Tobias Levkovich", "page_id": "308620954", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-06", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 12, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "James W. Paulsen", "page_id": "308620954", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-06", "publisher_state": null}
+{"page_id": "308622487", "no_predictions": true}
+{"page_id": "308622527", "no_predictions": true}
+{"page_id": "308622921", "no_predictions": true}
+{"page_id": "308624932", "no_predictions": true}
+{"page_id": "308625032", "no_predictions": true}
+{"page_id": "308625205", "no_predictions": true}
+{"page_id": "308627718", "no_predictions": true}
+{"page_id": "308627843", "no_predictions": true}
+{"page_id": "308628010", "no_predictions": true}
+{"page_id": "308628021", "no_predictions": true}
+{"page_id": "308629005", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Richard Curtin", "page_id": "308629601", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-19", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Dean Maki", "page_id": "308629601", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-19", "publisher_state": null}
+{"page_id": "308631504", "no_predictions": true}
+{"page_id": "308631659", "no_predictions": true}
+{"page_id": "308632728", "no_predictions": true}
+{"page_id": "308634035", "no_predictions": true}
+{"page_id": "308634227", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "reported_survey", "hedged": false, "attributed_to": null, "page_id": "308634707", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-07", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "David Greenlaw", "page_id": "308634707", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-07", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Sheryl King", "page_id": "308634707", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-07", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Michael Moran", "page_id": "308634707", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-07", "publisher_state": null}
+{"page_id": "308634906", "no_predictions": true}
+{"page_id": "308635853", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "308637548", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-08-22", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Mark Zandi", "page_id": "308637548", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-08-22", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 12, "voice": "other", "hedged": false, "attributed_to": null, "page_id": "308637548", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-08-22", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": null, "page_id": "308637548", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-08-22", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Edward Leamer", "page_id": "308637548", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-08-22", "publisher_state": null}
+{"page_id": "308637721", "no_predictions": true}
+{"page_id": "308638720", "no_predictions": true}
+{"page_id": "308639751", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Nariman Behravesh", "page_id": "308641087", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-13", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "308641087", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-13", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 48, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Christopher Georgakis", "page_id": "308641087", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-13", "publisher_state": null}
+{"page_id": "308641558", "no_predictions": true}
+{"page_id": "308641776", "no_predictions": true}
+{"page_id": "308645434", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "editorial", "hedged": true, "attributed_to": null, "page_id": "308647041", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-12", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 48, "voice": "editorial", "hedged": false, "attributed_to": null, "page_id": "308647041", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-12", "publisher_state": null}
+{"page_id": "308647792", "no_predictions": true}
+{"page_id": "308650916", "no_predictions": true}
+{"page_id": "308652013", "no_predictions": true}
+{"page_id": "308653382", "no_predictions": true}
+{"page_id": "308659463", "no_predictions": true}
+{"page_id": "308660036", "no_predictions": true}
+{"page_id": "308660347", "no_predictions": true}
+{"page_id": "308663529", "no_predictions": true}
+{"page_id": "308664593", "no_predictions": true}
+{"page_id": "308664997", "no_predictions": true}
+{"page_id": "308667026", "no_predictions": true}
+{"page_id": "308667070", "no_predictions": true}
+{"page_id": "308667465", "no_predictions": true}
+{"page_id": "308667563", "no_predictions": true}
+{"page_id": "308669370", "no_predictions": true}
+{"page_id": "308672952", "no_predictions": true}
+{"page_id": "308674190", "no_predictions": true}
+{"page_id": "308674589", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 4, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Nariman Behravesh", "page_id": "308676796", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-01", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Nariman Behravesh", "page_id": "308676796", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-01", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 1, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Joshua Shapiro", "page_id": "398886047", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-30", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 1, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Lynn Franco", "page_id": "398886047", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-30", "publisher_state": null}
+{"page_id": "398889593", "no_predictions": true}
+{"page_id": "398889705", "no_predictions": true}
+{"page_id": "398891160", "no_predictions": true}
+{"page_id": "398892601", "no_predictions": true}
+{"page_id": "398894786", "no_predictions": true}
+{"page_id": "398898182", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 9, "voice": "reported_survey", "hedged": false, "attributed_to": null, "page_id": "398899708", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-08-15", "publisher_state": null}
+{"page_id": "398899839", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 12, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Mr. Coburn", "page_id": "398901053", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-07", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 12, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Mr. Ablin", "page_id": "398901053", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-07", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 12, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Mr. Ablin", "page_id": "398901053", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-07", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 24, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Mr. Coburn", "page_id": "398901053", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-07", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 180, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Russ Koesterich", "page_id": "398901053", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-07", "publisher_state": null}
+{"page_id": "398901567", "no_predictions": true}
+{"page_id": "398903125", "no_predictions": true}
+{"page_id": "398906836", "no_predictions": true}
+{"page_id": "398907259", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Mr. Siegel", "page_id": "398907745", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-23", "publisher_state": null}
+{"page_id": "398908184", "no_predictions": true}
+{"page_id": "398908267", "no_predictions": true}
+{"page_id": "398908563", "no_predictions": true}
+{"page_id": "398911220", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Giovanni Bisignani", "page_id": "398911522", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-30", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "IATA economists", "page_id": "398911522", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-30", "publisher_state": null}
+{"page_id": "398912513", "no_predictions": true}
+{"page_id": "398912737", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Gregory Mankiw", "page_id": "398913252", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-29", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "398913252", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-29", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "398913252", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-29", "publisher_state": null}
+{"page_id": "398913573", "no_predictions": true}
+{"page_id": "398913655", "no_predictions": true}
+{"page_id": "398914218", "no_predictions": true}
+{"page_id": "398914592", "no_predictions": true}
+{"page_id": "398914799", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Tim Hayes", "page_id": "398916799", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-20", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Ned Davis", "page_id": "398916799", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-20", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Kevin McClintock", "page_id": "398916799", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-20", "publisher_state": null}
+{"page_id": "398917081", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "David Huether, chief economist at the National Association of Manufacturers", "page_id": "398917197", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-07-05", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Donald A. Norman, economist at the Manufacturers Alliance/MAPI", "page_id": "398917197", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-07-05", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "reported_survey", "hedged": false, "attributed_to": null, "page_id": "398917197", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-07-05", "publisher_state": null}
+{"page_id": "398917730", "no_predictions": true}
+{"page_id": "398919738", "no_predictions": true}
+{"page_id": "398919838", "no_predictions": true}
+{"page_id": "398920331", "no_predictions": true}
+{"page_id": "398920370", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "reported_survey", "hedged": true, "attributed_to": "Moody's Investors Service", "page_id": "398920598", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-07-12", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Richard Brown", "page_id": "398921721", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-04", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "398921721", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-04", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "economists", "page_id": "398921721", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-04", "publisher_state": null}
+{"page_id": "398921853", "no_predictions": true}
+{"page_id": "398922085", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "reported_survey", "hedged": true, "attributed_to": null, "page_id": "398923297", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-04-14", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Edward Hyman", "page_id": "398923297", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-04-14", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Laurence Meyer", "page_id": "398923297", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-04-14", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Sean McAlinden", "page_id": "398923297", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-04-14", "publisher_state": null}
+{"page_id": "398923374", "no_predictions": true}
+{"page_id": "398923993", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Kevin Hassett", "page_id": "398924178", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-04", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "398924178", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-04", "publisher_state": null}
+{"page_id": "398924890", "no_predictions": true}
+{"page_id": "398924953", "no_predictions": true}
+{"page_id": "398926041", "no_predictions": true}
+{"page_id": "398926264", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Edward Leamer", "page_id": "398926374", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-08-17", "publisher_state": null}
+{"page_id": "398926589", "no_predictions": true}
+{"page_id": "398927112", "no_predictions": true}
+{"page_id": "398927664", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": null, "page_id": "398927704", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-13", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "398927704", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-13", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Christopher Georgakis", "page_id": "398927704", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-13", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 60, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Christopher Georgakis", "page_id": "398927704", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-13", "publisher_state": null}
+{"page_id": "398928836", "no_predictions": true}
+{"page_id": "398929862", "no_predictions": true}
+{"page_id": "398930209", "no_predictions": true}
+{"page_id": "398931886", "no_predictions": true}
+{"page_id": "398932147", "no_predictions": true}
+{"page_id": "398932658", "no_predictions": true}
+{"page_id": "398933065", "no_predictions": true}
+{"page_id": "398933473", "no_predictions": true}
+{"page_id": "398933804", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "reported_survey", "hedged": false, "attributed_to": null, "page_id": "398934209", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-04-25", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Jason Trennert", "page_id": "398934209", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-04-25", "publisher_state": null}
+{"predicted_direction": "unclear", "predicted_state_at_horizon": null, "horizon_months": null, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "398934209", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-04-25", "publisher_state": null}
+{"page_id": "398934942", "no_predictions": true}
+{"page_id": "398935067", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Mr. Malpass", "page_id": "398935315", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-22", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Mr. Malpass", "page_id": "398935315", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-22", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 18, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Mr. Malpass", "page_id": "398935315", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-22", "publisher_state": null}
+{"page_id": "398935674", "no_predictions": true}
+{"page_id": "398936393", "no_predictions": true}
+{"page_id": "398936717", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": "Douglas Holtz-Eakin", "page_id": "398937011", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-09", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": "Douglas Holtz-Eakin", "page_id": "398937011", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-09", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Federal Reserve officials", "page_id": "398937230", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-09", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "some economists", "page_id": "398937230", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-09", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Paul Volcker", "page_id": "398937230", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-09", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Paul McCulley", "page_id": "398937355", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-07-01", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Laurence Meyer", "page_id": "398937355", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-07-01", "publisher_state": null}
+{"page_id": "398937910", "no_predictions": true}
+{"page_id": "398938056", "no_predictions": true}
+{"page_id": "398939077", "no_predictions": true}
+{"page_id": "398939314", "no_predictions": true}
+{"page_id": "398939328", "no_predictions": true}
+{"page_id": "398939496", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 4, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Nariman Behravesh", "page_id": "398940876", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-01", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 4, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Nariman Behravesh", "page_id": "398940876", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-01", "publisher_state": null}
+{"page_id": "398940945", "no_predictions": true}
+{"page_id": "398942879", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Quentin Kelly", "page_id": "398942950", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-28", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Liz DeCastro", "page_id": "398942950", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-28", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Ed Walsh", "page_id": "398942950", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-28", "publisher_state": null}
+{"page_id": "398944038", "no_predictions": true}
+{"page_id": "398944166", "no_predictions": true}
+{"page_id": "398945122", "no_predictions": true}
+{"page_id": "398945965", "no_predictions": true}
+{"page_id": "398946345", "no_predictions": true}
+{"page_id": "398946620", "no_predictions": true}
+{"page_id": "398946864", "no_predictions": true}
+{"page_id": "398947181", "no_predictions": true}
+{"page_id": "398947478", "no_predictions": true}
+{"page_id": "398947725", "no_predictions": true}
+{"page_id": "398948105", "no_predictions": true}
+{"page_id": "398949045", "no_predictions": true}
+{"page_id": "398949141", "no_predictions": true}
+{"page_id": "398949156", "no_predictions": true}
+{"page_id": "398949648", "no_predictions": true}
+{"page_id": "398949719", "no_predictions": true}
+{"page_id": "398949751", "no_predictions": true}
+{"page_id": "398950011", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 3, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "398951201", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-06", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Henry Herrmann", "page_id": "398951201", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-06", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Chris Conkey", "page_id": "398951201", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-06", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "William Dwyer", "page_id": "398951201", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-06", "publisher_state": null}
+{"page_id": "398951336", "no_predictions": true}
+{"page_id": "398952551", "no_predictions": true}
+{"page_id": "398953345", "no_predictions": true}
+{"page_id": "398953432", "no_predictions": true}
+{"page_id": "398954791", "no_predictions": true}
+{"page_id": "398956372", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "398956763", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-11", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "reported_survey", "hedged": false, "attributed_to": "PPR", "page_id": "398956763", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-11", "publisher_state": null}
+{"page_id": "398956962", "no_predictions": true}
+{"page_id": "398957382", "no_predictions": true}
+{"page_id": "398957808", "no_predictions": true}
+{"page_id": "398957849", "no_predictions": true}
+{"page_id": "398958371", "no_predictions": true}
+{"page_id": "398960090", "no_predictions": true}
+{"page_id": "398963841", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "398964871", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-22", "publisher_state": null}
+{"page_id": "398968168", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Joachim Fels", "page_id": "398968744", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-28", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "government_official", "hedged": false, "attributed_to": "Bank for International Settlements", "page_id": "398968744", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-28", "publisher_state": null}
+{"page_id": "398968900", "no_predictions": true}
+{"page_id": "398968988", "no_predictions": true}
+{"page_id": "398969904", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": null, "page_id": "398970279", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-07", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": null, "page_id": "398970279", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-07", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 3, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "David Greenlaw", "page_id": "398970279", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-07", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 3, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Bruce Kasman", "page_id": "398970279", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-03-07", "publisher_state": null}
+{"page_id": "398970909", "no_predictions": true}
+{"page_id": "398972599", "no_predictions": true}
+{"page_id": "398975382", "no_predictions": true}
+{"page_id": "398976409", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 24, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "S&P analysts Michael Stock and Kyle Beauchamp", "page_id": "398977281", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-17", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 24, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "S&P analysts", "page_id": "398977281", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-17", "publisher_state": null}
+{"page_id": "398978478", "no_predictions": true}
+{"page_id": "398980784", "no_predictions": true}
+{"page_id": "398981097", "no_predictions": true}
+{"page_id": "398981342", "no_predictions": true}
+{"page_id": "398981920", "no_predictions": true}
+{"page_id": "398982803", "no_predictions": true}
+{"page_id": "398982913", "no_predictions": true}
+{"page_id": "398982999", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Marc Stern", "page_id": "398985396", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-31", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "398985396", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-31", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Richard Bernstein", "page_id": "398985396", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-31", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Jack Ablin", "page_id": "398985396", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-31", "publisher_state": null}
+{"page_id": "398986945", "no_predictions": true}
+{"page_id": "398987886", "no_predictions": true}
+{"page_id": "398988275", "no_predictions": true}
+{"page_id": "398988697", "no_predictions": true}
+{"page_id": "398990227", "no_predictions": true}
+{"page_id": "398990618", "no_predictions": true}
+{"page_id": "398991541", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "editorial", "hedged": true, "attributed_to": "Mr. Wesbury", "page_id": "398991685", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-08", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "editorial", "hedged": false, "attributed_to": "Mr. Wesbury", "page_id": "398991685", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-08", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "editorial", "hedged": false, "attributed_to": "Mr. Wesbury", "page_id": "398991685", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-08", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Larry Kay", "page_id": "398991855", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-04-27", "publisher_state": null}
+{"page_id": "398991985", "no_predictions": true}
+{"page_id": "398992470", "no_predictions": true}
+{"page_id": "398992786", "no_predictions": true}
+{"page_id": "398995828", "no_predictions": true}
+{"page_id": "398997043", "no_predictions": true}
+{"page_id": "398997070", "no_predictions": true}
+{"page_id": "398998680", "no_predictions": true}
+{"page_id": "399000201", "no_predictions": true}
+{"page_id": "399001941", "no_predictions": true}
+{"page_id": "399002524", "no_predictions": true}
+{"page_id": "399005431", "no_predictions": true}
+{"page_id": "399006415", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "399008050", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-18", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "399008050", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-05-18", "publisher_state": null}
+{"page_id": "399011319", "no_predictions": true}
+{"page_id": "399013896", "no_predictions": true}
+{"page_id": "399014377", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": null, "page_id": "399016508", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-06", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 12, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "James W. Paulsen", "page_id": "399016508", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-06", "publisher_state": null}
+{"page_id": "399017606", "no_predictions": true}
+{"page_id": "399018204", "no_predictions": true}
+{"page_id": "399019874", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Mary Lou Burde", "page_id": "399022130", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-06-30", "publisher_state": null}
+{"page_id": "399025360", "no_predictions": true}
+{"page_id": "399025718", "no_predictions": true}
+{"page_id": "399027790", "no_predictions": true}
+{"page_id": "399028692", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "World Bank", "page_id": "399032576", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-04-07", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Francois Bourguignon", "page_id": "399032576", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-04-07", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "World Bank", "page_id": "399032576", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-04-07", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "World Bank", "page_id": "399032576", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-04-07", "publisher_state": null}
+{"page_id": "399037025", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "399037200", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-17", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Richard Curtin", "page_id": "399037200", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-17", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": "Paul Kich", "page_id": "399037200", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-17", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "399037200", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-17", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "399037200", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-17", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "399037200", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-17", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Dean Maki", "page_id": "399037200", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-17", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "editorial", "hedged": false, "attributed_to": "Harmon Kaplan", "page_id": "399037200", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-17", "publisher_state": null}
+{"page_id": "399044087", "no_predictions": true}
+{"page_id": "399044798", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Tony Norfield", "page_id": "399045685", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-15", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Tony Norfield", "page_id": "399045685", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-15", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": null, "page_id": "399045685", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "Wall Street Journal", "lccn": null, "date": "2005-09-15", "publisher_state": null}
+{"page_id": "399047568", "no_predictions": true}
+{"page_id": "399049048", "no_predictions": true}
+{"page_id": "399058166", "no_predictions": true}
+{"page_id": "399060353", "no_predictions": true}
+{"page_id": "405541119", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Lynn Reaser", "page_id": "405542362", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-05-09", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Roy Krause", "page_id": "405542362", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-05-09", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": null, "page_id": "405542362", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-05-09", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": null, "page_id": "405543198", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-09-19", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": null, "page_id": "405543198", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-09-19", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Mark Vitner", "page_id": "405543198", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-09-19", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "405543983", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-09-09", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Gus Foucher", "page_id": "405543983", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-09-09", "publisher_state": null}
+{"page_id": "405544019", "no_predictions": true}
+{"page_id": "405544208", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "reported_survey", "hedged": false, "attributed_to": null, "page_id": "405544533", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-09-07", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Nariman Behravesh", "page_id": "405544533", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-09-07", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 72, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Robert Dye", "page_id": "405544533", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-09-07", "publisher_state": null}
+{"page_id": "405544852", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "government_official", "hedged": false, "attributed_to": "Ernesto Archuleta", "page_id": "405545168", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-09-19", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": "Taylor Lyon", "page_id": "405545168", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-09-19", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "reported_survey", "hedged": true, "attributed_to": "Northeastern University's Center for Labor Market Studies", "page_id": "405545519", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-06-02", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Robert Parks", "page_id": "405547530", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-08-22", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "David Rosenberg", "page_id": "405547530", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-08-22", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Robert Parks", "page_id": "405547530", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-08-22", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Paul Kasriel", "page_id": "405677097", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-04-18", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "David Malpass", "page_id": "405677097", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "The Christian Science Monitor", "lccn": null, "date": "2005-04-18", "publisher_state": null}
+{"page_id": "405677502", "no_predictions": true}
+{"page_id": "405703601", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Douglas Holtz-Eakin", "page_id": "92830480", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-03-27", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": null, "page_id": "92830480", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-03-27", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "92830480", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-03-27", "publisher_state": null}
+{"page_id": "92831674", "no_predictions": true}
+{"page_id": "92835345", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Brad Lander", "page_id": "92839897", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-03-27", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "John Mason", "page_id": "92839897", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-03-27", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Gregory J. Hcym", "page_id": "92839897", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-03-27", "publisher_state": null}
+{"page_id": "92840884", "no_predictions": true}
+{"page_id": "92841685", "no_predictions": true}
+{"page_id": "92842433", "no_predictions": true}
+{"page_id": "92843437", "no_predictions": true}
+{"page_id": "92844122", "no_predictions": true}
+{"page_id": "92852207", "no_predictions": true}
+{"page_id": "92856457", "no_predictions": true}
+{"page_id": "92862535", "no_predictions": true}
+{"page_id": "92864803", "no_predictions": true}
+{"page_id": "92865070", "no_predictions": true}
+{"page_id": "92865848", "no_predictions": true}
+{"page_id": "92869383", "no_predictions": true}
+{"page_id": "92871021", "no_predictions": true}
+{"page_id": "92871677", "no_predictions": true}
+{"page_id": "92878194", "no_predictions": true}
+{"page_id": "92878885", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Ms. Li", "page_id": "92880236", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-03-28", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": null, "page_id": "92880810", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-08-08", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Alan Greenspan", "page_id": "92880810", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-08-08", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "reported_survey", "hedged": false, "attributed_to": null, "page_id": "92880810", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-08-08", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Mark Zandi", "page_id": "92880810", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-08-08", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": null, "page_id": "92881446", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-05-01", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "stable", "horizon_months": 6, "voice": "reported_survey", "hedged": true, "attributed_to": null, "page_id": "92881446", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-05-01", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": "Quentin Dastugue", "page_id": "92884688", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-17", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "government_official", "hedged": false, "attributed_to": "Michael Olivier", "page_id": "92884688", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-17", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Loren Scott", "page_id": "92884688", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-17", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "92884688", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-17", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 5, "voice": "other", "hedged": true, "attributed_to": "Quentin Dastugue", "page_id": "92884688", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-17", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": "Quentin Dastugue", "page_id": "92884688", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-17", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Barry Eichengreen", "page_id": "92885033", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-05-08", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Catherine L. Mann", "page_id": "92885033", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-05-08", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Jeffrey Frankel", "page_id": "92885033", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-05-08", "publisher_state": null}
+{"page_id": "92889140", "no_predictions": true}
+{"page_id": "92890526", "no_predictions": true}
+{"page_id": "92892186", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": null, "page_id": "92894332", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-04", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "government_official", "hedged": false, "attributed_to": "John Snow", "page_id": "92894332", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-04", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "92894332", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-04", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Richard Yamarone", "page_id": "92894332", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-04", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": null, "page_id": "92894332", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-04", "publisher_state": null}
+{"page_id": "92894762", "no_predictions": true}
+{"page_id": "92897921", "no_predictions": true}
+{"page_id": "92900087", "no_predictions": true}
+{"page_id": "92902211", "no_predictions": true}
+{"page_id": "92903246", "no_predictions": true}
+{"page_id": "92903935", "no_predictions": true}
+{"page_id": "92909307", "no_predictions": true}
+{"page_id": "92909508", "no_predictions": true}
+{"page_id": "92909940", "no_predictions": true}
+{"page_id": "92914860", "no_predictions": true}
+{"page_id": "92915848", "no_predictions": true}
+{"page_id": "92918466", "no_predictions": true}
+{"page_id": "92918829", "no_predictions": true}
+{"page_id": "92921638", "no_predictions": true}
+{"page_id": "92922476", "no_predictions": true}
+{"page_id": "92923389", "no_predictions": true}
+{"page_id": "92925649", "no_predictions": true}
+{"page_id": "92925724", "no_predictions": true}
+{"page_id": "92926613", "no_predictions": true}
+{"page_id": "92928098", "no_predictions": true}
+{"page_id": "92928435", "no_predictions": true}
+{"page_id": "92931162", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": "Brennan Billeaud", "page_id": "92931486", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-26", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": "Mike Motwani", "page_id": "92931486", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-26", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": "Mike Motwani", "page_id": "92931486", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-26", "publisher_state": null}
+{"page_id": "92932417", "no_predictions": true}
+{"page_id": "92932738", "no_predictions": true}
+{"page_id": "92933589", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Richard Rippe", "page_id": "92934696", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-05-07", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "politician", "hedged": false, "attributed_to": "John Snow", "page_id": "92934696", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-05-07", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Jared Bernstein", "page_id": "92934696", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-05-07", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 24, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "James Glassman", "page_id": "92934696", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-05-07", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Mr. Rippe", "page_id": "92934696", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-05-07", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "reported_survey", "hedged": true, "attributed_to": null, "page_id": "92935446", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-12", "publisher_state": null}
+{"page_id": "92936624", "no_predictions": true}
+{"page_id": "92938101", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "politician", "hedged": false, "attributed_to": "President Bush", "page_id": "92938702", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-16", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "politician", "hedged": false, "attributed_to": "President Bush", "page_id": "92938702", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-16", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "politician", "hedged": false, "attributed_to": "President Bush", "page_id": "92938702", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-16", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "politician", "hedged": true, "attributed_to": "President Bush", "page_id": "92938702", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-16", "publisher_state": null}
+{"page_id": "92939678", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "builders and planners", "page_id": "92940876", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-04-17", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Robert Wieboldt", "page_id": "92940876", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-04-17", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Pearl M. Kamer", "page_id": "92940876", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-04-17", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": null, "page_id": "92941856", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-08-12", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Ms. Reaser", "page_id": "92941856", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-08-12", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "92941856", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-08-12", "publisher_state": null}
+{"page_id": "92943827", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "92946256", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-05-13", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "92946256", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-05-13", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "92946256", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-05-13", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "92946256", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-05-13", "publisher_state": null}
+{"page_id": "92950300", "no_predictions": true}
+{"page_id": "92952906", "no_predictions": true}
+{"page_id": "92953450", "no_predictions": true}
+{"page_id": "92953453", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Alan Greenspan", "page_id": "92955635", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-06-10", "publisher_state": null}
+{"predicted_direction": "stable", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Peter Cardillo", "page_id": "92955635", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-06-10", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "Hans F. Olsen", "page_id": "92955635", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-06-10", "publisher_state": null}
+{"page_id": "92958529", "no_predictions": true}
+{"page_id": "92959691", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 15, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "David Seiders", "page_id": "92960193", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-21", "publisher_state": null}
+{"page_id": "92960337", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 12, "voice": "reported_survey", "hedged": false, "attributed_to": null, "page_id": "92961156", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-07-08", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 12, "voice": "government_official", "hedged": false, "attributed_to": "Duane Goossen", "page_id": "92961156", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-07-08", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "government_official", "hedged": false, "attributed_to": "Raymond Scheppach", "page_id": "92961156", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-07-08", "publisher_state": null}
+{"page_id": "92967047", "no_predictions": true}
+{"page_id": "92969613", "no_predictions": true}
+{"page_id": "92970160", "no_predictions": true}
+{"page_id": "92970296", "no_predictions": true}
+{"page_id": "92971506", "no_predictions": true}
+{"page_id": "92976344", "no_predictions": true}
+{"page_id": "92976736", "no_predictions": true}
+{"page_id": "92977079", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": true, "attributed_to": null, "page_id": "92981897", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-04-09", "publisher_state": null}
+{"page_id": "92985501", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": null, "page_id": "92985963", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-04-16", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "other", "hedged": false, "attributed_to": null, "page_id": "92985963", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-04-16", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": false, "attributed_to": "David J. Greenlaw", "page_id": "92985963", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-04-16", "publisher_state": null}
+{"page_id": "92986485", "no_predictions": true}
+{"page_id": "92987060", "no_predictions": true}
+{"page_id": "92988365", "no_predictions": true}
+{"page_id": "92989018", "no_predictions": true}
+{"page_id": "92992538", "no_predictions": true}
+{"page_id": "92994563", "no_predictions": true}
+{"page_id": "92995319", "no_predictions": true}
+{"page_id": "92995480", "no_predictions": true}
+{"page_id": "92996557", "no_predictions": true}
+{"page_id": "92998856", "no_predictions": true}
+{"page_id": "93000278", "no_predictions": true}
+{"page_id": "93002616", "no_predictions": true}
+{"page_id": "93004199", "no_predictions": true}
+{"page_id": "93005112", "no_predictions": true}
+{"page_id": "93015871", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Jose Suescun", "page_id": "93017721", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-08", "publisher_state": null}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "government_official", "hedged": true, "attributed_to": "Mike Stampler", "page_id": "93017721", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-09-08", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Marisa DiNatale", "page_id": "93019427", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-07-06", "publisher_state": null}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Stephen Stanley", "page_id": "93019427", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-07-06", "publisher_state": null}
+{"page_id": "93020314", "no_predictions": true}
+{"predicted_direction": "worsen", "predicted_state_at_horizon": "recession", "horizon_months": 6, "voice": "editorial", "hedged": true, "attributed_to": null, "page_id": "93021180", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-05-23", "publisher_state": null}
+{"page_id": "93024779", "no_predictions": true}
+{"page_id": "93030831", "no_predictions": true}
+{"page_id": "93032344", "no_predictions": true}
+{"predicted_direction": "improve", "predicted_state_at_horizon": "expansion", "horizon_months": 6, "voice": "quoted_banker_or_economist", "hedged": true, "attributed_to": "Ken Hoexter", "page_id": "93032602", "source": "proquest", "arm": "economy", "window": "calm_2005", "window_kind": "placebo", "cycle": null, "newspaper_title": "New York Times  (1923-)", "lccn": null, "date": "2005-07-09", "publisher_state": null}
+{"page_id": "93033106", "no_predictions": true}
+{"page_id": "93039057", "no_predictions": true}
+{"page_id": "93039216", "no_predictions": true}
+{"page_id": "93041963", "no_predictions": true}
+{"page_id": "93042175", "no_predictions": true}
+{"page_id": "93042806", "no_predictions": true}
+{"page_id": "93048192", "no_predictions": true}
+{"page_id": "93075821", "no_predictions": true}
