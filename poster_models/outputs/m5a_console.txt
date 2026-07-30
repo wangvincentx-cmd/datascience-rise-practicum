@@ -1,0 +1,140 @@
+
+==============================================================================
+MODEL 5a: error direction
+==============================================================================
+Too optimistic / correct / too pessimistic, instead of a single hit bit.
+
+  claims 14,251   blocks 22
+
+=== error direction, overall ===
+  optimism is defined for 11,976 of 14,251 claims (price claims excluded -- see module docstring)
+    too pessimistic    0.154
+    correct            0.531
+    too optimistic     0.315
+  mean signed error +0.161   (systematically OVER-optimistic)
+
+=== error direction by feature ===
+  Two forecasts can share a hit rate and fail in opposite directions.
+
+  by confidence:
+    level                     n  too pess   correct  too optim      net
+    assertive              7651     0.141     0.535      0.324   +0.183
+    hedged                 4325     0.175     0.525      0.300   +0.124
+  by voice:
+    level                     n  too pess   correct  too optim      net
+    expert                 5746     0.134     0.544      0.322   +0.188
+    journalist             4429     0.166     0.516      0.318   +0.153
+    unclear                  57     0.158     0.561      0.281   +0.123
+    official               1440     0.185     0.526      0.289   +0.104
+    layperson               297     0.205     0.532      0.263   +0.057
+  by topic:
+    level                     n  too pess   correct  too optim      net
+    general_business       8713     0.129     0.561      0.309   +0.180
+    markets                2219     0.192     0.449      0.358   +0.166
+    other                   870     0.261     0.479      0.260   -0.001
+    employment              174     0.345     0.328      0.328   -0.017
+  by predicted_norm:
+    level                     n  too pess   correct  too optim      net
+    down                     86     0.000     0.384      0.616   +0.616
+    improve                8962     0.000     0.597      0.403   +0.403
+    flat                    268     0.526     0.067      0.407   -0.119
+    worsen                 2577     0.636     0.364      0.000   -0.636
+    up                       83     0.711     0.289      0.000   -0.711
+  -> poster_models/outputs/m5a_error_by_feature.csv
+
+  modelling 11,976 claims with a defined optimism sign; 13 features
+  (direction dummies dropped: they define the outcome, see source comment)
+
+=== MULTINOMIAL logit: 'too pessimistic' vs 'correct' ===
+  n = 11976
+  term                            coef        se                  95% CI       OR  
+  const                         -0.150     0.334        [-0.805, +0.505]     0.86    
+  c_topic_general_business      -1.475     0.366        [-2.194, -0.757]     0.23 ***
+  c_topic_markets               -0.885     0.364        [-1.598, -0.172]     0.41 *  
+  c_topic_other                 -0.653     0.337        [-1.313, +0.008]     0.52    
+  c_voice_journalist            +0.162     0.121        [-0.075, +0.398]     1.18    
+  c_voice_layperson             +0.332     0.166        [+0.006, +0.657]     1.39 *  
+  c_voice_official              +0.325     0.132        [+0.066, +0.584]     1.38 *  
+  c_voice_unclear               -0.024     0.509        [-1.021, +0.973]     0.98    
+  c_hedged                      +0.173     0.058        [+0.059, +0.288]     1.19 ** 
+  c_quoted                      -0.015     0.117        [-0.243, +0.214]     0.99    
+  c_named                       -0.049     0.121        [-0.287, +0.188]     0.95    
+  c_has_number                  +0.055     0.094        [-0.129, +0.238]     1.06    
+  c_len                         -0.003     0.029        [-0.060, +0.055]     1.00    
+  c_horizon                     +0.017     0.034        [-0.049, +0.083]     1.02    
+
+  Positive = the feature makes this KIND of error more likely, relative to
+  being right. Block-clustered SEs.
+  -> poster_models/outputs/m5a_mnlogit_pess.csv
+
+=== MULTINOMIAL logit: 'too optimistic' vs 'correct' ===
+  n = 11976
+  term                            coef        se                  95% CI       OR  
+  const                         +0.070     0.277        [-0.472, +0.613]     1.07    
+  c_topic_general_business      -0.643     0.352        [-1.333, +0.047]     0.53    
+  c_topic_markets               -0.271     0.334        [-0.925, +0.383]     0.76    
+  c_topic_other                 -0.633     0.320        [-1.259, -0.006]     0.53 *  
+  c_voice_journalist            +0.057     0.103        [-0.144, +0.259]     1.06    
+  c_voice_layperson             -0.155     0.182        [-0.512, +0.201]     0.86    
+  c_voice_official              -0.062     0.110        [-0.277, +0.153]     0.94    
+  c_voice_unclear               -0.103     0.320        [-0.731, +0.525]     0.90    
+  c_hedged                      -0.097     0.080        [-0.254, +0.060]     0.91    
+  c_quoted                      +0.068     0.125        [-0.178, +0.313]     1.07    
+  c_named                       -0.016     0.094        [-0.199, +0.167]     0.98    
+  c_has_number                  -0.100     0.089        [-0.273, +0.074]     0.91    
+  c_len                         +0.042     0.030        [-0.016, +0.100]     1.04    
+  c_horizon                     -0.026     0.032        [-0.090, +0.037]     0.97    
+
+  Positive = the feature makes this KIND of error more likely, relative to
+  being right. Block-clustered SEs.
+  -> poster_models/outputs/m5a_mnlogit_optim.csv
+
+=== is each effect symmetric, or does it push one way only? ===
+  If a feature's two coefficients are mirror images, an ordered model captures
+  it. If they share a sign, the feature makes forecasts WRONGER in general
+  rather than shifting them optimistic or pessimistic.
+
+  term                        -> too pess  -> too optim   reading
+  c_topic_general_business         -1.475        -0.643   both directions (accuracy, not bias)
+  c_topic_markets                  -0.885        -0.271   both directions (accuracy, not bias)
+  c_topic_other                    -0.653        -0.633   both directions (accuracy, not bias)
+  c_voice_journalist               +0.162        +0.057   both directions (accuracy, not bias)
+  c_voice_layperson                +0.332        -0.155   shifts bias toward pessimism
+  c_voice_official                 +0.325        -0.062   shifts bias toward pessimism
+  c_voice_unclear                  -0.024        -0.103   both directions (accuracy, not bias)
+  c_hedged                         +0.173        -0.097   shifts bias toward pessimism
+  c_quoted                         -0.015        +0.068   shifts bias toward optimism
+  c_named                          -0.049        -0.016   no effect
+  c_has_number                     +0.055        -0.100   shifts bias toward pessimism
+  c_len                            -0.003        +0.042   no effect
+  c_horizon                        +0.017        -0.026   no effect
+  -> poster_models/outputs/m5a_symmetry.csv
+
+  fitting ordered logit on the signed error ...
+
+=== ORDERED logit on signed error (pessimistic < correct < optimistic) ===
+  n = 11976
+  term                            coef        se                  95% CI       OR  
+  c_topic_general_business      +0.501     0.160        [+0.188, +0.814]     1.65 ** 
+  c_topic_markets               +0.515     0.164        [+0.194, +0.837]     1.67 ** 
+  c_topic_other                 +0.027     0.172        [-0.309, +0.363]     1.03    
+  c_voice_journalist            -0.039     0.059        [-0.155, +0.078]     0.96    
+  c_voice_layperson             -0.308     0.120        [-0.543, -0.073]     0.74 *  
+  c_voice_official              -0.209     0.057        [-0.321, -0.098]     0.81 ***
+  c_voice_unclear               -0.068     0.259        [-0.576, +0.440]     0.93    
+  c_hedged                      -0.162     0.037        [-0.235, -0.089]     0.85 ***
+  c_quoted                      +0.052     0.069        [-0.083, +0.188]     1.05    
+  c_named                       +0.007     0.066        [-0.122, +0.135]     1.01    
+  c_has_number                  -0.103     0.040        [-0.181, -0.024]     0.90 *  
+  c_len                         +0.035     0.018        [-0.000, +0.069]     1.04    
+  c_horizon                     -0.030     0.018        [-0.064, +0.005]     0.97    
+
+  One coefficient per feature: positive = shifts the whole distribution
+  toward over-optimism. Assumes the two thresholds share a slope -- check that
+  against the symmetry table above before quoting it.
+  -> poster_models/outputs/m5a_ordered.csv
+
+  Headline for the poster: of forecasts that were WRONG, 67.2% were
+  wrong by being too optimistic. The press did not just fail to see downturns --
+  it failed in a consistent direction.
+  -> poster_models/outputs/m5a_summary.csv
