@@ -509,24 +509,26 @@ def fig_graph(d, X, y, groups, per_group=3, spec=EXAMPLE):
     # figure, and inches of width are what let them be set large. The top limit
     # sits just above the quote box -- bbox_inches="tight" keeps the whole axes
     # patch, so any headroom past the box printed as a band of white above it.
-    # The top limit sits just above the quote box -- bbox_inches="tight" keeps
-    # the whole axes patch, so any headroom past the box printed as a band of
-    # white above it. Heights other than ~9in need the quote block's own
-    # geometry (in data units) rescaled, or its leading stretches with the page.
-    fig, ax = plt.subplots(figsize=(17.0, 9.0))
-    ax.set_xlim(0, 1); ax.set_ylim(yy_cursor + GAP - 0.055, 1.232)
+    # Narrow and tall. Width is the scarce dimension -- it caps how large the
+    # input labels can be set -- so height carries the air instead. The top
+    # limit sits just above the quote box: bbox_inches="tight" keeps the whole
+    # axes patch, so headroom past the box prints as a white band. The quote
+    # block's geometry below is tightened for an 11in page; at ~9in it wants the
+    # looser numbers (box 0.210, quote 1.185, attribution 1.075, top 1.232).
+    fig, ax = plt.subplots(figsize=(15.0, 11.0))
+    ax.set_xlim(0, 1); ax.set_ylim(yy_cursor + GAP - 0.055, 1.197)
     ax.axis("off"); ax.grid(False)
 
     # -- the forecast itself, quoted across the top ---------------------------
-    ax.add_patch(plt.Rectangle((0.008, 1.010), 0.984, 0.210, facecolor="#f7f7f7",
+    ax.add_patch(plt.Rectangle((0.008, 1.010), 0.984, 0.175, facecolor="#f7f7f7",
                                edgecolor="#e3e3e3", lw=1.0, zorder=0))
-    ax.plot([0.008, 0.008], [1.010, 1.220], color=BLUE, lw=4.0, zorder=1,
+    ax.plot([0.008, 0.008], [1.010, 1.185], color=BLUE, lw=4.0, zorder=1,
             solid_capstyle="butt")
-    ax.text(0.030, 1.185, f"“{row['quote'].strip()}”", fontsize=17,
+    ax.text(0.030, 1.155, f"“{row['quote'].strip()}”", fontsize=17,
             style="italic", va="top", color=INK)
     speaker = str(row.get("speaker_name", "na"))
     who = "" if speaker.lower() == "na" else f"{speaker}, quoted in "
-    ax.text(0.030, 1.075,
+    ax.text(0.030, 1.065,
             f"{who}{_tidy_publisher(row['publisher'])}, "
             f"{pd.to_datetime(row['date']):%-d %B %Y} — {spec['occasion']}",
             fontsize=12, color=MUTED, va="top")
@@ -535,13 +537,14 @@ def fig_graph(d, X, y, groups, per_group=3, spec=EXAMPLE):
     chosen = [(c, colr) for c, colr, _ in chosen]
     # Everything right of the inputs is packed as tightly as it will go, because
     # every hundredth of width saved here is width the labels can spend on type.
-    # x_node is set by measurement, not taste: the longest label -- "direction x
-    # stock market vs its 2-year peak = ..." -- is 0.613 wide at 20pt, so 0.640
-    # lands its left edge on the margin. Enlarging the type means moving this.
-    x_node = 0.640                      # the input column
-    x_conv = x_node + 0.130             # where the edges meet
+    # x_node is set by measurement, not taste: on a 15in page the longest label
+    # -- "direction x stock market vs its 2-year peak = ..." -- is 0.643 wide at
+    # 18.5pt, so 0.670 lands its left edge on the margin. Changing the page width
+    # or the label size means re-solving this row (see the label fontsize below).
+    x_node = 0.670                      # the input column
+    x_conv = x_node + 0.115             # where the edges meet
     x_sig = x_conv + 0.030              # sigma(z), set flush against the fan
-    x_out = 0.920                       # the verdict
+    x_out = 0.945                       # the verdict
     y_mid = (ys[0] + ys[-1]) / 2
     biggest = max(abs(live.at[c, "contrib"]) for c, _ in chosen)
 
@@ -555,7 +558,7 @@ def fig_graph(d, X, y, groups, per_group=3, spec=EXAMPLE):
     for (c, colr), yy in zip(chosen, ys):
         ax.plot([x_node], [yy], "o", ms=11, color=colr, mec="white", mew=1.6,
                 zorder=4)
-        ax.text(x_node - 0.022, yy, nice(c), fontsize=20, ha="right",
+        ax.text(x_node - 0.022, yy, nice(c), fontsize=18.5, ha="right",
                 va="center", color=INK)
         # White bbox: the edge leaves the node at a steep angle and passes
         # straight through where the number would otherwise sit.
@@ -582,7 +585,7 @@ def fig_graph(d, X, y, groups, per_group=3, spec=EXAMPLE):
             va="center", zorder=6, fontweight="bold")
     # Three short lines, not two long ones: a wide caption here either slid back
     # under the fan on its left or into the verdict on its right.
-    ax.text(x_sig + 0.030, y_mid - 0.050,
+    ax.text(x_sig + 0.030, y_mid - 0.044,
             f"weights fitted on\n{n_train:,} forecasts from\n"
             f"the other {n_blocks} periods",
             fontsize=10.5, ha="center", va="top", color=MUTED, linespacing=1.4)
@@ -599,12 +602,12 @@ def fig_graph(d, X, y, groups, per_group=3, spec=EXAMPLE):
                 zorder=4)
     ax.text(x_out, y_mid, said.lower(), fontsize=21, va="center",
             fontweight="bold", color=VERM if said == "NO HIT" else BLUE)
-    ax.text(x_out, y_mid - 0.056,
+    ax.text(x_out, y_mid - 0.048,
             "✓  the model called it" if said == truth
             else "✗  the model missed it",
             fontsize=13.5, va="top", fontweight="bold",
             color=GREEN if said == truth else VERM)
-    ax.text(x_out, y_mid - 0.128,
+    ax.text(x_out, y_mid - 0.112,
             f"what happened: {truth}\n{what} {verb} over\n"
             f"the next {int(row['horizon_used'])} months",
             fontsize=12, va="top", color=MUTED, linespacing=1.5)
