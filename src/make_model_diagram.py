@@ -43,7 +43,7 @@ BLUE = "#2a78d6"
 ORANGE = "#eb6834"
 RED = "#e34948"
 
-W, H = 11.0, 11.5
+W, H = 14.0, 10.5
 BASE, LABEL, NOTE = 23, 31, 20
 
 BOXES = [
