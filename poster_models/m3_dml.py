@@ -99,6 +99,34 @@ def crossfit_predict(Z, target, folds, kind):
     return pred
 
 
+def interaction_design(df, Z):
+    """direction x macro: let the EFFECT of a forecast depend on the economy.
+
+    docs/RESULTS_MACRO.md is the reason this exists. Its central correction is
+    that the pooled macro null was a CANCELLATION, not an absence: optimistic
+    and pessimistic forecasts respond to the same conditions with opposite
+    sign, so averaging them drives the coefficient to zero. A model additive in
+    the claim features is structurally unable to represent that -- one
+    coefficient has to serve both groups -- and will report 'the economy does
+    not matter' when what it means is 'I cannot express how it matters'.
+
+    Adding dir_sign * macro turns the partially linear model into
+
+        hit = theta'[claim, claim x macro] + g(macro) + e
+
+    which still lets g absorb the economy's MAIN effect non-parametrically,
+    while theta now carries how the payoff to predicting improvement moves with
+    conditions. That is the quantity RESULTS_MACRO measured at +0.066 AUC."""
+    dir_sign = (df["direction"].astype(str)
+                .map({"improve": 1.0, "worsen": -1.0}).fillna(0.0))
+    out = pd.DataFrame(index=df.index)
+    for c in Z.columns:
+        if c.startswith("m_has_"):
+            continue  # a coverage flag, not a condition
+        out[f"x_dir_{c[2:]}"] = dir_sign.values * Z[c].values
+    return out
+
+
 def run(args):
     C.header("MODEL 3: double machine learning",
              "The macro increment as a COEFFICIENT with a confidence interval, "
@@ -113,13 +141,37 @@ def run(args):
     # OVER the economy'. Without macro data there is no question to answer, so
     # it must fail rather than silently report an unconditional association.
     Z = C.macro_design(df, required=True)
-    D = C.standardize(C.drop_collinear(C.claim_design(df)))
+    D = C.drop_collinear(C.claim_design(df))
+    main_cols = list(D.columns)
+
+    inter_cols = []
+    if not args.no_interactions:
+        I = interaction_design(df, Z)
+        # A macro series that is not cached comes through as all-zero, so its
+        # interaction is all-zero too. Name those explicitly: silently dropping
+        # them would leave the run looking like a fair test of an interaction
+        # that was never actually in the design.
+        dead = [c for c in I.columns if I[c].std() == 0 or not np.isfinite(
+            I[c]).all()]
+        if dead:
+            print(f"\n  !! {len(dead)} interaction term(s) are constant and "
+                  f"cannot be estimated:\n     {', '.join(dead)}")
+            print("     This means the underlying macro series is not cached. "
+                  "The interaction\n     test below does NOT cover them.")
+            I = I.drop(columns=dead)
+        D = pd.concat([D, I], axis=1)
+        inter_cols = list(I.columns)
+
+    D = C.standardize(C.drop_collinear(D))
+    main_cols = [c for c in main_cols if c in D.columns]
+    inter_cols = [c for c in inter_cols if c in D.columns]
 
     folds, n_splits = grouped_folds(blocks, args.folds)
     print(f"\n  claims {len(df):,}   hit rate {y.mean():.3f}   "
           f"blocks {len(set(blocks))}")
     print(f"  macro nuisance features {Z.shape[1]}   claim features "
-          f"{D.shape[1]}   cross-fit folds {n_splits} (grouped by block)")
+          f"{len(main_cols)}   direction x macro interactions {len(inter_cols)}")
+    print(f"  cross-fit folds {n_splits} (grouped by block)")
 
     # --- stage 1: what does the economy alone predict? ----------------------
     print("\n  stage 1: cross-fitting E[hit | macro] ...")
@@ -217,6 +269,45 @@ def run(args):
               "size. A null with\n  wide intervals would only mean the study "
               "was underpowered -- say which it is.")
 
+    def block_test(cols, title, explain):
+        """Wald test that one named group of coefficients is jointly zero."""
+        cols = [c for c in cols if c in list(Xr.columns)]
+        if not cols:
+            return np.nan, np.nan, 0
+        ii = [list(Xr.columns).index(c) for c in cols]
+        Rb = np.zeros((len(ii), len(fit.params)))
+        for i, j in enumerate(ii):
+            Rb[i, j] = 1.0
+        w = fit.wald_test(Rb, scalar=True)
+        s, pv = float(np.squeeze(w.statistic)), float(np.squeeze(w.pvalue))
+        print(f"\n=== {title} ===")
+        print(f"  chi2({len(ii)}) = {s:.2f}   p = {pv:.4g}")
+        print(explain)
+        return s, pv, len(ii)
+
+    inter_stat = inter_p = np.nan
+    n_inter = 0
+    if inter_cols:
+        inter_stat, inter_p, n_inter = block_test(
+            inter_cols,
+            "does the ECONOMY change the payoff to a forecast? "
+            "(direction x macro)",
+            "  H0: the effect of predicting improvement is the same in every "
+            "macro state.\n  This is the RESULTS_MACRO finding restated as a "
+            "test: rejecting means\n  optimists and pessimists were right "
+            "under DIFFERENT conditions, which an\n  additive model averages "
+            "away to nothing.")
+        if np.isfinite(inter_p):
+            if inter_p < 0.05:
+                print("  -> Reject. The interaction is real, and a model "
+                      "additive in the macro\n     state understates the "
+                      "economy's role -- exactly the cancellation\n     "
+                      "RESULTS_MACRO diagnosed.")
+            else:
+                print("  -> Do not reject, on the terms actually estimable "
+                      "here. Check the list of\n     dropped interactions "
+                      "above before reading this as a null.")
+
     style_stat = style_p = np.nan
     style = [c for c in ["c_hedged", "c_quoted", "c_named", "c_has_number",
                          "c_len"] if c in list(tab["term"])]
@@ -246,6 +337,8 @@ def run(args):
         "auc_macro_oof": auc_macro, "wald_chi2": stat, "wald_df": dfree,
         "wald_p": pval,
         "style_chi2": style_stat, "style_df": len(style), "style_p": style_p,
+        "interaction_chi2": inter_stat, "interaction_df": n_inter,
+        "interaction_p": inter_p,
         "max_abs_effect": float(tab["coef"].abs().max()),
         "median_ci_width_pp": float((tab["hi95"] - tab["lo95"]).median() * 100),
     }])
@@ -288,4 +381,7 @@ if __name__ == "__main__":
                     help="cross-fitting folds (grouped by time block)")
     ap.add_argument("--placebo", type=int, default=0,
                     help="placebo draws to check the test's false-positive rate")
+    ap.add_argument("--no-interactions", action="store_true",
+                    help="drop the direction x macro terms (the pre-"
+                         "RESULTS_MACRO specification)")
     run(ap.parse_args())
