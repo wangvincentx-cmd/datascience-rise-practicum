@@ -1,10 +1,10 @@
 """The three feature blocks the hit model is built from, as one figure.
 
 Not a chart of data -- a picture of what goes INTO the model that
-src/hit_predictor.py and poster_models/m3_dml.py estimate. It exists because
-the poster's central claim is about WHICH BLOCK carries the signal, and that
-argument is easier to follow with the three blocks drawn side by side than
-with a formula.
+src/hit_predictor.py estimates (the AUC 0.647 logistic regression). It exists
+because the poster's central claim is about WHICH BLOCK carries the signal,
+and that argument is easier to follow with the three blocks drawn side by side
+than with a formula.
 
 The third block is the one people miss. docs/RESULTS_MACRO.md found that the
 pooled macro effect is a CANCELLATION -- optimists and pessimists are right
@@ -12,12 +12,11 @@ under opposite conditions -- so the economy only enters usefully once it is
 multiplied by the forecast's own direction. Drawing it as its own box is the
 point of the figure.
 
-Feature names are the real ones: claim block from poster_models/_common.py
-claim_design, macro block from src/model_hit.py macro_features, interaction
-block from m3_dml.interaction_design. NOTE: the 0.647 model in RESULTS_MACRO
-is src/hit_predictor.py, whose macro block also carries EPU and whose
-interaction block is four named terms rather than every macro term -- if that
-is the model on the poster, the lists below need updating to match.
+Feature names below are from src/model_hit.py (claim_features, macro_features).
+NOTE: the 0.647 model is src/hit_predictor.py, whose macro block also carries
+EPU and whose interaction block is four named terms rather than every macro
+term -- if that is the model on the poster, the lists below need updating to
+match src/macro_context.py FACTORS and hit_predictor.INTERACT_WITH.
 
     python src/make_model_diagram.py
 """

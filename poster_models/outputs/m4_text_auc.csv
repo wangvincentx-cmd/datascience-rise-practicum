@@ -1,6 +1,0 @@
-model,oof_auc,note
-structured features only (the baseline),0.5608884932785996,what model_hit already had
-word 1-2 grams,0.5382131258133349,"readable, but OCR fragments the vocab"
-char 3-5 grams,0.5371071973152632,OCR-robust
-"char 3-5 grams, digits masked",0.5385576851634514,guards against learning dates
-char n-grams + structured,0.5694015609328862,the full model
