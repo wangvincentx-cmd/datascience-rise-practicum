@@ -43,8 +43,8 @@ BLUE = "#2a78d6"
 ORANGE = "#eb6834"
 RED = "#e34948"
 
-W, H = 13.4, 7.0
-BASE, LABEL, NOTE = 17, 22, 15
+W, H = 13.4, 8.6
+BASE, LABEL, NOTE = 18, 24, 16
 
 BOXES = [
     dict(
@@ -98,7 +98,7 @@ def box(ax, x0, y0, w, h, spec):
     ax.text(x0 + 2.8, y0 + h - 8.8, spec["sub"], fontsize=NOTE, color=MUTED,
             va="center", zorder=4)
     for i, it in enumerate(spec["items"]):
-        ax.text(x0 + 2.8, y0 + h - 13.6 - i * 3.7, it, fontsize=BASE,
+        ax.text(x0 + 2.8, y0 + h - 13.5 - i * 3.9, it, fontsize=BASE,
                 color=INK2, va="center", zorder=4)
 
 
@@ -139,7 +139,7 @@ def main():
     ax.add_patch(matplotlib.patches.Ellipse(
         (zx, zy), 2 * zr, 2 * zr * aspect, facecolor=SURFACE, edgecolor=INK,
         linewidth=2.4, zorder=6))
-    ax.text(zx, zy, r"$\sigma(z)$", fontsize=38, color=INK, ha="center",
+    ax.text(zx, zy, r"$\sigma(z)$", fontsize=44, color=INK, ha="center",
             va="center", zorder=7)
 
     # arrows: each block -> sigma(z), curved so the three do not overlap
