@@ -42,7 +42,9 @@ text-feature model — **must run in the VM**. Only numbers/labels come out.
 | `strip_for_export.py` | VM | pred jsonl → `pred_*.export.jsonl` (removes `quote`) |
 | `adapt_proquest_claims.py` | Mac | `pred_*.export.jsonl` → `pred_proquestllm_economy_*.jsonl` (main's adapter: derives `predicted_state_at_horizon`, `hedged`) |
 | `run_all_economy.sh` | VM | batches parse→extract→strip over all 9 windows, bundles `proquest_exports.tar.gz` |
+| `run_corpus_economy.sh` | VM | the same, over the ~110 **year shards** of a 1900-2010 corpus (§4b) |
 | `extraction_status.py` | VM or Mac | the pred/verified files on disk → per-window table: claims, no-prediction pages, verifier drops, pages still to do |
+| `corpus_progress.py` | VM or Mac | the corpus rollup: per-decade counts, pages left, daily runs remaining (§4b) |
 | `sample_claims.py` | VM | prints N random claims to eyeball extraction quality |
 | `validate_kappa.py` | VM | draws a sample + computes Cohen's kappa (human validation) |
 | `analyze_economy.py` | Mac | pred jsonl (text-free) → NBER scoring, crisis-vs-placebo table |
@@ -354,6 +356,74 @@ One ProQuest dataset = one window. Steps:
 The 9 post-1963 windows (`kind` in `windows_economy.csv`): `oil_1973 volcker_1980
 crash_1987 gulf_1990 dotcom_2001 gfc_2008` (crises) and `calm_1965 calm_1995 calm_2005`
 (placebos).
+
+---
+
+## 4b. The CORPUS layout (one 1900-2010 dataset, ~146k articles)
+
+The alternative to §4, and the current direction: **one** ProQuest dataset built from
+a single query over **1900-2010**, instead of nine window-sized keyword datasets.
+
+**Why.** With per-window datasets, the ProQuest query itself decides how many articles
+each window contains — a crisis window matches more recession-words by construction — so
+"crisis windows contain more forecasts" is partly a statement about the query, not the
+press. A corpus spanning every year gives a real denominator (articles read per year, from
+`corpus_progress.py`) and a continuous 1900-2010 series instead of 9 disjoint bands.
+
+**What changes mechanically.** A 110-year dataset cannot be stamped with one window, so:
+
+| per-window (§4) | corpus |
+|---|---|
+| `tdm_parse.py --window gfc_2008` | `tdm_parse.py --corpus` |
+| window comes from the dataset | window derived per article **from its date** |
+| `data/raw/proquest_economy_gfc_2008.jsonl` | `data/raw/proquest_economy_{YYYY}.jsonl` |
+| `run_all_economy.sh` (9 windows) | `run_corpus_economy.sh` (~110 year shards) |
+| `extraction_status.py` (9 rows) | `corpus_progress.py` (decade rollup + pages left) |
+
+Most articles get a **null window** — the configured bands cover ~12 of 110 years. That is
+expected, not a parse failure; those claims are scored continuously against NBER, and
+`analyze_economy.py` now prints how many claims each table actually covers so the
+crisis-vs-placebo row can't be mistaken for the whole corpus.
+
+**Build it:** same as §4 steps 1-2 and 4-6, but the date range is the full span and the
+name has no window in it (e.g. `econ19002010`). Watch editions harder than usual — over
+110 years nearly every paper has multiple historical/current editions and you need all of
+them, or whole decades come back thin.
+
+**Budget honestly, before you start.** ~146k articles is ~30x the keyword windows.
+Extraction is ~1.2-1.5 LLM calls per article (`extract_gpt.py` chunks at 8000 chars) and
+verification adds one call per surviving claim. Against a daily cost cap that stopped an
+earlier run at ~4.3k articles, **this is a weeks-long run of once-a-day invocations**, and
+it consumes the shared proxy's daily budget for the duration. Every stage resumes per
+shard, so the operating procedure is genuinely just "run the same command daily":
+
+```
+python tdm_parse.py --arm economy --corpus --dataset-dir <folder> --inspect   # tags first
+python tdm_parse.py --arm economy --corpus --dataset-dir <folder>             # ~25 min, once
+PYTHONUNBUFFERED=1 nohup bash run_corpus_economy.sh > batch.log 2>&1 &        # daily
+python corpus_progress.py --rate 3000                                         # where am I
+```
+
+`run_corpus_economy.sh` runs **window years first** by default, so the crisis-vs-placebo
+result lands in days rather than at the very end; `--chrono` opts out. It also refuses to
+start if another run is live, and **does not** build an export tarball unless you pass
+`--export` — the 15 MB allowance is a rolling 7-day budget and a weeks-long run would
+otherwise spend it every day on partial data.
+
+**Do not let both layouts into `data/predictions/` at once.** `analyze_economy.py` globs
+`pred_*_economy_*.jsonl` with no window filter, so an article present in both the keyword
+window dataset and the corpus is counted twice — and the old window files are still schema
+v1, which the scorer cannot read at all. `tdm_parse.py --corpus` warns when it sees them;
+move them aside before scoring:
+
+```
+mkdir -p data/predictions/keyword_v1
+mv data/predictions/pred_proquest_economy_*_*.jsonl data/predictions/keyword_v1/
+```
+
+(The `*_*` glob matches window ids like `gulf_1990` and never a bare year.) This also
+settles the v1 backfile question from earlier: under the corpus the ~4.3k v1 records are
+superseded rather than migrated.
 
 ---
 

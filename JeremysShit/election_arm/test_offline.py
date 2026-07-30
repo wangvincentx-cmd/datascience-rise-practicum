@@ -22,12 +22,14 @@ import pandas as pd
 os.chdir(Path(__file__).resolve().parent)
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import corpus_progress
 import download_loc
 import download_nyt
 import extract_gpt
 import extract_predictions
 import extraction_status
 import strip_for_export
+import tdm_parse
 from analyze_economy import load_recessions, state_at
 
 REAL_DIR = Path(__file__).resolve().parent
@@ -462,6 +464,156 @@ check("window ids survive every filename variant",
           "verified/pred_proquest_economy_gulf_1990.export.jsonl",
           "data/verified/pred_proquest_economy_gulf_1990.jsonl.dropped.jsonl",
       )] == ["gulf_1990"] * 4)
+
+# ---------------------------------------------------------------------------
+# Corpus mode: ONE ProQuest dataset spanning many years (the 1900-2010 query)
+# instead of one dataset per window. The window now comes from each article's
+# date, and output is sharded by year so a weeks-long run can resume per shard.
+print("\n[8] tdm_parse.py --corpus (year shards, window derived from date)")
+
+
+def _proquest_xml(goid, date, paper, title, body):
+    """One ProQuest article XML, using the tags tdm_parse actually looks for.
+
+    Note the two <Title>s: the article's, and the publication's inside
+    <PubFrosting>. Telling them apart is exactly what TITLE_XPATHS does.
+    """
+    date_tag = f"<NumericDate>{date}</NumericDate>" if date else ""
+    return (f"<Record><GOID>{goid}</GOID>{date_tag}"
+            f"<PubFrosting><Title>{paper}</Title></PubFrosting>"
+            f"<Title>{title}</Title>"
+            f"<TextInfo><Text>{body}</Text></TextInfo></Record>")
+
+
+with sandbox_cwd() as d:
+    dataset = d / "econ19002010"
+    dataset.mkdir()
+    # gulf_1990 runs 1990-07-01..1991-01-31; calm_1995 runs 1995-03-01..09-30.
+    articles = [
+        ("g1", "1990-08-15", "in a crisis window"),
+        ("g2", "1995-04-02", "in a placebo window"),
+        ("g3", "1993-06-11", "between windows -- the 90% case"),
+        ("g4", "1990-06-30", "one day BEFORE gulf_1990 opens"),
+        ("g5", None, "no parseable date at all"),
+    ]
+    for goid, date, note in articles:
+        (dataset / f"{goid}.xml").write_text(_proquest_xml(
+            goid, date, "The Wall Street Journal", f"Headline {goid}",
+            f"Analysts expect a downturn. {note}"))
+
+    tdm_parse.run_corpus(dataset)
+
+    def read_shard(name):
+        path = d / "data/raw" / name
+        if not path.exists():
+            return []
+        return [json.loads(line) for line in path.read_text().splitlines() if line]
+
+    y1990 = read_shard("proquest_economy_1990.jsonl")
+    y1995 = read_shard("proquest_economy_1995.jsonl")
+    y1993 = read_shard("proquest_economy_1993.jsonl")
+    nodate = read_shard("proquest_economy_nodate.jsonl")
+    by_id = {r["page_id"]: r for r in y1990 + y1995 + y1993 + nodate}
+
+    # Resume is the load-bearing property of a run that takes weeks.
+    tdm_parse.run_corpus(dataset)
+    y1990_again = read_shard("proquest_economy_1990.jsonl")
+
+check("shards by the article's year, not by window",
+      len(y1990) == 2 and len(y1995) == 1 and len(y1993) == 1)
+check("a date inside a window gets that window and its kind",
+      by_id["g1"]["window"] == "gulf_1990"
+      and by_id["g1"]["window_kind"] == "crisis")
+check("placebo windows are labelled as such",
+      by_id["g2"]["window"] == "calm_1995"
+      and by_id["g2"]["window_kind"] == "placebo")
+check("a date outside every window is kept with a null window",
+      "g3" in by_id and by_id["g3"]["window"] is None
+      and by_id["g3"]["window_kind"] is None)
+check("window bounds are inclusive-exact, not fuzzy",
+      by_id["g4"]["window"] is None)
+check("undated articles are parked in their own shard, not dropped",
+      len(nodate) == 1 and nodate[0]["page_id"] == "g5")
+check("the article headline survives into ocr_text",
+      "Headline g1" in by_id["g1"]["ocr_text"])
+check("the publication title is not mistaken for the article title",
+      by_id["g1"]["newspaper_title"] == "The Wall Street Journal")
+check("re-running writes nothing new (resume across shards)",
+      len(y1990_again) == 2)
+
+# The subtle one. An article can sit in BOTH the old keyword window dataset and
+# the new corpus. If the corpus resume set counted the old per-window files, that
+# article would never be written to its year shard -- leaving window-shaped holes
+# in the corpus precisely where the analysis needs it densest.
+with sandbox_cwd() as d:
+    (d / "data/raw").mkdir(parents=True, exist_ok=True)
+    (d / "data/raw/proquest_economy_gulf_1990.jsonl").write_text(
+        json.dumps({"page_id": "shared1"}) + "\n")
+    (d / "data/raw/proquest_economy_1990.jsonl").write_text(
+        json.dumps({"page_id": "corpus1"}) + "\n")
+    done = tdm_parse.load_corpus_done_ids(d / "data/raw")
+
+check("the corpus resume set ignores the old per-window files",
+      done == {"corpus1"})
+check("a corpus shard is recognised by year, a window file is not",
+      bool(tdm_parse.CORPUS_SHARD_RE.match("proquest_economy_1990.jsonl"))
+      and not tdm_parse.CORPUS_SHARD_RE.match("proquest_economy_gulf_1990.jsonl"))
+
+# ---------------------------------------------------------------------------
+# The rollup that replaces the 9-row window table at 110 shards. Its one job is
+# an honest "pages left", so it must count done pages the way extract_gpt does.
+print("\n[9] corpus_progress.py (rollup over ~110 year shards)")
+
+check("corpus_progress tracks extract_gpt's schema version",
+      corpus_progress.SCHEMA_VERSION == extract_gpt.SCHEMA_VERSION)
+
+with sandbox_cwd() as d:
+    for sub in ("data/raw", "data/predictions", "data/verified"):
+        (d / sub).mkdir(parents=True, exist_ok=True)
+
+    def write_jsonl(path, records):
+        (d / path).write_text("".join(json.dumps(r) + "\n" for r in records))
+
+    write_jsonl("data/raw/proquest_economy_1990.jsonl",
+                [{"page_id": f"p{i}"} for i in range(4)])
+    write_jsonl("data/raw/proquest_economy_1991.jsonl",
+                [{"page_id": f"q{i}"} for i in range(2)])
+    # An old per-window file sitting alongside: not a unit of corpus work.
+    write_jsonl("data/raw/proquest_economy_gulf_1990.jsonl",
+                [{"page_id": f"w{i}"} for i in range(99)])
+    write_jsonl("data/predictions/pred_proquest_economy_1990.jsonl", [
+        {"schema_version": 2, "page_id": "p0", "quote": "a"},
+        {"schema_version": 2, "page_id": "p0", "quote": "b"},
+        {"schema_version": 2, "page_id": "p1", "no_predictions": True},
+        {"page_id": "p2", "claim_text": "old"},                       # v1: not done
+    ])
+    write_jsonl("data/verified/pred_proquest_economy_1990.jsonl",
+                [{"schema_version": 2, "page_id": "p0", "quote": "a"}])
+
+    raw = corpus_progress.count_raw(d / "data/raw")
+    preds = corpus_progress.count_preds(d / "data/predictions")
+    ver = corpus_progress.count_preds(d / "data/verified")
+    rows = corpus_progress.rollup(raw, preds, ver, by_year=False)
+    total = rows[-1]
+
+check("only year shards are counted as corpus work",
+      raw == {"1990": 4, "1991": 2})
+check("a page with two claims is one page done, two claims",
+      preds["1990"][0] == 2 and preds["1990"][1] == 2)
+check("a no_predictions page still counts as done",
+      "p1" in {"p0", "p1"} and preds["1990"][0] == 2)
+check("v1 pages are not counted done -- they will be re-extracted",
+      preds["1990"][2] == 1)
+_, parsed, done, claims, kept, _ = total
+check("decade rollup sums the years under it",
+      total[0] == "TOTAL" and parsed == 6 and done == 2
+      and claims == 2 and kept == 1)
+check("pages left is parsed minus done, so a quota stop is visible",
+      parsed - done == 4)
+check("export and dropped side-files are not counted as shards",
+      corpus_progress.shard_year("pred_proquest_economy_1990.export.jsonl") is None
+      and corpus_progress.shard_year(
+          "pred_proquest_economy_1990.jsonl.dropped.jsonl") is None)
 
 # Last, so it covers every block above: the suite must be hermetic.
 check("the committed search_log.csv is not touched by a test run",

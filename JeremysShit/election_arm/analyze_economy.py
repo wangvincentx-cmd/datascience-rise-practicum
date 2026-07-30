@@ -102,12 +102,36 @@ def main():
     df = df.dropna(subset=["claim_month"])
     print(f"scored {len(df)} claims\n")
 
-    print("--- Crisis vs placebo (the base-rate control) ---")
-    print(df.groupby("window_kind")[["hit", "brier"]].agg(["mean", "count"]))
+    # The corpus (one 1900-2010 query) puts most claims OUTSIDE any configured
+    # window, where window_kind is null. pandas' groupby drops those rows
+    # silently, so the crisis-vs-placebo table below would quietly describe a
+    # small slice of the data while looking like it described all of it. Say so.
+    in_window = df["window_kind"].notna().sum()
+    if in_window < len(df):
+        print(f"note: {in_window:,} of {len(df):,} claims fall inside a "
+              f"configured window. The crisis-vs-placebo and by-window tables "
+              f"below cover ONLY those; every other table covers all "
+              f"{len(df):,}.\n")
 
-    print("\n--- By window ---")
-    print(df.groupby("window")[["hit", "brier"]].mean()
-          .join(df.groupby("window").size().rename("count")))
+    print("--- Crisis vs placebo (the base-rate control) ---")
+    if in_window:
+        print(df.groupby("window_kind")[["hit", "brier"]].agg(["mean", "count"]))
+    else:
+        print("  no claims fall inside a configured window")
+
+    if in_window:
+        print("\n--- By window ---")
+        print(df.groupby("window")[["hit", "brier"]].mean()
+              .join(df.groupby("window").size().rename("count")))
+
+    # What the corpus buys that the per-window datasets could not: an
+    # uninterrupted series. Claim COUNT per decade is only interpretable
+    # alongside how many articles were read, which corpus_progress.py reports.
+    decades = df["claim_month"].dt.year // 10 * 10
+    if decades.nunique() > 2:
+        print("\n--- By decade (continuous series; window years included) ---")
+        print(df.groupby(decades)[["hit", "brier"]].mean()
+              .join(df.groupby(decades).size().rename("count")))
 
     print("\n--- By voice (whose prediction was it) ---")
     print(df.groupby("voice")[["hit", "brier"]].mean()

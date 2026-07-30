@@ -15,11 +15,24 @@ Why bother: ProQuest's <FullText> is the whole article body, whereas the NYT
 Article Search API (download_nyt.py) returns headline+abstract+lead+snippet only.
 So ocr_text here is far richer than the nyt source over the same 1963-2010 era.
 
-One ProQuest dataset = one arm/window bucket (mirrors how the downloaders bucket
-at fetch time). Build the dataset in the dashboard for a single window's date
-range, then run this once against that folder.
+Two dataset shapes, and they produce different output layouts:
 
-Output: data/raw/proquest_{elections|economy}_{cycle_or_window}.jsonl
+  per-window (--window)  One ProQuest dataset = one window, built in the
+                         dashboard for that window's date range with the
+                         forecast-catcher query. Mirrors how the downloaders
+                         bucket at fetch time.
+                         -> data/raw/proquest_economy_{window}.jsonl
+
+  corpus (--corpus)      One ProQuest dataset spans many years (e.g. a single
+                         1900-2010 query). No single window applies, so the
+                         window is derived per article from its date and is null
+                         for the ~90% of years no window covers. Output is
+                         sharded by year so the downstream extract/verify stages
+                         resume in small units -- which is what makes a corpus
+                         of this size survivable against the daily LLM quota.
+                         -> data/raw/proquest_economy_{YYYY}.jsonl
+
+Output: data/raw/proquest_{elections|economy}_{cycle_or_window_or_year}.jsonl
 
 VERIFY TAG NAMES FIRST. ProQuest's XML tag names vary by content type. Run with
 --inspect on your real dataset before a full parse; it prints the tag matched per
@@ -36,6 +49,10 @@ Usage:
       --dataset-dir /home/ec2-user/SageMaker/data/MyDataset
   python tdm_parse.py --arm elections --cycle 1980 \
       --dataset-dir /home/ec2-user/SageMaker/data/Elect1980
+  python tdm_parse.py --arm economy --corpus \
+      --dataset-dir /home/ec2-user/SageMaker/data/econ19002010 --inspect
+  python tdm_parse.py --arm economy --corpus \
+      --dataset-dir /home/ec2-user/SageMaker/data/econ19002010
 
 Resume-safe: already-parsed GOIDs are skipped on rerun.
 """
@@ -43,6 +60,7 @@ Resume-safe: already-parsed GOIDs are skipped on rerun.
 import argparse
 import csv
 import json
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -140,12 +158,31 @@ def load_done_ids(out_path):
 
 
 def load_economy_windows():
-    """Read crisis/placebo windows (all eras; ProQuest covers post-1963 too)."""
+    """window_id -> {kind, start, end} for every crisis/placebo window."""
     windows = {}
     with open("data/windows_economy.csv") as f:
         for row in csv.DictReader(f):
-            windows[row["window_id"]] = row["kind"]
+            windows[row["window_id"]] = {"kind": row["kind"],
+                                         "start": row["start_date"],
+                                         "end": row["end_date"]}
     return windows
+
+
+def window_for_date(date, windows):
+    """(window_id, kind) for the window containing an ISO date, else (None, None).
+
+    Corpus mode only. The windows are disjoint 6-7 month bands covering roughly
+    12 of the 110 years a 1900-2010 query spans, so the overwhelming majority of
+    articles legitimately match nothing and get a null window. That is not a
+    parse failure -- it is the point of the wider corpus. Dates are ISO strings
+    normalized by _norm_date, so string comparison is date comparison.
+    """
+    if not date:
+        return None, None
+    for window_id, spec in windows.items():
+        if spec["start"] <= date <= spec["end"]:
+            return window_id, spec["kind"]
+    return None, None
 
 
 def inspect(xml_files):
@@ -237,11 +274,143 @@ def run_dataset(arm, window_id, dataset_dir, extra_meta, limit=None):
           f"--arm {arm} --window {window_id}")
 
 
+# A corpus shard is named for the year it holds, so it can never collide with a
+# window id (which always carries a name_year form). Anything else in data/raw is
+# from the old per-window keyword datasets.
+CORPUS_SHARD_RE = re.compile(r"^proquest_economy_(\d{4}|nodate)\.jsonl$")
+
+
+def corpus_shards(out_dir):
+    return sorted(p for p in out_dir.glob("proquest_economy_*.jsonl")
+                  if CORPUS_SHARD_RE.match(p.name))
+
+
+def load_corpus_done_ids(out_dir):
+    """page_ids already written to any corpus year-shard.
+
+    Deliberately ignores the old per-window files (proquest_economy_gulf_1990
+    and friends): those came from the narrow forecast-catcher datasets, and an
+    article present in both corpora must still be written to its year shard.
+    Treating those GOIDs as done would punch window-shaped holes in the corpus.
+    """
+    done = set()
+    for path in corpus_shards(out_dir):
+        done |= load_done_ids(path)
+    return done
+
+
+def warn_stale_window_files(out_dir):
+    """Corpus and per-window predictions cannot both sit in data/predictions.
+
+    analyze_economy.py globs pred_*_economy_*.jsonl with no window filter, so an
+    article that appears in both a keyword window dataset and the corpus would be
+    counted twice -- and the old window files are still schema v1, which the
+    scorer cannot read at all. Warn loudly rather than moving a teammate's data.
+    """
+    stale = [p.name for p in out_dir.glob("proquest_economy_*.jsonl")
+             if not CORPUS_SHARD_RE.match(p.name)]
+    if not stale:
+        return
+    print(f"\n*** {len(stale)} per-window raw file(s) from the old keyword "
+          f"datasets are still here:")
+    for name in sorted(stale)[:10]:
+        print(f"      {name}")
+    if len(stale) > 10:
+        print(f"      ... and {len(stale) - 10} more")
+    print("*** Their predictions are globbed by analyze_economy.py alongside the")
+    print("*** corpus ones, double-counting any shared article. Before scoring:")
+    print("***   mkdir -p data/predictions/keyword_v1 && \\")
+    print("***     mv data/predictions/pred_proquest_economy_*_*.jsonl "
+          "data/predictions/keyword_v1/\n")
+
+
+def run_corpus(dataset_dir, limit=None):
+    """Parse one date-spanning dataset (e.g. a 1900-2010 query) into year shards.
+
+    A dataset covering 110 years cannot be stamped with a single window, so the
+    window is derived per article from its date and left null for the majority
+    that fall outside the configured bands. Sharding by year is what makes the
+    rest of the run tractable: every downstream stage resumes off its own shard's
+    output, so the resume scan stays small, and the batch runner gets a natural
+    unit to stop on when the daily LLM quota hits.
+    """
+    out_dir = Path("data/raw")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    windows = load_economy_windows()
+    warn_stale_window_files(out_dir)
+    done = load_corpus_done_ids(out_dir)
+    xml_files = sorted(dataset_dir.rglob("*.xml"))
+    print(f"=== ProQuest economy corpus ({dataset_dir.name}), "
+          f"{len(xml_files)} XMLs, {len(done)} already saved ===")
+
+    handles, per_year, per_window = {}, Counter(), Counter()
+    written = skipped = nodate = 0
+    try:
+        for i, path in enumerate(xml_files):
+            if limit and i >= limit:
+                break
+            fields = parse_xml(path)
+            if fields is None or not fields["goid"] or not fields["ocr_text"]:
+                skipped += 1
+                continue
+            if fields["goid"] in done:
+                continue
+            date = fields["date"]
+            # An article with no parseable date cannot be scored -- claim_month
+            # is what analyze_economy.py joins on. Park those in their own shard
+            # so they are counted and inspectable instead of silently dropped;
+            # the batch runner leaves that shard alone so no quota is spent on
+            # articles whose claims could never be scored.
+            shard = date[:4] if date else "nodate"
+            nodate += not date
+            window_id, kind = window_for_date(date, windows)
+            record = {
+                "page_id": fields["goid"], "lccn": None,
+                "newspaper_title": fields["newspaper_title"], "date": date,
+                "state": None, "city": None, "ocr_text": fields["ocr_text"],
+                "source": "proquest", "arm": "economy", "window": window_id,
+                "window_kind": kind, "matched_phrase": dataset_dir.name,
+            }
+            if shard not in handles:
+                handles[shard] = open(out_dir / f"proquest_economy_{shard}.jsonl",
+                                      "a")
+            handles[shard].write(json.dumps(record) + "\n")
+            handles[shard].flush()
+            done.add(fields["goid"])
+            written += 1
+            per_year[shard] += 1
+            per_window[window_id] += bool(window_id)
+            if written % 1000 == 0:
+                print(f"  wrote {written}")
+    finally:
+        for handle in handles.values():
+            handle.close()
+
+    years = sorted(y for y in per_year if y != "nodate")
+    in_window = sum(per_window.values())
+    print(f"\nwrote {written} new records ({skipped} skipped unparseable/empty)")
+    if years:
+        print(f"  {len(years)} year shards, {years[0]}-{years[-1]}")
+    if nodate:
+        print(f"  {nodate} records had no parseable date -> "
+              f"proquest_economy_nodate.jsonl (not extracted; unscorable)")
+    if written:
+        print(f"  {in_window} records fall inside a configured window "
+              f"({len(per_window)} windows); the rest carry a null window and "
+              f"are scored continuously against NBER")
+    print(f"\nNext: bash run_corpus_economy.sh")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--arm", choices=["elections", "economy"], required=True)
     ap.add_argument("--cycle", type=int, help="elections: cycle year, e.g. 1980")
     ap.add_argument("--window", help="economy: window_id, e.g. gfc_2008")
+    ap.add_argument("--corpus", action="store_true",
+                    help="economy: the dataset spans many years (e.g. one "
+                         "1900-2010 query) rather than one window. Shards "
+                         "output by year and derives each article's window "
+                         "from its date. Use INSTEAD of --window.")
     ap.add_argument("--dataset-dir", required=True,
                     help="ProQuest dataset folder, e.g. "
                          "/home/ec2-user/SageMaker/data/MyDataset")
@@ -269,14 +438,22 @@ def main():
         run_dataset("elections", str(args.cycle), dataset_dir,
                     {"cycle": args.cycle}, args.limit)
     else:
+        if args.corpus:
+            if args.window:
+                raise SystemExit("--corpus and --window are alternatives: "
+                                 "--corpus derives the window from each "
+                                 "article's date.")
+            run_corpus(dataset_dir, args.limit)
+            return
         if not args.window:
-            raise SystemExit("--window is required for --arm economy")
+            raise SystemExit("--window is required for --arm economy "
+                             "(or --corpus for a date-spanning dataset)")
         windows = load_economy_windows()
         if args.window not in windows:
             raise SystemExit(f"Unknown window '{args.window}'. "
                              f"Options: {sorted(windows)}")
         run_dataset("economy", args.window, dataset_dir,
-                    {"window_kind": windows[args.window]}, args.limit)
+                    {"window_kind": windows[args.window]["kind"]}, args.limit)
 
 
 if __name__ == "__main__":
