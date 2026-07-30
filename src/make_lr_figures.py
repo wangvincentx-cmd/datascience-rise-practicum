@@ -509,24 +509,24 @@ def fig_graph(d, X, y, groups, per_group=3, spec=EXAMPLE):
     # figure, and inches of width are what let them be set large. The top limit
     # sits just above the quote box -- bbox_inches="tight" keeps the whole axes
     # patch, so any headroom past the box printed as a band of white above it.
-    # Taller than the layout strictly needs: the row pitch is fixed in data
-    # units, so inches of height are what turn into air around the 20pt labels
-    # (0.077 of a row goes from a 41pt gap at 9.2in to 49pt at 11in). The quote
-    # block is re-tightened below to keep its own leading from growing with it.
-    fig, ax = plt.subplots(figsize=(17.0, 11.0))
-    ax.set_xlim(0, 1); ax.set_ylim(yy_cursor + GAP - 0.055, 1.197)
+    # The top limit sits just above the quote box -- bbox_inches="tight" keeps
+    # the whole axes patch, so any headroom past the box printed as a band of
+    # white above it. Heights other than ~9in need the quote block's own
+    # geometry (in data units) rescaled, or its leading stretches with the page.
+    fig, ax = plt.subplots(figsize=(17.0, 9.0))
+    ax.set_xlim(0, 1); ax.set_ylim(yy_cursor + GAP - 0.055, 1.232)
     ax.axis("off"); ax.grid(False)
 
     # -- the forecast itself, quoted across the top ---------------------------
-    ax.add_patch(plt.Rectangle((0.008, 1.010), 0.984, 0.175, facecolor="#f7f7f7",
+    ax.add_patch(plt.Rectangle((0.008, 1.010), 0.984, 0.210, facecolor="#f7f7f7",
                                edgecolor="#e3e3e3", lw=1.0, zorder=0))
-    ax.plot([0.008, 0.008], [1.010, 1.185], color=BLUE, lw=4.0, zorder=1,
+    ax.plot([0.008, 0.008], [1.010, 1.220], color=BLUE, lw=4.0, zorder=1,
             solid_capstyle="butt")
-    ax.text(0.030, 1.155, f"“{row['quote'].strip()}”", fontsize=17,
+    ax.text(0.030, 1.185, f"“{row['quote'].strip()}”", fontsize=17,
             style="italic", va="top", color=INK)
     speaker = str(row.get("speaker_name", "na"))
     who = "" if speaker.lower() == "na" else f"{speaker}, quoted in "
-    ax.text(0.030, 1.065,
+    ax.text(0.030, 1.075,
             f"{who}{_tidy_publisher(row['publisher'])}, "
             f"{pd.to_datetime(row['date']):%-d %B %Y} — {spec['occasion']}",
             fontsize=12, color=MUTED, va="top")
@@ -559,8 +559,8 @@ def fig_graph(d, X, y, groups, per_group=3, spec=EXAMPLE):
                 va="center", color=INK)
         # White bbox: the edge leaves the node at a steep angle and passes
         # straight through where the number would otherwise sit.
-        ax.text(x_node + 0.030, yy + 0.026, f"{live.at[c, 'contrib']:+.2f}",
-                fontsize=12, ha="left", va="center", color=MUTED,
+        ax.text(x_node + 0.030, yy + 0.028, f"{live.at[c, 'contrib']:+.2f}",
+                fontsize=15, ha="left", va="center", color=MUTED,
                 family="monospace", zorder=6,
                 bbox=dict(facecolor="white", edgecolor="none", pad=1.2))
 
@@ -582,7 +582,7 @@ def fig_graph(d, X, y, groups, per_group=3, spec=EXAMPLE):
             va="center", zorder=6, fontweight="bold")
     # Three short lines, not two long ones: a wide caption here either slid back
     # under the fan on its left or into the verdict on its right.
-    ax.text(x_sig + 0.030, y_mid - 0.044,
+    ax.text(x_sig + 0.030, y_mid - 0.050,
             f"weights fitted on\n{n_train:,} forecasts from\n"
             f"the other {n_blocks} periods",
             fontsize=10.5, ha="center", va="top", color=MUTED, linespacing=1.4)
@@ -599,12 +599,12 @@ def fig_graph(d, X, y, groups, per_group=3, spec=EXAMPLE):
                 zorder=4)
     ax.text(x_out, y_mid, said.lower(), fontsize=21, va="center",
             fontweight="bold", color=VERM if said == "NO HIT" else BLUE)
-    ax.text(x_out, y_mid - 0.048,
+    ax.text(x_out, y_mid - 0.056,
             "✓  the model called it" if said == truth
             else "✗  the model missed it",
             fontsize=13.5, va="top", fontweight="bold",
             color=GREEN if said == truth else VERM)
-    ax.text(x_out, y_mid - 0.112,
+    ax.text(x_out, y_mid - 0.128,
             f"what happened: {truth}\n{what} {verb} over\n"
             f"the next {int(row['horizon_used'])} months",
             fontsize=12, va="top", color=MUTED, linespacing=1.5)
