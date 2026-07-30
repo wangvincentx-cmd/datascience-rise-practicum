@@ -345,9 +345,9 @@ def fig_ladder_lr():
 # makes the group subtotals fail to add up to the log-odds printed underneath.
 GROUPS = [
     ("what the forecast said", hp.CLAIM_CAT + hp.CLAIM_NUM, GRAY),
-    ("the economy that month",
+    ("economic status",
      [f"m_{f}" for f in FACTORS] + [f"has_{f}" for f in FACTORS], GRAY),
-    ("the two multiplied", hp.INTER_NUM, BLUE),
+    ("economy × direction", hp.INTER_NUM, BLUE),
 ]
 
 # The one claim the figure walks through. Matched on fields rather than a row
@@ -442,7 +442,6 @@ def fig_graph(d, X, y, groups, per_group=3, spec=EXAMPLE):
     est, n_train, n_blocks = _fit_excluding(X, y, groups, groups[i])
     C = _contributions(est, X, i)
     p = float(est.predict_proba(X.iloc[[i]])[0, 1])
-    b0 = float(est.named_steps["clf"].intercept_[0])
     live = C[C["z"] != 0]           # an input at its mean moved nothing
 
     def value(n):
@@ -499,24 +498,26 @@ def fig_graph(d, X, y, groups, per_group=3, spec=EXAMPLE):
         sel = list(live.loc[cols, "contrib"].abs()
                    .sort_values(ascending=False).head(per_group).index)
         rest = [c for c in cols if c not in sel]
-        headers.append((name, colr, yy_cursor + 0.030, len(rest),
+        headers.append((name, colr, yy_cursor + 0.044, len(rest),
                         float(live.loc[rest, "contrib"].sum())))
         for c in sel:
             chosen.append((c, colr, yy_cursor))
             yy_cursor -= ROW
         yy_cursor -= GAP
 
-    fig, ax = plt.subplots(figsize=(15.0, 9.2))
-    ax.set_xlim(0, 1); ax.set_ylim(yy_cursor + GAP - 0.185, 1.30)
+    # Wider than tall on purpose: the input labels are the longest text on the
+    # figure, and inches of width are what let them be set large. The top limit
+    # sits just above the quote box -- bbox_inches="tight" keeps the whole axes
+    # patch, so any headroom past the box printed as a band of white above it.
+    fig, ax = plt.subplots(figsize=(17.0, 9.2))
+    ax.set_xlim(0, 1); ax.set_ylim(yy_cursor + GAP - 0.185, 1.232)
     ax.axis("off"); ax.grid(False)
 
     # -- the forecast itself, quoted across the top ---------------------------
-    ax.add_patch(plt.Rectangle((0.008, 1.010), 0.984, 0.268, facecolor="#f7f7f7",
+    ax.add_patch(plt.Rectangle((0.008, 1.010), 0.984, 0.210, facecolor="#f7f7f7",
                                edgecolor="#e3e3e3", lw=1.0, zorder=0))
-    ax.plot([0.008, 0.008], [1.010, 1.278], color=BLUE, lw=4.0, zorder=1,
+    ax.plot([0.008, 0.008], [1.010, 1.220], color=BLUE, lw=4.0, zorder=1,
             solid_capstyle="butt")
-    ax.text(0.030, 1.243, "ONE FORECAST, PUT THROUGH THE MODEL", fontsize=11,
-            fontweight="bold", color=MUTED, va="top")
     ax.text(0.030, 1.185, f"“{row['quote'].strip()}”", fontsize=17,
             style="italic", va="top", color=INK)
     speaker = str(row.get("speaker_name", "na"))
@@ -528,7 +529,10 @@ def fig_graph(d, X, y, groups, per_group=3, spec=EXAMPLE):
 
     ys = [t[2] for t in chosen]
     chosen = [(c, colr) for c, colr, _ in chosen]
-    x_node, x_lr = 0.455, 0.700
+    # The node column sits far enough right for the longest label -- "direction
+    # x stock market vs its 2-year peak = ..." at 13.5pt -- to clear the group
+    # headers on the left edge; sigma(z) and the verdict move right to match.
+    x_node, x_lr = 0.520, 0.765
     y_mid = (ys[0] + ys[-1]) / 2
     biggest = max(abs(live.at[c, "contrib"]) for c, _ in chosen)
 
@@ -542,46 +546,35 @@ def fig_graph(d, X, y, groups, per_group=3, spec=EXAMPLE):
     for (c, colr), yy in zip(chosen, ys):
         ax.plot([x_node], [yy], "o", ms=11, color=colr, mec="white", mew=1.6,
                 zorder=4)
-        ax.text(x_node - 0.022, yy, nice(c), fontsize=11.5, ha="right",
+        ax.text(x_node - 0.022, yy, nice(c), fontsize=16, ha="right",
                 va="center", color=INK)
         # White bbox: the edge leaves the node at a steep angle and passes
         # straight through where the number would otherwise sit.
         ax.text(x_node + 0.030, yy + 0.024, f"{live.at[c, 'contrib']:+.2f}",
-                fontsize=9.5, ha="left", va="center", color=MUTED,
+                fontsize=11, ha="left", va="center", color=MUTED,
                 family="monospace", zorder=6,
                 bbox=dict(facecolor="white", edgecolor="none", pad=1.2))
 
     # group headers, each sitting in the whitespace above its own rows
     for name, colr, yy, rest, rest_sum in headers:
-        ax.text(0.012, yy, name.upper(), fontsize=11.5, fontweight="bold",
+        ax.text(0.012, yy, name.upper(), fontsize=13, fontweight="bold",
                 va="bottom", ha="left", color=colr)
         ax.text(x_node + 0.012, yy,
-                f"+ {rest} more, together {_signed(rest_sum)}", fontsize=9.5,
+                f"+ {rest} more, together {_signed(rest_sum)}", fontsize=10.5,
                 color=MUTED, va="bottom", ha="right")
         ax.plot([0.012, x_node + 0.012], [yy - 0.016, yy - 0.016],
                 color="#e6e6e6", lw=1.0, zorder=1)
 
-    # the model, as one box
-    box_w, box_h = 0.135, 0.105
-    ax.add_patch(plt.Rectangle((x_lr - box_w / 2, y_mid - box_h / 2), box_w,
-                               box_h, facecolor="white", edgecolor="#bbbbbb",
-                               lw=1.6, zorder=5))
-    ax.text(x_lr, y_mid + 0.015, "logistic", fontsize=14.5, ha="center",
+    # The step that turns the summed log-odds into a probability. No box: the
+    # edges already converge on it, and the frame only competed with them.
+    ax.text(x_lr - 0.040, y_mid + 0.004, "σ(z)", fontsize=18, ha="center",
             va="center", zorder=6, fontweight="bold")
-    ax.text(x_lr, y_mid - 0.018, "regression", fontsize=14.5, ha="center",
-            va="center", zorder=6, fontweight="bold")
-    ax.text(x_lr, y_mid - box_h / 2 - 0.020,
+    # Right of centre and well below: the edges converge at x_lr - 0.072, and a
+    # caption centred under the label ran its first words into the fan.
+    ax.text(x_lr + 0.025, y_mid - 0.048,
             f"weights fitted on {n_train:,} forecasts\n"
             f"from the other {n_blocks} periods",
             fontsize=10, ha="center", va="top", color=MUTED, linespacing=1.4)
-
-    ax.annotate("", xy=(0.855, y_mid), xytext=(x_lr + box_w / 2 + 0.012, y_mid),
-                arrowprops=dict(arrowstyle="-|>", color="#999999", lw=1.6),
-                zorder=4)
-    ax.text(0.868, y_mid + 0.014, "hit or", fontsize=15, va="bottom",
-            color=INK, fontweight="bold")
-    ax.text(0.868, y_mid - 0.001, "no hit", fontsize=15, va="top", color=INK,
-            fontweight="bold")
 
     # what the model said about THIS forecast, and what happened
     said = "HIT" if p >= 0.5 else "NO HIT"
@@ -589,18 +582,22 @@ def fig_graph(d, X, y, groups, per_group=3, spec=EXAMPLE):
     what = BASIS_PRETTY.get(str(row["basis"]), str(row["basis"]))
     verb = {"improve": "rose", "up": "rose", "worsen": "fell",
             "down": "fell"}.get(str(row["realized"]), "moved the other way")
-    ax.text(0.868, y_mid - 0.098, f"model: {p:.0%} → {said}", fontsize=12.5,
-            va="top", color=VERM if said == "NO HIT" else BLUE,
-            fontweight="bold")
-    ax.text(0.868, y_mid - 0.150,
+
+    ax.annotate("", xy=(0.885, y_mid), xytext=(x_lr - 0.008, y_mid),
+                arrowprops=dict(arrowstyle="-|>", color="#999999", lw=1.6),
+                zorder=4)
+    ax.text(0.900, y_mid, f"{p:.0%} → {said.lower()}", fontsize=15,
+            va="center", fontweight="bold",
+            color=VERM if said == "NO HIT" else BLUE)
+    ax.text(0.900, y_mid - 0.052,
+            "✓  the model called it" if said == truth
+            else "✗  the model missed it",
+            fontsize=12.5, va="top", fontweight="bold",
+            color=GREEN if said == truth else VERM)
+    ax.text(0.900, y_mid - 0.120,
             f"what happened: {truth}\n{what} {verb} over\n"
             f"the next {int(row['horizon_used'])} months",
             fontsize=11, va="top", color=MUTED, linespacing=1.5)
-    ax.text(0.868, y_mid - 0.285,
-            "✓  the model called it" if said == truth
-            else "✗  the model missed it",
-            fontsize=11.5, va="top", fontweight="bold",
-            color=GREEN if said == truth else VERM)
 
     # Why the same falling market reads one sign on its own and the opposite
     # once multiplied -- the pair of numbers on the figure that looks like a
@@ -619,22 +616,14 @@ def fig_graph(d, X, y, groups, per_group=3, spec=EXAMPLE):
                 f"number on the page.",
                 fontsize=11, color=MUTED, va="top", linespacing=1.6)
 
+    # Anchored in DATA coords: the top-right corner of the axes is empty, but it
+    # sits above the quoted forecast's box, so an axes-fraction anchor would put
+    # the legend inside the quote.
     ax.plot([], [], color=BLUE, lw=3, label="pushed toward HIT")
     ax.plot([], [], color=VERM, lw=3, label="pushed toward NO HIT")
-    ax.legend(frameon=False, loc="lower right", fontsize=11,
-              bbox_to_anchor=(1.0, 0.0))
+    ax.legend(frameon=False, loc="upper right", fontsize=12,
+              bbox_to_anchor=(0.995, 0.985), bbox_transform=ax.transData)
 
-    total = b0 + float(live["contrib"].sum())
-    # x in FIGURE coords, chosen to land on the axes' own left edge so the
-    # footnote lines up with the group headers rather than hanging off to the
-    # left of them (bbox_inches="tight" then crops to that same edge).
-    fig.text(0.134, 0.045,
-             "Each number is that input's value × its weight, in log-odds; line "
-             "thickness is its size. The three groups and an intercept\nof "
-             f"{_signed(b0)} sum to {_signed(total)}, which is {p:.0%}. Only the "
-             f"largest few of this forecast's {len(live)} non-zero inputs are "
-             "drawn; the rest are totalled on the group lines.",
-             fontsize=10.5, color=MUTED, va="top", linespacing=1.6)
     fig.savefig(OUT / "figR_lr_graph.png", bbox_inches="tight")
     plt.close(fig)
     print(f"  -> {OUT / 'figR_lr_graph.png'}  (example: {row['date']}, "
