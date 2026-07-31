@@ -85,6 +85,16 @@ INCUMBENT = ("l2", 0.5)     # what hit_predictor.py actually ships
 # carry a marker at every fitted C, so nothing is hidden.
 XTICKS = [0.005, 0.02, 0.1, 0.5, 1.0]
 
+# Figure C runs on its own, much finer grid, and reaches an order of magnitude
+# further left than the evaluated grid. Both are deliberate. C_GRID's coarsest
+# step spans the whole event this figure is about -- c_direction_no_change is
+# zero at C=0.01 and -0.50 at C=0.02, so on that grid a term's entry point can
+# only be bracketed, never drawn. And every term is already alive at C=0.005,
+# so the evaluated range cannot show the ORDER in which they enter, which is
+# the one thing a coefficient path is for.
+PATH_GRID = list(np.exp(np.linspace(np.log(0.0002), np.log(1.0), 30)))
+C_XTICKS = [0.001, 0.01, 0.1, 1.0]
+
 # Where each page's text column starts, in figure coords -- titles and captions
 # align to this on all four, whatever the axes' own left margin has to be.
 NOTE_X = 0.135
@@ -97,6 +107,13 @@ D_TITLE_X = -0.246
 KEY_TERMS = {f"x_dir_{f}": n for f, n in [
     ("epu", "× policy uncertainty"), ("stock_ret6", "× stock return"),
     ("stock_drawdown", "× drawdown"), ("ip_accel", "× output accel.")]}
+
+# NOT highlighted, though it is the largest negative coefficient in the model
+# and the eye goes to it: c_direction_no_change. It is a big effect on a small
+# slice -- 400 of 14,251 claims, hit rate 0.180 against a 0.513 base -- and the
+# held-out permutation importance of the whole c_direction feature is 0.005 AUC
+# against x_dir_epu's 0.038. Drawing it in ink gave a term that moves the model
+# very little the same visual weight as the four that carry it.
 
 
 def style():
@@ -140,11 +157,17 @@ def l1_path(refit=False):
     DESCRIPTION of what the penalty keeps in what order, not an evaluation of
     it. The evaluation is figure A, which is out-of-fold."""
     if PATH_CACHE.exists() and not refit:
-        return pd.read_csv(PATH_CACHE, index_col=0)
+        cached = pd.read_csv(PATH_CACHE, index_col=0)
+        # A cache written against a different grid is silently the wrong figure,
+        # so the grid itself is the cache key.
+        if len(cached.columns) == len(PATH_GRID):
+            return cached
+        print(f"  [cached path has {len(cached.columns)} C values, "
+              f"grid wants {len(PATH_GRID)} -- refitting]")
     d, y, _ = MV.load()
     X, cat, num = MV.design(d)
     cols = {}
-    for C in MV.C_GRID:
+    for C in PATH_GRID:
         print(f"  L1 fit at C={C} ...", flush=True)
         pipe = HP.make_pipe(cat, num, clf=MV.clf_for("l1", C))
         pipe.fit(X, y)
@@ -225,6 +248,28 @@ def panel_b(ax, tab):
     clean(ax)
 
 
+def entry_c(path, name):
+    """The C at which a coefficient leaves zero for good.
+
+    Read from the right, where every term is alive, and walk left to the first
+    C at which this one is zero -- rather than the leftmost non-zero, because a
+    coefficient can flicker on, off and on again along a path. Returned as the
+    geometric midpoint of the bracketing pair, which is all the grid resolves;
+    the figure quotes it to one significant figure for the same reason."""
+    if name not in path.index:
+        return None
+    alive = path.loc[name].abs().values > 1e-8
+    cs = np.asarray(path.columns, dtype=float)
+    if not alive[-1]:
+        return None          # never enters, even at the weakest penalty tried
+    i = 0
+    for j in range(len(cs) - 1, -1, -1):
+        if not alive[j]:
+            i = j + 1
+            break
+    return None if i == 0 else float(np.sqrt(cs[i - 1] * cs[i]))
+
+
 def panel_c(ax, path):
     ax.grid(True, axis="y", lw=0.9, alpha=0.7)
     ax.set_axisbelow(True)
@@ -236,35 +281,64 @@ def panel_c(ax, path):
             continue
         ax.plot(cs, row.values, color=MUTED, lw=1.0, alpha=0.5, zorder=3)
 
-    # Three of the four land within 0.2 of each other at the right edge, so the
-    # labels are pulled apart vertically and each keeps a leader to its curve.
-    present = [(n, s) for n, s in KEY_TERMS.items() if n in path.index]
-    ends = sorted(present, key=lambda t: path.loc[t[0]].values[-1], reverse=True)
+    marked = [(n, s, ORANGE) for n, s in KEY_TERMS.items() if n in path.index]
+
+    # Several land within 0.2 of each other at the right edge, so the labels are
+    # pulled apart vertically and each keeps a leader to its curve.
+    ends = sorted(marked, key=lambda t: path.loc[t[0]].values[-1], reverse=True)
     label_y, floor = {}, None
-    for name, _ in ends:
+    for name, _, _ in ends:
         v = path.loc[name].values[-1]
         y = v if floor is None else min(v, floor - 0.26)
         label_y[name], floor = y, y
 
-    for name, nice in ends:
+    for name, nice, color in ends:
         v = path.loc[name].values
-        ax.plot(cs, v, color=ORANGE, lw=2.4, marker="s", markersize=6.5,
-                mec=SURFACE, mew=1.2, zorder=5)
-        ax.annotate(nice, xy=(cs[-1], v[-1]), xytext=(cs[-1] * 1.35, label_y[name]),
-                    color=ORANGE, fontsize=NOTE - 2, va="center", ha="left",
+        ax.plot(cs, v, color=color, lw=2.4 if color == ORANGE else 2.8,
+                zorder=5 if color == ORANGE else 6)
+        ax.annotate(nice, xy=(cs[-1], v[-1]), xytext=(cs[-1] * 1.30, label_y[name]),
+                    color=color, fontsize=NOTE - 2, va="center", ha="left",
                     arrowprops=dict(arrowstyle="-", color=AXIS, lw=1.0))
 
-    n_other = len(path.index) - len(present)
-    ax.text(cs[0] * 0.92, -1.02, f"the other {n_other} coefficients", color=MUTED,
-            fontsize=NOTE - 2, va="center", ha="left")
+    # --- the deletion line ----------------------------------------------------
+    # One line, and it is the only one that can be drawn for the panel as a
+    # whole: the C below which EVERY coefficient is zero. Per-term rules were
+    # tried and removed -- a full-height rule at one term's entry reads as this
+    # boundary, which is an order of magnitude away and means something else.
+    # Each term's own entry stays visible as the point where its curve lifts
+    # off zero, marked with a ring on the four highlighted ones.
+    lo, hi = ax.get_ylim()
+    for name, _, color in ends:
+        e = entry_c(path, name)
+        if e:
+            ax.plot([e], [0], "o", mfc=SURFACE, mec=color, mew=2.2,
+                    markersize=9, zorder=7)
+
+    e_all = min((c for c in (entry_c(path, n) for n in path.index)
+                 if c is not None), default=None)
+    x_lo = cs[0] * 0.80
+    if e_all:
+        ax.axvspan(x_lo, e_all, color=GRID, alpha=0.75, lw=0, zorder=1)
+        ax.axvline(e_all, color=INK2, lw=1.8, ls=(0, (5, 3.5)), zorder=4)
+        # No leader: the text sits against the rule already, and a leader drawn
+        # at the same height runs straight through its own label.
+        ax.text(e_all * 1.5, hi * 0.72,
+                f"L1 has deleted every\ncoefficient left of here\nC ≈ {e_all:.1g}",
+                color=INK2, fontsize=NOTE - 2.5, ha="left", va="center",
+                linespacing=1.45)
+
+    n_other = len(path.index) - len(marked)
+    ax.text(cs[-1] * 0.45, -0.80, f"the other {n_other} coefficients", color=MUTED,
+            fontsize=NOTE - 2, va="center", ha="center")
     ax.set_xscale("log")
-    ax.set_xticks(XTICKS)
-    ax.set_xticklabels([f"{c:g}" for c in XTICKS])
-    ax.set_xlim(cs[0] * 0.72, cs[-1] * 5.0)
+    ax.set_xticks(C_XTICKS)
+    ax.set_xticklabels([f"{c:g}" for c in C_XTICKS])
+    ax.set_xlim(x_lo, cs[-1] * 4.0)
     ax.set_xlabel("C   (smaller = deletes more)", fontsize=LABEL - 3, labelpad=9)
     ax.set_ylabel("L1 coefficient", fontsize=LABEL - 3, labelpad=9)
-    panel_title(ax, "C", "What L1 refuses to delete",
-                "direction × economy survives every C tried — in orange")
+    panel_title(ax, "C", "What L1 deletes, and in what order",
+                "a coefficient is exactly zero until its own curve lifts off —\n"
+                "the four direction × economy terms lift off before any other")
     clean(ax)
 
 
@@ -329,16 +403,16 @@ def panel_d(ax, dec):
 # Each figure now carries its own provenance, since none of them sits under a
 # shared caption any more. Two lines common to all four, then the one caveat
 # that figure specifically needs.
-COMMON = ("21 configurations of the AUC-0.647 hit model, leave-one-3-year-era-out:\n"
-          "22 eras, 14,251 forecasts. Only the penalty and C change.\n")
+COMMON = ("The AUC-0.647 hit model of src/hit_predictor.py, 14,251 forecasts 1900–1963.\n"
+          "Only the penalty and C change.   docs/RESULTS_MODEL_VARIANTS.md\n")
 
 # name, drawing function, which table it reads, axes margins, its own caveat.
 # D gets a wide left gutter: its y labels are two- and three-line era counts.
 PAGES = [
     ("a_penalty_auc", panel_a, "tab",
      dict(left=0.145, right=0.965, top=0.795, bottom=0.295),
-     "The whole grid spans 0.012 of AUC and the block-bootstrap interval on the\n"
-     "headline alone is ±0.07 — read for shape, not for a winner. Out-of-fold."),
+     "Out-of-fold, leave-one-3-year-era-out over 22 eras. The grid spans 0.012 of\n"
+     "AUC; the interval on the headline alone is ±0.07 — read for shape, not a winner."),
     ("b_sparsity", panel_b, "tab",
      dict(left=0.145, right=0.965, top=0.795, bottom=0.295),
      "Survivor counts are a full-data fit at each C — a description of what the\n"
@@ -347,13 +421,12 @@ PAGES = [
     # past the last fitted C and used to spill into the old sheet's column gap.
     ("c_l1_path", panel_c, "path",
      dict(left=0.145, right=0.735, top=0.795, bottom=0.295),
-     "A full-data L1 fit at each C, in-sample on purpose: what the penalty keeps\n"
-     "and in what order, never a claim about accuracy.\n"
-     "docs/RESULTS_MODEL_VARIANTS.md"),
+     "A full-data L1 fit at each C — what the penalty keeps and in what order,\n"
+     "not a claim about accuracy. Every term has its own deletion point."),
     ("d_within_era", panel_d, "dec",
      dict(left=0.300, right=0.970, top=0.795, bottom=0.295),
-     "Pooled = one AUC over all 22 eras' held-out predictions. Within-era = the\n"
-     "size-weighted mean of the 22 per-era deltas. Out-of-fold."),
+     "Out-of-fold, 22 eras. Pooled = one AUC over all eras' held-out predictions;\n"
+     "within-era = the size-weighted mean of the 22 per-era deltas."),
 ]
 
 
