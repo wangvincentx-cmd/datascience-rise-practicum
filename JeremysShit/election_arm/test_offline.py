@@ -615,6 +615,115 @@ check("export and dropped side-files are not counted as shards",
       and corpus_progress.shard_year(
           "pred_proquest_economy_1990.jsonl.dropped.jsonl") is None)
 
+# ---------------------------------------------------------------------------
+# The corpus is the only dataset now, and verification is a PHASE that must not
+# start before every page is extracted. Two things enforce that: the integer
+# corpus_progress.py --left prints, and the gate in run_corpus_economy.sh that
+# reads it. The script itself needs the VM interpreter, so its gate is checked as
+# text; the counter is checked by running it.
+print("\n[10] the extract-then-verify phase gate")
+
+import subprocess
+
+import analyze_economy
+
+
+def progress_left(cwd):
+    """`corpus_progress.py --left` as the shell sees it: (rc, stdout)."""
+    p = subprocess.run([sys.executable, str(REAL_DIR / "corpus_progress.py"), "--left"],
+                       cwd=cwd, capture_output=True, text=True)
+    return p.returncode, p.stdout.strip()
+
+with sandbox_cwd() as d:
+    for sub in ("data/raw", "data/predictions", "data/verified"):
+        (d / sub).mkdir(parents=True, exist_ok=True)
+
+    def write_jsonl(path, records):
+        (d / path).write_text("".join(json.dumps(r) + "\n" for r in records))
+
+    rc_empty, out_empty = progress_left(d)
+
+    write_jsonl("data/raw/proquest_economy_1930.jsonl",
+                [{"page_id": f"p{i}"} for i in range(3)])
+    write_jsonl("data/predictions/pred_proquest_economy_1930.jsonl", [
+        {"schema_version": 2, "page_id": "p0", "quote": "a"},
+    ])
+    rc_partial, out_partial = progress_left(d)
+
+    write_jsonl("data/predictions/pred_proquest_economy_1930.jsonl", [
+        {"schema_version": 2, "page_id": "p0", "quote": "a"},
+        {"schema_version": 2, "page_id": "p1", "no_predictions": True},
+        {"schema_version": 2, "page_id": "p2", "no_predictions": True},
+    ])
+    rc_done, out_done = progress_left(d)
+
+check("--left prints a bare integer the shell can compare",
+      rc_partial == 0 and out_partial == "2")
+check("--left reaches 0 only when every parsed page is extracted",
+      rc_done == 0 and out_done == "0")
+check("no shards is an ERROR, not 0 left -- it must not unlock verification",
+      rc_empty != 0 and out_empty == "")
+
+RUNNER = (REAL_DIR / "run_corpus_economy.sh").read_text()
+check("the runner gates verification on corpus_progress.py --left",
+      "corpus_progress.py --left" in RUNNER)
+check("verification is refused while pages remain unextracted",
+      "Refusing to verify" in RUNNER)
+check("a non-numeric gate reading aborts instead of verifying blind",
+      "not starting verification blind" in RUNNER)
+check("the scrapped per-window runner is gone",
+      not (REAL_DIR / "run_all_economy.sh").exists())
+check("run order no longer prioritises window years over the rest",
+      "windows_economy.csv" not in RUNNER and "windows-first" not in RUNNER)
+
+# ---------------------------------------------------------------------------
+# What the scorer is allowed to load. The bare pred_*_economy_*.jsonl glob also
+# matched the stripped .export copies, the verifier's .dropped rejects, and the
+# scrapped periods files at schema v1 -- each of which either double-counts
+# claims or re-admits what the filter threw out.
+print("\n[11] analyze_economy.py loads the right set")
+
+with sandbox_cwd() as d:
+    (d / "data/verified").mkdir(parents=True, exist_ok=True)
+    (d / "data/predictions").mkdir(parents=True, exist_ok=True)
+    for name in ("pred_proquest_economy_1930.jsonl",
+                 "pred_proquest_economy_1930.export.jsonl",
+                 "pred_proquest_economy_1930.jsonl.dropped.jsonl",
+                 "pred_proquest_economy_gulf_1990.jsonl",
+                 "pred_loc_economy_crash_1929.jsonl"):
+        (d / "data/predictions" / name).write_text("")
+    names = {p.name for p in analyze_economy.pred_files(d / "data/predictions")}
+
+    # A v1 record next to a v2 one: the v1 vocabulary has no
+    # predicted_state_at_horizon, so scoring it would produce a silent miss.
+    (d / "data/verified/pred_proquest_economy_1930.jsonl").write_text(
+        json.dumps({"schema_version": 2, "page_id": "p0", "date": "1930-01-01",
+                    "predicted_state_at_horizon": "recession", "horizon_months": 6,
+                    "hedged": False, "voice": "editor", "source": "proquest",
+                    "window": None, "window_kind": None}) + "\n"
+        + json.dumps({"page_id": "p1", "claim_text": "old vocabulary"}) + "\n"
+        + json.dumps({"schema_version": 2, "page_id": "p2",
+                      "no_predictions": True}) + "\n")
+    df, which = analyze_economy.load_claims("verified")
+
+check("year shards and other-source windows load",
+      names == {"pred_proquest_economy_1930.jsonl",
+                "pred_loc_economy_crash_1929.jsonl"})
+check("stripped .export and .dropped side-files are never loaded",
+      not any(".export." in n or ".dropped." in n for n in names))
+check("v1 records are skipped, not scored under the wrong vocabulary",
+      len(df) == 1 and which == "verified")
+
+with sandbox_cwd() as d:
+    (d / "data/predictions").mkdir(parents=True, exist_ok=True)
+    (d / "data/predictions/pred_proquest_economy_1930.jsonl").write_text(
+        json.dumps({"schema_version": 2, "page_id": "p0", "date": "1930-01-01",
+                    "predicted_state_at_horizon": "recession"}) + "\n")
+    df_fb, which_fb = analyze_economy.load_claims("verified")
+
+check("an empty data/verified falls back to raw and says which set it used",
+      which_fb == "raw" and len(df_fb) == 1)
+
 # Last, so it covers every block above: the suite must be hermetic.
 check("the committed search_log.csv is not touched by a test run",
       SEARCH_LOG_BEFORE is None or SEARCH_LOG.read_text() == SEARCH_LOG_BEFORE)

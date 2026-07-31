@@ -41,13 +41,13 @@ text-feature model — **must run in the VM**. Only numbers/labels come out.
 | `extract_gpt.py` | VM | raw jsonl → `data/predictions/pred_proquest_economy_{window}.jsonl` (via in-VM GPT proxy) |
 | `strip_for_export.py` | VM | pred jsonl → `pred_*.export.jsonl` (removes `quote`) |
 | `adapt_proquest_claims.py` | Mac | `pred_*.export.jsonl` → `pred_proquestllm_economy_*.jsonl` (main's adapter: derives `predicted_state_at_horizon`, `hedged`) |
-| `run_all_economy.sh` | VM | batches parse→extract→strip over all 9 windows, bundles `proquest_exports.tar.gz` |
-| `run_corpus_economy.sh` | VM | the same, over the ~110 **year shards** of a 1900-2010 corpus (§4b) |
-| `extraction_status.py` | VM or Mac | the pred/verified files on disk → per-window table: claims, no-prediction pages, verifier drops, pages still to do |
+| `verify_gpt.py` | VM | pred jsonl → `data/verified/pred_*.jsonl` + `.dropped.jsonl` (second pass; precision 0.41 → 0.70) |
+| `run_corpus_economy.sh` | VM | the batch runner: **extracts every year shard, then verifies the whole corpus once extraction is done** (§4b) |
+| `extraction_status.py` | VM or Mac | per-window table: claims, no-prediction pages, verifier drops, pages still to do. Superseded by `corpus_progress.py` for the corpus |
 | `corpus_progress.py` | VM or Mac | the corpus rollup: per-decade counts, pages left, daily runs remaining (§4b) |
 | `sample_claims.py` | VM | prints N random claims to eyeball extraction quality |
 | `validate_kappa.py` | VM | draws a sample + computes Cohen's kappa (human validation) |
-| `analyze_economy.py` | Mac | pred jsonl (text-free) → NBER scoring, crisis-vs-placebo table |
+| `analyze_economy.py` | Mac | verified (or `--set raw`) jsonl → NBER scoring, by-decade series, crisis-vs-placebo subset |
 | `model.py` | VM (for text features) | `scored_economy.csv` → predicts `hit`, prints feature importances |
 
 `extract_predictions.py` is the **non-ProQuest** extractor (loc/nyt sources, runs
@@ -148,8 +148,9 @@ python migrate_v2.py --restore  # undo
 ```
 It refuses to run if the v2 scripts were not pasted in first (migrating against
 the old extractor would burn a day of quota re-creating v1), skips files already
-on v2, is safe to re-run, and prints the `run_all_economy.sh` line for the
-windows that need redoing. It also counts the **fake `no_predictions`** rows the
+on v2, is safe to re-run, and prints the re-extract line for the year shards
+that need redoing (per-window ProQuest files are not redone — the corpus replaces
+them). It also counts the **fake `no_predictions`** rows the
 pre-fix extractor wrote for FAILED calls — indistinguishable from real empties in
 v1, and one more reason those windows are worth redoing.
 
@@ -198,7 +199,7 @@ binary name was. Hardcoding `bin/python` is what produced a long run of
 "No module named openai" against an interpreter that existed but was the wrong
 one. The error is misleading: a wrong *path* says "no such file or directory",
 so "no module named openai" makes you hunt for the package when the real fault
-is the interpreter. `run_all_economy.sh` now honours an exported `$PY` and falls
+is the interpreter. `run_corpus_economy.sh` honours an exported `$PY` and falls
 back to the path above, so there is nothing to edit by hand.
 
 **Installing packages:** `pip` is blocked (no internet). `conda` works via ProQuest's
@@ -237,7 +238,8 @@ This is the part that trips people up. Do it once per fresh workbench, in order.
 the needed files into a tarball, base64 it, and paste one command. On the **Mac**, from
 `JeremysShit/election_arm`, generate the paste:
 ```
-tar czf - tdm_parse.py extract_gpt.py strip_for_export.py run_all_economy.sh \
+tar czf - tdm_parse.py extract_gpt.py verify_gpt.py strip_for_export.py \
+  run_corpus_economy.sh corpus_progress.py \
   sample_claims.py validate_kappa.py analyze_economy.py model.py \
   data/windows_economy.csv data/nber_recessions.csv data/proquest_datasets.csv \
   data/epu_monthly.csv | base64 | tr -d '\n'
@@ -278,11 +280,11 @@ internet), then re-test:
 ```
 conda install -n <sample-env> lxml -y
 ```
-Finally, point `run_all_economy.sh` at that interpreter:
+Finally, point `run_corpus_economy.sh` at that interpreter:
 ```
-# run_all_economy.sh now honours an exported $PY -- nothing to edit.
+# run_corpus_economy.sh honours an exported $PY -- nothing to edit.
 # Only needed if you want to bake a different default into the file:
-sed -i "s|^PY=.*|PY=\"\${PY:-$PY}\"|" run_all_economy.sh
+sed -i "s|^PY=.*|PY=\"\${PY:-$PY}\"|" run_corpus_economy.sh
 ```
 
 **C. Create `gpt_sample.txt` so `extract_gpt.py` can auto-discover the proxy.** It needs the
@@ -325,11 +327,18 @@ Prints `using proxy base_url=...` then `ok` → the notebook is fully set up. Er
 error → check the base_url/key path in `make_client`'s printout (the key path may differ on
 this workbench).
 
-After A–D succeed, go to §4 (build a dataset) then §5 (run).
+After A–D succeed, go to **§4b** (build the corpus dataset) then §5 (run). §4 is kept for
+reference only.
 
 ---
 
-## 4. Building a dataset in the ProQuest dashboard
+## 4. Building a per-window dataset — SCRAPPED, kept for reference
+
+**This layout is no longer used.** One dataset per crisis/placebo window is what §4b
+replaced: the ~146k-article 1900-2010 corpus is now the only ProQuest dataset, and
+`run_all_economy.sh`, which drove this layout, has been deleted. Read §4b instead. What
+follows still documents how the nine v1 window datasets (and the claims already extracted
+from them) were built, which is the provenance of anything labelled `keyword_v1`.
 
 One ProQuest dataset = one window. Steps:
 
@@ -347,7 +356,7 @@ One ProQuest dataset = one window. Steps:
    (recession OR downturn OR depression OR recovery OR slump) NEAR/10 (predict* OR expect* OR forecast* OR outlook OR likely OR coming OR ahead OR fear*)
    ```
 5. **Name = window id with underscores removed** — ProQuest strips underscores, and
-   `run_all_economy.sh` derives the folder as `${window//_/}`. So `gfc_2008` → dataset
+   the (now deleted) `run_all_economy.sh` derived the folder as `${window//_/}`. So `gfc_2008` → dataset
    `gfc2008` → folder `/home/ec2-user/SageMaker/data/gfc2008`.
 6. **Build it** (~1 hr, ProQuest-side, independent of the VM terminal).
 7. **Log provenance** in `data/proquest_datasets.csv`: window_id, source_papers,
@@ -359,10 +368,11 @@ crash_1987 gulf_1990 dotcom_2001 gfc_2008` (crises) and `calm_1965 calm_1995 cal
 
 ---
 
-## 4b. The CORPUS layout (one 1900-2010 dataset, ~146k articles)
+## 4b. The CORPUS layout (one 1900-2010 dataset, ~146k articles) — THE CURRENT PLAN
 
-The alternative to §4, and the current direction: **one** ProQuest dataset built from
-a single query over **1900-2010**, instead of nine window-sized keyword datasets.
+**One** ProQuest dataset built from a single query over **1900-2010**, with no keyword
+pre-filter: gpt-4o-mini extracts over every article, and the verification phase then judges
+every claim that survives. This replaces §4's nine window-sized datasets outright.
 
 **Why.** With per-window datasets, the ProQuest query itself decides how many articles
 each window contains — a crisis window matches more recession-words by construction — so
@@ -377,7 +387,7 @@ press. A corpus spanning every year gives a real denominator (articles read per 
 | `tdm_parse.py --window gfc_2008` | `tdm_parse.py --corpus` |
 | window comes from the dataset | window derived per article **from its date** |
 | `data/raw/proquest_economy_gfc_2008.jsonl` | `data/raw/proquest_economy_{YYYY}.jsonl` |
-| `run_all_economy.sh` (9 windows) | `run_corpus_economy.sh` (~110 year shards) |
+| `run_all_economy.sh` (9 windows, **deleted**) | `run_corpus_economy.sh` (~110 year shards) |
 | `extraction_status.py` (9 rows) | `corpus_progress.py` (decade rollup + pages left) |
 
 Most articles get a **null window** — the configured bands cover ~12 of 110 years. That is
@@ -404,17 +414,37 @@ PYTHONUNBUFFERED=1 nohup bash run_corpus_economy.sh > batch.log 2>&1 &        # 
 python corpus_progress.py --rate 3000                                         # where am I
 ```
 
-`run_corpus_economy.sh` runs **window years first** by default, so the crisis-vs-placebo
-result lands in days rather than at the very end; `--chrono` opts out. It also refuses to
-start if another run is live, and **does not** build an export tarball unless you pass
-`--export` — the 15 MB allowance is a rolling 7-day budget and a weeks-long run would
-otherwise spend it every day on partial data.
+`run_corpus_economy.sh` works in **two phases, and the switch is automatic** — you do not
+have to notice when the first one ends:
 
-**Do not let both layouts into `data/predictions/` at once.** `analyze_economy.py` globs
-`pred_*_economy_*.jsonl` with no window filter, so an article present in both the keyword
-window dataset and the corpus is counted twice — and the old window files are still schema
-v1, which the scorer cannot read at all. `tdm_parse.py --corpus` warns when it sees them;
-move them aside before scoring:
+1. **EXTRACT** every year shard, oldest first, until all ~146k pages have been read.
+2. **VERIFY** — gpt-4o-mini's second pass over the candidate claims — **only once every
+   page has been extracted.** The script asks `corpus_progress.py --left` and refuses to
+   start phase 2 while that is above zero (`--force` overrides, `--verify` runs phase 2
+   alone, `--extract` runs phase 1 alone).
+
+Verification waits on purpose. It is a precision filter whose keep-rate is a property of
+the run, so applying it to a growing pile of claims would filter early years under one set
+of conditions and late years under another, leaving the keep-rate uninterpretable as a
+single number. It is also the cheaper pass (one call per page, a quote plus ~400 chars of
+context, versus extraction's whole-document calls), so it is the one that should wait.
+Phase 2 is itself resumable and quota-capped, so expect it to take several daily runs of
+its own after extraction finishes.
+
+There is no prioritised ordering any more: with the per-window datasets scrapped the
+deliverable is the whole 1900-2010 series, so years run chronologically. The runner still
+refuses to start if another run is live, and **does not** build an export tarball unless
+you pass `--export` — the 15 MB allowance is a rolling 7-day budget and a weeks-long run
+would otherwise spend it every day on partial data.
+
+**The old per-window files are dead weight, and the scorer now says so.**
+`analyze_economy.py` skips ProQuest per-window files (`pred_proquest_economy_gulf_1990.jsonl`)
+and prints which ones it skipped: an article present in both the keyword dataset and the
+corpus would otherwise be counted twice, and those files are schema v1, which the scorer
+cannot read anyway. It also no longer loads the stripped `.export` copies or the verifier's
+`.dropped` rejects, both of which the old bare glob matched. Nothing breaks if you leave
+them in place, but `tdm_parse.py --corpus` warns about them and moving them aside keeps the
+folder honest:
 
 ```
 mkdir -p data/predictions/keyword_v1
@@ -430,11 +460,11 @@ superseded rather than migrated.
 ## 5. Running the pipeline
 
 Verify first: `<sample-python> -c "import lxml, openai"` → `ok`. Confirm
-`run_all_economy.sh`'s `PY=` line points at the sample env python (not bare `python`).
+`run_corpus_economy.sh`'s `PY=` line points at the sample env python (not bare `python`).
 
-Then, from `election_arm`, **launched exactly once**:
+Then, from `election_arm`, **launched exactly once per day**:
 ```
-PYTHONUNBUFFERED=1 nohup bash run_all_economy.sh > batch.log 2>&1 &
+PYTHONUNBUFFERED=1 nohup bash run_corpus_economy.sh > batch.log 2>&1 &
 tail -f batch.log
 ```
 - `nohup` → survives a closed browser (TDM keeps processes ~48h).
@@ -443,11 +473,11 @@ tail -f batch.log
 
 Monitor with the **files on disk**, not the log (see §6):
 ```
-python extraction_status.py
+python corpus_progress.py            # decade rollup, pages left, which phase is next
+python extraction_status.py          # per-window detail (pre-corpus layout)
 ```
-Per window: claims, pages that came back with no prediction, claims the verifier
-dropped, and pages still to do — so a quota stop shows up as a `left` column that
-stops shrinking. (`wc -l data/predictions/pred_proquest_economy_*.jsonl` is the
+`corpus_progress.py` prints which phase the next run will do — EXTRACT while pages
+remain, then VERIFY with a count of years still to judge, then DONE. (`wc -l data/predictions/pred_proquest_economy_*.jsonl` is the
 crude version: it counts empties and v1 leftovers as if they were claims.)
 
 Quality check anytime: `python sample_claims.py --n 10`.
@@ -467,7 +497,8 @@ was really just buffered errors.)
 per-day *cost* cap on the shared proxy. `extract_gpt.py` now detects it
 (`RateLimitReached`), **stops cleanly** (exit 2), and does NOT mark the current article
 done, so a rerun resumes exactly there. The batch runner stops the whole run on exit 2.
-→ **Workflow is "run once a day until all 9 windows finish."** Check if the cap reset
+→ **Workflow is "run the same command once a day until `corpus_progress.py` says DONE"** —
+first through extraction, then through verification. Check if the cap reset
 without a big run by making one probe call (a 5-token "say ok"); if it 429s, wait.
 
 **Failures silently recorded as `no_predictions` (fixed).** The old code wrote a failed
@@ -477,8 +508,8 @@ write `no_predictions`.
 
 **Never launch the batch twice.** Two concurrent runs fight over the rate-limited proxy
 (halving throughput, constant backoffs) and double-process articles → duplicate claims.
-Before launching, `ps -ef | grep -E "run_all_economy|extract_gpt" | grep -v grep` must be
-empty. If duplicates happened, dedup by `page_id` before scoring.
+Before launching, `ps -ef | grep -E "run_corpus_economy|extract_gpt|verify_gpt" | grep -v grep`
+must be empty (the runner checks this itself and exits). If duplicates happened, dedup by `page_id` before scoring.
 
 **Azure content filter false positives.** Some OCR'd articles trip the proxy's
 `jailbreak detected` filter (a 400). They yield no claims — a recall leak. Occasional is
@@ -493,7 +524,7 @@ cost a long debugging detour. Don't guess:
 ```
 python vm_doctor.py        # prints the exact `export PY=...` to use
 ```
-`run_all_economy.sh` honours an exported `$PY`, so there is nothing to edit by hand.
+`run_corpus_economy.sh` honours an exported `$PY`, so there is nothing to edit by hand.
 
 **iCloud eviction on the Mac side.** This repo lives in an iCloud-synced folder. Symptoms:
 ProQuest files "disappear" from disk, or the checkout silently switches to `main` (where
@@ -529,9 +560,13 @@ difference — don't silently pool gpt-4o-mini labels with gpt-4.1 ones.
 
 **Scoring (Mac, text-free):**
 ```
-python analyze_economy.py     # NBER hit rates, Brier, crisis-vs-placebo, by voice/source
+python analyze_economy.py              # the VERIFIED set (default) -> data/scored_economy.csv
+python analyze_economy.py --set raw    # every candidate     -> data/scored_economy_raw.csv
 ```
-Needs `data/nber_recessions.csv` (present). Writes `data/scored_economy.csv`.
+Needs `data/nber_recessions.csv` (present). Run both and report the difference: that is the
+measured effect of the verification phase, and the raw set's precision is ~0.41 on the gold
+pages. If `data/verified/` is empty the default falls back to raw **and says so** — check
+that line before quoting a hit rate.
 
 **Model (`model.py`) uses `claim_text` via TF-IDF** as its strongest feature, so run it in
 the VM on un-stripped data for the real result; on the Mac export it's metadata-only.
@@ -542,8 +577,9 @@ leaks the outcome) and read the held-out-window ROC-AUC to judge if skill genera
 
 ## 8. Export → Mac → git
 
-1. In VM: `run_all_economy.sh` bundles `data/predictions/proquest_exports.tar.gz`
-   (label-only, well under the cap). Export it via ProQuest's `Export Instructions.ipynb`
+1. In VM: `bash run_corpus_economy.sh --export` bundles `proquest_exports.tar.gz`
+   (label-only, `verified/` and `unverified/` side by side). Opt-in — the 15 MB cap is a
+   rolling 7-day budget, so spend it on finished years. Export it via ProQuest's `Export Instructions.ipynb`
    (`aws s3 cp` → emailed 2-hour download link).
 2. Download to the Mac, unpack into `election_arm/data/predictions/`.
 3. Commit on branch **`proquest-tdm-integration`** (the PR branch, not `main`). Push as

@@ -222,7 +222,7 @@ Then re-run this script to confirm.""")
         print("    conda install -n %s %s -y" % (env, " ".join(missing)))
 
     print("\n  Then, so the batch script uses the same one:")
-    print("    sed -i \"s|^PY=.*|PY=%s|\" run_all_economy.sh" % path)
+    print("    export PY=%s" % path)
     print("\n  And verify end to end:")
     print("    $PY -c \"import extract_gpt, strip_for_export as s; "
           "print(extract_gpt.SCHEMA_VERSION, 'quote' in s.DROP_FIELDS)\"")

@@ -18,6 +18,12 @@ Usage:
   python corpus_progress.py
   python corpus_progress.py --rate 3000      # pages/day you actually observe
   python corpus_progress.py --by-year        # every shard, not decade rollups
+  python corpus_progress.py --left           # just the integer: pages left to extract
+
+`--left` is the phase gate run_corpus_economy.sh reads. Verification only starts
+once every page has been extracted, and that decision has to be made from what is
+on disk (a run interrupted yesterday must not look finished), so both the script
+and the human ask the same counter.
 """
 
 import argparse
@@ -106,6 +112,8 @@ def main():
                     help="pages/day the quota actually buys, for the estimate")
     ap.add_argument("--by-year", action="store_true",
                     help="one row per year instead of per decade")
+    ap.add_argument("--left", action="store_true",
+                    help="print only the number of pages left to extract, for scripts")
     args = ap.parse_args()
 
     base = Path(args.base)
@@ -113,11 +121,20 @@ def main():
     preds = count_preds(base / "data/predictions")
     verified = count_preds(base / "data/verified")
     if not raw and not preds:
+        if args.left:
+            # No shards is not zero work left; it is an unparsed corpus. Saying
+            # "0" here would tell the runner to start verifying nothing.
+            raise SystemExit("no corpus shards in data/raw")
         raise SystemExit(
             "No corpus shards found. Parse the dataset first:\n"
             "  python tdm_parse.py --arm economy --corpus --dataset-dir <folder>")
 
     rows = rollup(raw, preds, verified, args.by_year)
+    if args.left:
+        _, parsed, done, _, _, _ = rows[-1]
+        print(max(parsed - done, 0))
+        return
+
     header = f"{'':>8}  {'parsed':>9} {'done':>9} {'claims':>9} {'verified':>9} {'stale':>7}"
     print(header)
     print("-" * len(header))
@@ -141,6 +158,29 @@ def main():
               f"({100 * kept / claims:.0f}% of claims kept)")
     elif claims:
         print("  verification has not run yet (data/verified is empty)")
+
+    # Which phase run_corpus_economy.sh will do next. It gates verification on
+    # left == 0 (see --left above), so say that here rather than leaving it to be
+    # inferred from two numbers. Verification progress is counted in YEARS, not
+    # claims: kept < claims permanently once the filter has dropped anything, so
+    # comparing those two can never signal "finished".
+    if left > 0:
+        print("\n  phase: EXTRACT. Verification starts once this reaches 0.")
+    else:
+        with_claims = {y for y, v in preds.items() if v[1]}
+        started = {y for y, v in verified.items() if v[0] or v[1]}
+        todo = sorted(with_claims - started)
+        if todo:
+            print(f"\n  phase: VERIFY. Every page is extracted; "
+                  f"{len(started)}/{len(with_claims)} year(s) verified, "
+                  f"{len(todo)} to go\n  (next: {todo[0]}). Note a year is "
+                  f"counted once it has output, so the one that was mid-run "
+                  f"when\n  the quota stopped is already counted -- verify_gpt.py "
+                  f"resumes inside it.")
+        elif with_claims:
+            print("\n  phase: DONE extracting and verifying. Score it:\n"
+                  "    python analyze_economy.py --set verified")
+
     if stale:
         print(f"\n  *** {stale:,} pages sit at an older schema version and will be")
         print(f"  *** re-extracted, costing quota. See extract_gpt.py's check_schema.")

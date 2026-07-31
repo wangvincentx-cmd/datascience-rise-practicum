@@ -52,13 +52,21 @@ it and cite it.
 PROQUEST (runs inside the TDM Studio workbench, not on your laptop). ProQuest
 forbids exporting full text, so tdm_parse.py and extract_predictions.py both run
 in the workbench Jupyter VM; only the derived data/predictions/pred_*.jsonl (no
-ocr_text) is exported back out under the 15 MB / 7-day cap. Build one dataset per
-window in the dashboard, then:
+ocr_text) is exported back out under the 15 MB / 7-day cap. The ProQuest dataset
+is now ONE corpus spanning 1900-2010 (~146k articles), not one dataset per window
+-- see PROQUEST_TDM_GUIDE.md sec 4b. Build it in the dashboard, then:
 
-    python tdm_parse.py --arm economy --window gfc_2008 \
+    python tdm_parse.py --arm economy --corpus \
         --dataset-dir /home/ec2-user/SageMaker/data/MyDataset --inspect   # verify tags
-    python tdm_parse.py --arm economy --window gfc_2008 \
-        --dataset-dir /home/ec2-user/SageMaker/data/MyDataset             # -> data/raw/proquest_economy_gfc_2008.jsonl
+    python tdm_parse.py --arm economy --corpus \
+        --dataset-dir /home/ec2-user/SageMaker/data/MyDataset             # -> data/raw/proquest_economy_{YYYY}.jsonl
+
+Then run the whole thing, once a day until it is done. The runner extracts every
+year shard first and only then lets gpt-4o-mini verify the corpus (a precision
+filter applied mid-run would have a keep-rate that means nothing):
+
+    bash run_corpus_economy.sh      # extract; verify once every page is extracted
+    python corpus_progress.py       # pages left, and which phase is next
 
 Always --inspect first; ProQuest's XML tag names vary by content type and the
 tag lists at the top of tdm_parse.py may need one added.
@@ -93,14 +101,16 @@ elections arm.
 
 STAGE 4 SCORE
 
-    python analyze_elections.py     # -> data/scored_claims.csv + tables
-    python analyze_economy.py       # -> data/scored_economy.csv + tables
+    python analyze_elections.py          # -> data/scored_claims.csv + tables
+    python analyze_economy.py            # verified set -> data/scored_economy.csv
+    python analyze_economy.py --set raw  # unfiltered   -> data/scored_economy_raw.csv
 
 Elections tables: accuracy by source type (polls vs editorials vs betting
 odds), by publisher, by cycle, hedged vs firm, LOC vs NYT. Economy tables:
-crisis vs placebo hit rates (the base-rate control), by window, by voice, by
-source, Brier scores for the overconfidence result, and the
-optimism-at-turning-points number.
+the by-decade series over the whole corpus, crisis vs placebo hit rates (the
+base-rate control, now a labelled SUBSET of the corpus rather than the whole
+dataset), by window, by voice, by source, Brier scores for the overconfidence
+result, and the optimism-at-turning-points number.
 
 Economy scoring rule: each claim predicts recession or expansion at
 claim date + horizon; the actual state comes from data/nber_recessions.csv

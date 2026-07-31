@@ -11,18 +11,38 @@ Brier scores: each claim's confidence is mapped from its hedged flag
 Brier = (p - outcome)^2, lower is better, and it punishes confident misses,
 which is the overconfidence result.
 
-Outputs: printed tables + data/scored_economy.csv
+Which claims get scored is a choice, so it is an argument:
+
+  --set verified  (default)  data/verified/  -- gpt-4o-mini's second pass, the
+                             analysis set. Precision 0.409 -> 0.700 on the gold
+                             pages. Falls back to raw with a warning if the
+                             verification phase has not run yet.
+  --set raw                  data/predictions/ -- every candidate the extractor
+                             proposed. Run both to report the filter's effect.
+
+Outputs: printed tables + data/scored_economy.csv (or _raw.csv)
 
 Usage:  python analyze_economy.py
+        python analyze_economy.py --set raw
 """
 
-import glob
+import argparse
 import json
+import re
 from pathlib import Path
 
 import pandas as pd
 
 CONFIDENCE = {False: 0.90, True: 0.70}   # firm vs hedged -> P(predicted state)
+SCHEMA_VERSION = 2                       # must track extract_gpt.SCHEMA_VERSION
+
+# pred_<source>_economy_<shard>.jsonl, and nothing else in the folder. The bare
+# glob pred_*_economy_*.jsonl also matches pred_proquest_economy_1990.export.jsonl
+# and ....jsonl.dropped.jsonl, which are a stripped copy of the same records and
+# the verifier's rejects -- loading either double-counts claims or re-admits
+# exactly what the filter threw out.
+PRED_RE = re.compile(r"^pred_(?P<source>[a-z0-9]+)_economy_(?P<shard>[^.]+)\.jsonl$")
+YEAR_RE = re.compile(r"^\d{4}$")
 
 
 def load_epu():
@@ -59,19 +79,69 @@ def state_at(month, recessions):
     return "expansion"
 
 
-def load_claims():
-    rows = []
-    for path in glob.glob("data/predictions/pred_*_economy_*.jsonl"):
+def pred_files(directory):
+    """The claim files in `directory` that are units of the current corpus.
+
+    Skips, loudly, the ProQuest per-window files from the scrapped "periods"
+    design (pred_proquest_economy_gulf_1990.jsonl and friends). Those cover
+    articles the 1900-2010 corpus also covers, at schema v1, so pooling them
+    double-counts the overlap and mixes two vocabularies. LOC/NYT window files
+    are a different corpus and are still loaded.
+    """
+    kept, periods = [], []
+    for path in sorted(Path(directory).glob("*.jsonl")):
+        match = PRED_RE.match(path.name)
+        if not match:
+            continue
+        if (match.group("source") == "proquest"
+                and not YEAR_RE.match(match.group("shard"))):
+            periods.append(path)
+            continue
+        kept.append(path)
+    if periods:
+        print(f"skipping {len(periods)} ProQuest per-window file(s) from the "
+              f"scrapped periods design;\n  the 1900-2010 corpus covers those "
+              f"articles at schema v{SCHEMA_VERSION}:")
+        for path in periods:
+            print(f"    {path}")
+    return kept
+
+
+def load_claims(which):
+    """Claims from the verified or the raw set. Returns (df, label)."""
+    directory = Path("data/verified" if which == "verified" else "data/predictions")
+    files = pred_files(directory) if directory.is_dir() else []
+    if which == "verified" and not files:
+        print(f"*** no claim files in {directory}: the verification phase has "
+              f"not run.\n*** Falling back to the RAW extractor output, which "
+              f"has precision ~0.41 on\n*** the gold pages. Numbers below are "
+              f"unfiltered candidates, not the analysis set.")
+        which = "raw"
+        directory = Path("data/predictions")
+        files = pred_files(directory) if directory.is_dir() else []
+
+    rows, stale = [], 0
+    for path in files:
         with open(path) as f:
             for line in f:
+                if not line.strip():
+                    continue
                 r = json.loads(line)
                 if r.get("no_predictions"):
                     continue
+                # v1 records use a different label vocabulary the scorer below
+                # cannot read (predicted_state_at_horizon does not exist there).
+                if r.get("schema_version") != SCHEMA_VERSION:
+                    stale += 1
+                    continue
                 rows.append(r)
     df = pd.DataFrame(rows)
-    print(f"loaded {len(df)} economy claims from "
-          f"{df['window'].nunique() if len(df) else 0} windows")
-    return df
+    print(f"loaded {len(df)} economy claims ({which}) from {len(files)} file(s) "
+          f"in {directory}")
+    if stale:
+        print(f"  skipped {stale} record(s) at an older schema version "
+              f"(run migrate_v2.py if you need them)")
+    return df, which
 
 
 def score(df, recessions):
@@ -93,7 +163,15 @@ def score(df, recessions):
 
 
 def main():
-    df = load_claims()
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--set", dest="which", choices=["verified", "raw"],
+                    default="verified",
+                    help="verified = data/verified (default); raw = every "
+                         "extractor candidate")
+    args = ap.parse_args()
+
+    df, which = load_claims(args.which)
     if df.empty:
         raise SystemExit("No economy claims found. Run the downloaders and "
                          "extractor for the economy arm first.")
@@ -102,36 +180,35 @@ def main():
     df = df.dropna(subset=["claim_month"])
     print(f"scored {len(df)} claims\n")
 
-    # The corpus (one 1900-2010 query) puts most claims OUTSIDE any configured
-    # window, where window_kind is null. pandas' groupby drops those rows
-    # silently, so the crisis-vs-placebo table below would quietly describe a
-    # small slice of the data while looking like it described all of it. Say so.
-    in_window = df["window_kind"].notna().sum()
-    if in_window < len(df):
-        print(f"note: {in_window:,} of {len(df):,} claims fall inside a "
-              f"configured window. The crisis-vs-placebo and by-window tables "
-              f"below cover ONLY those; every other table covers all "
-              f"{len(df):,}.\n")
-
-    print("--- Crisis vs placebo (the base-rate control) ---")
-    if in_window:
-        print(df.groupby("window_kind")[["hit", "brier"]].agg(["mean", "count"]))
-    else:
-        print("  no claims fall inside a configured window")
-
-    if in_window:
-        print("\n--- By window ---")
-        print(df.groupby("window")[["hit", "brier"]].mean()
-              .join(df.groupby("window").size().rename("count")))
-
-    # What the corpus buys that the per-window datasets could not: an
-    # uninterrupted series. Claim COUNT per decade is only interpretable
-    # alongside how many articles were read, which corpus_progress.py reports.
+    # The corpus is now the whole dataset, so the continuous series leads: claim
+    # COUNT per decade is only interpretable alongside how many articles were
+    # read, which corpus_progress.py reports.
     decades = df["claim_month"].dt.year // 10 * 10
     if decades.nunique() > 2:
-        print("\n--- By decade (continuous series; window years included) ---")
+        print("--- By decade (the continuous 1900-2010 series) ---")
         print(df.groupby(decades)[["hit", "brier"]].mean()
               .join(df.groupby(decades).size().rename("count")))
+
+    # Crisis-vs-placebo survives the scrapping of the per-window DATASETS,
+    # because window_kind is derived from each article's date, not from which
+    # query found it -- and it is now a fair comparison for the first time: the
+    # denominator is articles read, not articles a forecast-catcher query
+    # returned. But most corpus claims sit outside every window, where
+    # window_kind is null and pandas' groupby drops them silently, so say what
+    # fraction the table covers before showing it.
+    in_window = df["window_kind"].notna().sum()
+    print(f"\nnote: {in_window:,} of {len(df):,} claims fall inside a configured "
+          f"window.\nThe two tables below cover ONLY those; every other table "
+          f"covers all {len(df):,}.")
+
+    print("\n--- Crisis vs placebo (the base-rate control; window subset) ---")
+    if in_window:
+        print(df.groupby("window_kind")[["hit", "brier"]].agg(["mean", "count"]))
+        print("\n--- By window (window subset) ---")
+        print(df.groupby("window")[["hit", "brier"]].mean()
+              .join(df.groupby("window").size().rename("count")))
+    else:
+        print("  no claims fall inside a configured window")
 
     print("\n--- By voice (whose prediction was it) ---")
     print(df.groupby("voice")[["hit", "brier"]].mean()
@@ -160,8 +237,16 @@ def main():
         if len(optimists):
             print(f"...and their hit rate: {optimists['hit'].mean():.2%}")
 
-    df.to_csv("data/scored_economy.csv", index=False)
-    print("\nfull scored table -> data/scored_economy.csv")
+    # Separate files per set: the verified table is the analysis set, and
+    # overwriting it with the raw run (or the reverse) would silently swap which
+    # one every downstream figure and model.py was fitted on.
+    out = Path("data/scored_economy.csv" if which == "verified"
+               else "data/scored_economy_raw.csv")
+    df.to_csv(out, index=False)
+    print(f"\nfull scored table -> {out}")
+    if which == "verified":
+        print("compare against the unfiltered candidates with: "
+              "python analyze_economy.py --set raw")
 
 
 if __name__ == "__main__":

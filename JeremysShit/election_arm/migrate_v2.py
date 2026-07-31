@@ -147,7 +147,7 @@ def do_migrate(rows, apply):
             shutil.move(str(r["path"]), str(dst))
     # The stripped exports are derived, so they are stale the moment their
     # source moves. Move them too rather than leave a v1 export next to a v2
-    # pred file, where run_all_economy.sh would bundle the wrong one.
+    # pred file, where the runner's --export would bundle the wrong one.
     for r in todo:
         exp = r["path"].with_suffix(".export.jsonl")
         if exp.exists():
@@ -156,11 +156,20 @@ def do_migrate(rows, apply):
                 print(f"  {'mv  ' if apply else 'WOULD mv  '}{exp.name} -> {dst.name}")
                 if apply:
                     shutil.move(str(exp), str(dst))
-    windows = sorted({r["path"].stem.replace("pred_proquest_economy_", "")
-                      .replace("pred_nyt_economy_", "") for r in todo})
+    shards = sorted({r["path"].stem.replace("pred_proquest_economy_", "")
+                     .replace("pred_nyt_economy_", "") for r in todo})
+    years = [s for s in shards if s.isdigit()]
     if apply:
-        print("\nDone. Re-extract these windows (quota resets daily):")
-        print(f"  bash run_all_economy.sh {' '.join(windows)}")
+        print("\nDone -- those files no longer block v2 extraction.")
+        # The per-window ProQuest files are the scrapped periods design: the
+        # 1900-2010 corpus re-reads the same articles by year, so re-extracting
+        # them window by window would spend quota on data the corpus replaces.
+        if years:
+            print("Re-extract these year shards (quota resets daily):")
+            print(f"  bash run_corpus_economy.sh --extract {' '.join(years)}")
+        if len(shards) > len(years):
+            print("The per-window ProQuest files are NOT re-extracted: the "
+                  "1900-2010 corpus\nreplaces them. Just leave them quarantined.")
         print("\nTo undo:  python migrate_v2.py --restore")
     else:
         print("\nDRY RUN -- nothing changed. Re-run with --apply to do it.")
