@@ -32,7 +32,7 @@ FEAT = ["d_attention_12m"]
 
 # palette (light surface)
 INK, INK2, MUTED = "#0b0b0b", "#52514e", "#898781"
-GRID, SURFACE = "#e1e0d9", "#fcfcfb"
+GRID, SURFACE = "#e1e0d9", "#ffffff"
 BLUE, ORANGE, RED = "#2a78d6", "#eb6834", "#d03b3b"
 
 plt.rcParams.update({
@@ -82,6 +82,20 @@ def fit_predict(tr_mask, te_mask):
     return m.predict_proba(((X[te_mask] - mu) / sd)[FEAT])[:, 1]
 
 
+
+def _flatten(path):
+    """Save as RGB on white. RGBA PNGs can import with a black border in Slides/Keynote."""
+    from PIL import Image
+    im = Image.open(path)
+    if im.mode in ("RGBA", "LA", "P"):
+        im = im.convert("RGBA")
+        bg = Image.new("RGB", im.size, "#ffffff")
+        bg.paste(im, mask=im.split()[-1])
+        bg.save(path)
+    else:
+        im.convert("RGB").save(path)
+
+
 # ------------------------------------------------------------------ figure 1
 def conditional_mapping():
     d = X["d_attention_12m"]
@@ -123,11 +137,9 @@ def conditional_mapping():
     ax.set_xlabel("change in economic coverage over 12 months  (forecasts per 100 pages)",
                   labelpad=20)
     ax.set_ylabel("P(recession starts within 12 months)")
-    ax.set_title("Coverage change maps to recession risk", fontsize=12.5,
-                 fontweight="600", loc="left", pad=22)
     ax.annotate("shown over the 10th-90th percentile of observed coverage change; "
                 "beyond this range the curve extrapolates",
-                (0, 1.035), xycoords="axes fraction", color=MUTED, fontsize=8.5,
+                (0, 1.02), xycoords="axes fraction", color=MUTED, fontsize=8.5,
                 annotation_clip=False)
     ax.annotate("<-- coverage falling", (grid[0], -.105), xycoords=("data", "axes fraction"),
                 color=MUTED, fontsize=9, annotation_clip=False)
@@ -141,6 +153,7 @@ def conditional_mapping():
     fig.tight_layout()
     fig.savefig(OUT / "conditional_mapping.png", bbox_inches="tight", facecolor=SURFACE)
     plt.close(fig)
+    _flatten(OUT / "conditional_mapping.png")
     print(f"  conditional_mapping.png   p10={np.interp(np.percentile(d,10),grid,p):.3f} "
           f"p90={np.interp(np.percentile(d,90),grid,p):.3f} base={y.mean():.3f}")
 
@@ -228,6 +241,7 @@ def backtest_table():
 
     fig.savefig(OUT / "backtest_table.png", bbox_inches="tight", facecolor=SURFACE)
     plt.close(fig)
+    _flatten(OUT / "backtest_table.png")
     print(f"  backtest_table.png/.csv   forward-only {fwd[0][3]:.3f}/{fwd[1][3]:.3f}/{fwd[2][3]:.3f}"
           f"  rotating median {med:.3f}, {sum(r[3] > .5 for r in rot)}/{len(rot)} above 0.5")
 
