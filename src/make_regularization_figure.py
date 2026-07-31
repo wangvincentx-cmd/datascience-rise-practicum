@@ -1,13 +1,13 @@
 """Every regularization setting tried, and what each one actually bought.
 
-The four panels answer the four questions in order, and the last one withdraws
-the answer the first one appears to give:
+FOUR SEPARATE FILES, one question each -- v2_fig10a..d. They are written to be
+read in order, and the last one withdraws the answer the first appears to give:
 
   A  accuracy   pooled out-of-fold ROC-AUC for L2, L1 and elastic net across
                 two orders of magnitude of C. Twelve cells beat the incumbent.
   B  sparsity   how many of the 56 coefficients survive. L2 keeps 55 at every
                 C; L1 at C=0.005 keeps 12.
-  C  the path   the lasso coefficient path. As the penalty tightens, the four
+  C  the path   the L1 coefficient path. As the penalty tightens, the four
                 direction x economy terms are the last things it will delete --
                 RESULTS_MACRO.md's central claim arriving by a method whose
                 entire job is deleting things.
@@ -17,15 +17,17 @@ the answer the first one appears to give:
                 a single era, which is the only thing this project claims to
                 measure. The interaction block, tested the same way, is not.
 
-Panel D is why this figure exists rather than panel A. An earlier draft of
+D is why this figure exists rather than A. An earlier draft of
 docs/RESULTS_MODEL_VARIANTS.md recommended switching to C=0.02 on the strength
-of panel A alone; that recommendation was wrong and was withdrawn. A figure
-showing A without D would re-make the same mistake in pictures.
+of A alone; that recommendation was wrong and was withdrawn. Showing A without
+D would re-make the same mistake in pictures -- so A's subtitle points at D by
+name, which matters more now that they are separate files and can be placed
+apart on the poster.
 
 Numbers come from the committed tables (data/models/model_variants_penalty.csv,
-model_variants_fold_decomposition.csv) so the figure cannot drift from the text.
-The coefficient path in panel C is the one thing recomputed here -- 7 full-data
-lasso fits, cached to data/models/model_variants_l1_path.csv.
+model_variants_fold_decomposition.csv) so the figures cannot drift from the
+text. The coefficient path in C is the one thing recomputed here -- 7 full-data
+L1 fits, cached to data/models/model_variants_l1_path.csv.
 
     python src/make_regularization_figure.py
     python src/make_regularization_figure.py --refit-path
@@ -67,20 +69,29 @@ BLUE = "#2a78d6"      # L2
 ORANGE = "#eb6834"    # L1
 GREEN = "#199e70"     # elastic net
 
-W = 13.4
+# One panel per file now, at roughly the size a panel occupied in the old 2x2
+# sheet -- so the type sizes below, which were tuned against that panel width,
+# still read the same.
+W, H = 7.6, 6.6
 BASE, LABEL, TITLE, NOTE = 17, 18, 25, 14.5
 
 PENS = [("l2", "L2  (ridge)", BLUE, "o", "solid"),
-        ("l1", "L1  (lasso)", ORANGE, "s", "solid"),
+        ("l1", "L1", ORANGE, "s", "solid"),
         ("elasticnet", "elastic net", GREEN, "^", (0, (5, 2.5)))]
 
 INCUMBENT = ("l2", 0.5)     # what hit_predictor.py actually ships
 
-# A subset of C_GRID: all seven labels collide on the narrower lower panels.
-# The lines still carry a marker at every fitted C, so nothing is hidden.
+# A subset of C_GRID: all seven labels collide at this width. The lines still
+# carry a marker at every fitted C, so nothing is hidden.
 XTICKS = [0.005, 0.02, 0.1, 0.5, 1.0]
 
-# The terms panel C is about. INTER_NUM also contains x_dir_sign (direction on
+# Where each page's text column starts, in figure coords -- titles and captions
+# align to this on all four, whatever the axes' own left margin has to be.
+NOTE_X = 0.135
+# The same point in D's axes coords: (NOTE_X - its left margin) / its width.
+D_TITLE_X = -0.246
+
+# The terms figure C is about. INTER_NUM also contains x_dir_sign (direction on
 # its own), which is not a direction x ECONOMY product and so is not part of
 # the claim being tested here.
 KEY_TERMS = {f"x_dir_{f}": n for f, n in [
@@ -110,28 +121,31 @@ def clean(ax, keep=("left", "bottom")):
     ax.tick_params(length=0)
 
 
-def panel_title(ax, letter, text, sub=None):
+def panel_title(ax, letter, text, sub=None, x=0.0):
+    """`x` is in axes coords, so a panel with a wide left gutter (D, whose tick
+    labels are three-line era counts) can still start its title at the page's
+    left edge rather than a quarter of the way in."""
     ax.set_title(f"{letter}   {text}", fontsize=TITLE - 7, pad=40, loc="left",
-                 color=INK)
+                 color=INK).set_x(x)
     if sub:
-        ax.text(0, 1.015, sub, transform=ax.transAxes, fontsize=NOTE - 2,
+        ax.text(x, 1.015, sub, transform=ax.transAxes, fontsize=NOTE - 2,
                 color=MUTED, va="bottom", ha="left")
 
 
 # --- panel C's data ---------------------------------------------------------
 def l1_path(refit=False):
-    """Coefficient value at each C, from a full-data lasso fit.
+    """Coefficient value at each C, from a full-data L1 fit.
 
     In-sample on purpose and labelled as such in the caption: the path is a
     DESCRIPTION of what the penalty keeps in what order, not an evaluation of
-    it. The evaluation is panel A, which is out-of-fold."""
+    it. The evaluation is figure A, which is out-of-fold."""
     if PATH_CACHE.exists() and not refit:
         return pd.read_csv(PATH_CACHE, index_col=0)
     d, y, _ = MV.load()
     X, cat, num = MV.design(d)
     cols = {}
     for C in MV.C_GRID:
-        print(f"  lasso fit at C={C} ...", flush=True)
+        print(f"  L1 fit at C={C} ...", flush=True)
         pipe = HP.make_pipe(cat, num, clf=MV.clf_for("l1", C))
         pipe.fit(X, y)
         names = [n.split("__", 1)[-1]
@@ -156,8 +170,11 @@ def panel_a(ax, tab):
     ax.axhline(inc["roc_auc"], color=AXIS, lw=1.3, ls=(0, (5, 4)), zorder=2)
     ax.plot([inc["C"]], [inc["roc_auc"]], "o", markersize=17, mfc="none",
             mec=INK, mew=2.0, zorder=6)
+    # Sits above the axis, not on it: as its own file this panel is shorter than
+    # it was in the 2x2 sheet, and at the old y the second line landed on the
+    # x tick labels.
     ax.annotate("what the model ships:\nL2, C = 0.5", xy=(inc["C"], inc["roc_auc"]),
-                xytext=(0.30, 0.6425), fontsize=NOTE - 1, color=INK, ha="center",
+                xytext=(0.30, 0.6452), fontsize=NOTE - 1, color=INK, ha="center",
                 va="top", linespacing=1.4,
                 arrowprops=dict(arrowstyle="-", color=AXIS, lw=1.2))
 
@@ -173,7 +190,7 @@ def panel_a(ax, tab):
     for t_, (_, _, color, *_) in zip(leg.get_texts(), PENS):
         t_.set_color(color)
     panel_title(ax, "A", "Twelve settings beat the incumbent",
-                "on pooled out-of-fold AUC — read panel D before believing it")
+                "on pooled out-of-fold AUC — read figure D before believing it")
     clean(ax)
 
 
@@ -203,7 +220,7 @@ def panel_b(ax, tab):
     ax.set_ylim(0, n_coef + 9)
     ax.set_xlabel("C   (larger = weaker penalty)", fontsize=LABEL - 3, labelpad=9)
     ax.set_ylabel("coefficients left non-zero", fontsize=LABEL - 3, labelpad=9)
-    panel_title(ax, "B", "Only the lasso deletes anything",
+    panel_title(ax, "B", "Only L1 deletes anything",
                 "ridge shrinks all 56 toward zero; it never arrives")
     clean(ax)
 
@@ -245,8 +262,8 @@ def panel_c(ax, path):
     ax.set_xticklabels([f"{c:g}" for c in XTICKS])
     ax.set_xlim(cs[0] * 0.72, cs[-1] * 5.0)
     ax.set_xlabel("C   (smaller = deletes more)", fontsize=LABEL - 3, labelpad=9)
-    ax.set_ylabel("lasso coefficient", fontsize=LABEL - 3, labelpad=9)
-    panel_title(ax, "C", "What the lasso refuses to delete",
+    ax.set_ylabel("L1 coefficient", fontsize=LABEL - 3, labelpad=9)
+    panel_title(ax, "C", "What L1 refuses to delete",
                 "direction × economy survives every C tried — in orange")
     clean(ax)
 
@@ -305,15 +322,46 @@ def panel_d(ax, dec):
     ax.set_xlabel("change in ROC-AUC against the incumbent",
                   fontsize=LABEL - 3, labelpad=9)
     panel_title(ax, "D", "Both gains evaporate within an era",
-                "the headline's does not — it wins 17 of 22 eras")
+                "the headline's does not — it wins 17 of 22 eras", x=D_TITLE_X)
     clean(ax, keep=("bottom",))
+
+
+# Each figure now carries its own provenance, since none of them sits under a
+# shared caption any more. Two lines common to all four, then the one caveat
+# that figure specifically needs.
+COMMON = ("21 configurations of the AUC-0.647 hit model, leave-one-3-year-era-out:\n"
+          "22 eras, 14,251 forecasts. Only the penalty and C change.\n")
+
+# name, drawing function, which table it reads, axes margins, its own caveat.
+# D gets a wide left gutter: its y labels are two- and three-line era counts.
+PAGES = [
+    ("a_penalty_auc", panel_a, "tab",
+     dict(left=0.145, right=0.965, top=0.795, bottom=0.295),
+     "The whole grid spans 0.012 of AUC and the block-bootstrap interval on the\n"
+     "headline alone is ±0.07 — read for shape, not for a winner. Out-of-fold."),
+    ("b_sparsity", panel_b, "tab",
+     dict(left=0.145, right=0.965, top=0.795, bottom=0.295),
+     "Survivor counts are a full-data fit at each C — a description of what the\n"
+     "penalty keeps, not an evaluation of it. The evaluation is figure A."),
+    # C stops well short of the right edge: its four direct labels are drawn
+    # past the last fitted C and used to spill into the old sheet's column gap.
+    ("c_l1_path", panel_c, "path",
+     dict(left=0.145, right=0.735, top=0.795, bottom=0.295),
+     "A full-data L1 fit at each C, in-sample on purpose: what the penalty keeps\n"
+     "and in what order, never a claim about accuracy.\n"
+     "docs/RESULTS_MODEL_VARIANTS.md"),
+    ("d_within_era", panel_d, "dec",
+     dict(left=0.300, right=0.970, top=0.795, bottom=0.295),
+     "Pooled = one AUC over all 22 eras' held-out predictions. Within-era = the\n"
+     "size-weighted mean of the 22 per-era deltas. Out-of-fold."),
+]
 
 
 def main():
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--refit-path", action="store_true",
-                    help="recompute the cached lasso coefficient path")
+                    help="recompute the cached L1 coefficient path")
     a = ap.parse_args()
 
     for p in (PENALTY, DECOMP):
@@ -322,42 +370,21 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     style()
 
-    tab = pd.read_csv(PENALTY)
-    dec = pd.read_csv(DECOMP)
     path = l1_path(a.refit_path)
     path.columns = [float(c) for c in path.columns]
-
-    fig, axes = plt.subplots(2, 2, figsize=(W, 12.2))
-    fig.subplots_adjust(left=0.085, right=0.985, top=0.845, bottom=0.115,
-                        hspace=0.52, wspace=0.58)
-    panel_a(axes[0][0], tab)
-    panel_b(axes[0][1], tab)
-    panel_c(axes[1][0], path)
-    panel_d(axes[1][1], dec)
-
-    fig.text(0.085, 0.978,
-             "Regularization: everything tried, and what it bought",
-             fontsize=TITLE, color=INK, va="top", ha="left")
-    fig.text(0.085, 0.947,
-             "21 configurations of the AUC-0.647 hit model under its own "
-             "evaluation — leave-one-3-year-era-out, 22 eras, 14,251 forecasts.\n"
-             "The loss stays log-loss throughout; only the penalty and C change.",
-             fontsize=NOTE - 1, color=INK2, va="top", ha="left", linespacing=1.55)
-
-    fig.text(0.085, 0.062,
-             "The whole grid spans 0.012 of AUC; the block-bootstrap interval on "
-             "the headline alone is ±0.07. Panel A is read for shape, not for a "
-             "winner.\n"
-             "Panels A, B and D are out-of-fold. Panel C is a full-data fit — "
-             "what the penalty keeps, not a claim about accuracy.     "
-             "docs/RESULTS_MODEL_VARIANTS.md",
-             fontsize=NOTE - 2.5, color=MUTED, va="top", ha="left",
-             linespacing=1.6)
-
-    p = f"{OUT}/v2_fig10_regularization.png"
-    fig.savefig(p, facecolor=SURFACE)
-    plt.close(fig)
-    print("wrote", p)
+    data = {"tab": pd.read_csv(PENALTY), "dec": pd.read_csv(DECOMP),
+            "path": path}
+    for name, draw, src, margins, caveat in PAGES:
+        fig, ax = plt.subplots(figsize=(W, H))
+        fig.subplots_adjust(**margins)
+        draw(ax, data[src])
+        fig.text(NOTE_X, margins["bottom"] - 0.115, COMMON + caveat,
+                 fontsize=NOTE - 2.5, color=MUTED, va="top", ha="left",
+                 linespacing=1.6)
+        p = f"{OUT}/v2_fig10{name}.png"
+        fig.savefig(p, facecolor=SURFACE)
+        plt.close(fig)
+        print("wrote", p)
 
 
 if __name__ == "__main__":

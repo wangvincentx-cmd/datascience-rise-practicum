@@ -4,11 +4,10 @@ This is the model's DISCRIMINATION drawn as a graph: for every threshold, how
 many forecasts it correctly flags as likely-to-come-true against how many it
 wrongly flags. The area under that curve is the AUC the poster quotes.
 
-    left panel    the four ROC curves, one per rung of hit_predictor's ladder,
-                  plus a block-bootstrap uncertainty band on the headline.
-    right panel   the same four AUCs as points with 95% block-bootstrap
-                  intervals, because a curve makes 0.647 and 0.581 look further
-                  apart than the interval says they are.
+One panel: the four ROC curves, one per rung of hit_predictor's ladder, plus a
+block-bootstrap uncertainty band on the headline. The curves make 0.647 and
+0.581 look further apart than 22 blocks can support, so the headline's interval
+is quoted in the caption and the band is drawn rather than left implicit.
 
 Everything is OUT-OF-FOLD: leave-one-3-year-block-out, exactly hit_predictor's
 evaluation. An in-sample ROC would be a much prettier picture of nothing --
@@ -62,7 +61,7 @@ AXIS = "#c3c2b7"
 BLUE = "#2a78d6"      # categorical slot 1 -- the model the poster reports
 ORANGE = "#eb6834"    # categorical slot 2 -- the rung directly below it
 
-W = 13.4
+W, H = 8.0, 9.6
 BASE, LABEL, TITLE, NOTE = 17, 18, 25, 14.5
 
 BOOT = 1000           # block-bootstrap resamples for the band and the intervals
@@ -210,12 +209,9 @@ def main():
     s = stats(d, a.refit)
     y = d["hit"].values.astype(int)
 
-    fig, (ax, bx) = plt.subplots(
-        1, 2, figsize=(W, 7.6), gridspec_kw={"width_ratios": [1, 0.78],
-                                             "wspace": 0.62})
-    fig.subplots_adjust(left=0.10, right=0.985, top=0.895, bottom=0.215)
+    fig, ax = plt.subplots(figsize=(W, H))
+    fig.subplots_adjust(left=0.155, right=0.98, top=0.915, bottom=0.262)
 
-    # ---------------------------------------------------------------- panel A
     ax.grid(True, axis="both", lw=0.9, alpha=0.7)
     ax.set_axisbelow(True)
 
@@ -257,52 +253,22 @@ def main():
     ax.set_yticklabels(["0%", "25%", "50%", "75%", "100%"])
     ax.set_title("Every threshold at once", fontsize=TITLE - 5, pad=14,
                  loc="left", color=INK)
-    ax.set_anchor("W")   # square plot hugs the left; the slack goes to panel B
+    ax.set_anchor("W")   # square plot hugs the left; slack goes to the margin
     clean(ax)
 
-    # ---------------------------------------------------------------- panel B
-    # The curves make 0.647 and 0.581 look decisively apart. Against 22 blocks
-    # they are not, and the same figure has to say so or it is arguing one side.
-    bx.grid(True, axis="x", lw=0.9, alpha=0.7)
-    bx.set_axisbelow(True)
-    ys = np.arange(len(RUNGS))
-    for i, (label, key, color, dash, lw) in enumerate(RUNGS):
-        auc, clo, chi = s["auc"][key]
-        c = color if color != MUTED else INK2
-        bx.hlines(i, clo, chi, color=c, lw=2.6, alpha=0.45,
-                  capstyle="round", zorder=4)
-        bx.plot([auc], [i], "o", color=c, markersize=11, mec=SURFACE, mew=2.0,
-                zorder=5)
-        bx.text(chi + 0.008, i, f"{auc:.3f}", color=c, fontsize=NOTE,
-                va="center", ha="left")
-
-    bx.axvline(0.5, color=AXIS, lw=1.4, ls=(0, (5, 4)), zorder=2)
-    bx.text(0.5, len(RUNGS) - 0.38, " coin flip", color=MUTED, fontsize=NOTE,
-            ha="left", va="center")
-
-    bx.set_yticks(ys)
-    bx.set_yticklabels([n.replace(" (additive)", "\n(additive)")
-                        for n, *_ in RUNGS], fontsize=NOTE)
-    for tick, (_, key, color, *_) in zip(bx.get_yticklabels(), RUNGS):
-        tick.set_color(INK if key == "full" else INK2)
-    bx.set_ylim(-0.6, len(RUNGS) - 0.4)
-    bx.set_xlim(0.42, 0.80)
-    bx.set_xticks([0.5, 0.6, 0.7])
-    bx.set_xlabel("area under the curve, 95% block bootstrap",
-                  fontsize=LABEL - 3, labelpad=9)
-    bx.set_title("…with their error bars", fontsize=TITLE - 5, pad=14,
-                 loc="left", color=INK)
-    clean(bx, keep=("bottom",))
-
+    # The interval belongs in words now that the error-bar panel is gone: the
+    # curves alone make 0.647 and 0.581 look decisively apart, and against 22
+    # blocks they are not. A figure that shows only the curves has to say so.
     d_auc = s["auc"]["full"][0] - s["auc"]["additive"][0]
-    fig.text(0.10, 0.132,
-             "{n:,} forecasts, 1900–1963. Out-of-fold only — every forecast is "
-             "scored by a model that never saw its 3-year era.\n"
-             "The intervals resample the {b} eras, not the {n:,} forecasts, so "
-             "they are wide. Boosting the same inputs scored 0.617.\n"
-             "What survives that test is the {dl:+.3f} interaction lift over the "
-             "additive rung (paired p = 0.002), not any curve's level."
-             .format(n=s["n"], b=s["n_blocks"], dl=d_auc),
+    _, f_lo, f_hi = s["auc"]["full"]
+    fig.text(0.155, 0.183,
+             "{n:,} forecasts, 1900–1963. Out-of-fold only — every forecast is\n"
+             "scored by a model that never saw its 3-year era. The band resamples\n"
+             "the {b} eras, not the {n:,} forecasts, so it is wide: the headline's\n"
+             "interval is [{lo:.3f}, {hi:.3f}] and every rung's overlaps it. What\n"
+             "survives that test is the {dl:+.3f} lift over the additive rung (paired\n"
+             "p = 0.002), not any curve's level. Boosting the same inputs: 0.617."
+             .format(n=s["n"], b=s["n_blocks"], dl=d_auc, lo=f_lo, hi=f_hi),
              fontsize=NOTE - 1.5, color=MUTED, va="top", linespacing=1.6)
 
     p = f"{OUT}/v2_fig9_roc.png"
