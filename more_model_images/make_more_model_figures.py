@@ -121,7 +121,7 @@ def conditional_mapping():
     lo, hi = np.percentile(np.array(boot), [2.5, 97.5], axis=0)
     p = m.predict_proba(gz)[:, 1]
 
-    fig, ax = plt.subplots(figsize=(7.4, 4.6), dpi=220)
+    fig, ax = plt.subplots(figsize=(7.4, 6.4), dpi=220)
     ax.fill_between(grid, lo, hi, color=BLUE, alpha=0.16, lw=0,
                     label="95% CI (3-year block bootstrap)")
     ax.plot(grid, p, color=BLUE, lw=2.4, label="fitted probability", zorder=3)
@@ -135,16 +135,17 @@ def conditional_mapping():
     ax.set_yticks(np.arange(0, 1.01, .2))
     ax.set_yticklabels([f"{v:.0%}" for v in np.arange(0, 1.01, .2)])
     ax.set_xlabel("change in economic coverage over 12 months  (forecasts per 100 pages)",
-                  labelpad=20)
+                  labelpad=10)
     ax.set_ylabel("P(recession starts within 12 months)")
     ax.annotate("shown over the 10th-90th percentile of observed coverage change; "
                 "beyond this range the curve extrapolates",
                 (0, 1.02), xycoords="axes fraction", color=MUTED, fontsize=8.5,
                 annotation_clip=False)
-    ax.annotate("<-- coverage falling", (grid[0], -.105), xycoords=("data", "axes fraction"),
-                color=MUTED, fontsize=9, annotation_clip=False)
-    ax.annotate("coverage rising -->", (grid[-1], -.105), xycoords=("data", "axes fraction"),
-                color=MUTED, fontsize=9, ha="right", annotation_clip=False)
+    # inside the axes, so they stay put whatever the figure height is
+    ax.annotate("<-- coverage falling", (.012, .022), xycoords="axes fraction",
+                color=MUTED, fontsize=9)
+    ax.annotate("coverage rising -->", (.988, .022), xycoords="axes fraction",
+                color=MUTED, fontsize=9, ha="right")
     ax.grid(axis="y", color=GRID, lw=.8)
     ax.set_axisbelow(True)
     for s in ("top", "right"):
