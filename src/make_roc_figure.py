@@ -61,7 +61,10 @@ AXIS = "#c3c2b7"
 BLUE = "#2a78d6"      # categorical slot 1 -- the model the poster reports
 ORANGE = "#eb6834"    # categorical slot 2 -- the rung directly below it
 
-W, H = 8.0, 9.6
+# H is the square plot plus its title and axis labels, nothing else. The 9.6in
+# version reserved room for a six-line caption under the axes; with that gone
+# the same height would print as an inch of blank paper below the x label.
+W, H = 8.0, 8.5
 BASE, LABEL, TITLE, NOTE = 17, 18, 25, 14.5
 
 BOOT = 1000           # block-bootstrap resamples for the band and the intervals
@@ -210,7 +213,9 @@ def main():
     y = d["hit"].values.astype(int)
 
     fig, ax = plt.subplots(figsize=(W, H))
-    fig.subplots_adjust(left=0.155, right=0.98, top=0.915, bottom=0.262)
+    # right stops short of the edge: the "100%" tick label is centred on the
+    # last tick and half of it sits outside the axes.
+    fig.subplots_adjust(left=0.155, right=0.955, top=0.925, bottom=0.16)
 
     ax.grid(True, axis="both", lw=0.9, alpha=0.7)
     ax.set_axisbelow(True)
@@ -245,8 +250,8 @@ def main():
     ax.set_ylim(-0.012, 1.012)
     ax.set_aspect("equal")
     ax.set_xlabel("forecasts wrongly flagged as likely to come true",
-                  fontsize=LABEL - 3, labelpad=9)
-    ax.set_ylabel("forecasts correctly flagged", fontsize=LABEL - 3, labelpad=9)
+                  fontsize=LABEL + 3, labelpad=12)
+    ax.set_ylabel("forecasts correctly flagged", fontsize=LABEL + 3, labelpad=12)
     for setter in (ax.set_xticks, ax.set_yticks):
         setter([0, 0.25, 0.5, 0.75, 1.0])
     ax.set_xticklabels(["0%", "25%", "50%", "75%", "100%"])
@@ -256,20 +261,21 @@ def main():
     ax.set_anchor("W")   # square plot hugs the left; slack goes to the margin
     clean(ax)
 
-    # The interval belongs in words now that the error-bar panel is gone: the
-    # curves alone make 0.647 and 0.581 look decisively apart, and against 22
-    # blocks they are not. A figure that shows only the curves has to say so.
+    # The provenance and the interval used to sit under the axes and are now
+    # printed to stdout instead. They still have to travel WITH the figure --
+    # the band is meaningless unless a reader knows it resamples 22 eras rather
+    # than 14,251 forecasts, and the curves alone make 0.647 and 0.581 look
+    # decisively apart when the interval says they are not. Whoever places this
+    # figure has to carry these numbers in the surrounding caption.
     d_auc = s["auc"]["full"][0] - s["auc"]["additive"][0]
     _, f_lo, f_hi = s["auc"]["full"]
-    fig.text(0.155, 0.183,
-             "{n:,} forecasts, 1900–1963. Out-of-fold only — every forecast is\n"
-             "scored by a model that never saw its 3-year era. The band resamples\n"
-             "the {b} eras, not the {n:,} forecasts, so it is wide: the headline's\n"
-             "interval is [{lo:.3f}, {hi:.3f}] and every rung's overlaps it. What\n"
-             "survives that test is the {dl:+.3f} lift over the additive rung (paired\n"
-             "p = 0.002), not any curve's level. Boosting the same inputs: 0.617."
-             .format(n=s["n"], b=s["n_blocks"], dl=d_auc, lo=f_lo, hi=f_hi),
-             fontsize=NOTE - 1.5, color=MUTED, va="top", linespacing=1.6)
+    print(f"  caption facts (no longer drawn on the figure):")
+    print(f"    {s['n']:,} forecasts, 1900-1963, out-of-fold over {s['n_blocks']} eras")
+    print(f"    headline AUC {s['auc']['full'][0]:.3f}  95% CI [{f_lo:.3f}, {f_hi:.3f}]"
+          f"  -- every rung's interval overlaps it")
+    print(f"    lift over additive {d_auc:+.3f} (paired p = 0.002) -- this is what "
+          f"survives, not any curve's level")
+    print(f"    gradient boosting on the same inputs: 0.617")
 
     p = f"{OUT}/v2_fig9_roc.png"
     fig.savefig(p, facecolor=SURFACE)
