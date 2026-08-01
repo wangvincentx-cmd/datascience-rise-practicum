@@ -130,6 +130,43 @@ def render(path, title, subtitle, colnames, colx, colalign, body, footnote, widt
         bg.save(path)
 
 
+def per_period():
+    """Both models' real-time predictions, broken out by decade.
+
+    Uses the 1930 start -- the longest forward-only run (303 months), so every
+    decade from the 1930s on is predicted by a model that never saw it.
+    Reported as AUC and Brier: accuracy is meaningless here (the base rate is
+    ~76% 'no onset', so always-no scores 0.76 while ranking nothing).
+    """
+    pb, truth = forward_only(SERIES, 1930)
+    pa, _ = forward_only(["attention"], 1930)
+    common = pb.index.intersection(pa.index)
+    pb, pa, t = pb[common], pa[common], truth[common]
+    years = np.array([m.year for m in common])
+
+    rows = []
+    for d0 in range(1930, 1964, 10):
+        sel = (years >= d0) & (years < d0 + 10)
+        if sel.sum() == 0:
+            continue
+        tv = t.values[sel]
+        label = f"{d0}s" if d0 + 10 <= 1964 else f"{d0}-1963"
+        rec = {"period": label, "months": int(sel.sum()), "onsets": int(tv.sum()),
+               "base_rate": tv.mean()}
+        for tag, p in (("five", pb), ("attn", pa)):
+            pv = p.values[sel]
+            rec[f"auc_{tag}"] = (roc_auc_score(tv, pv) if tv.min() != tv.max() else np.nan)
+            rec[f"brier_{tag}"] = float(np.mean((pv - tv) ** 2))
+        rows.append(rec)
+
+    tv, pbv, pav = t.values, pb.values, pa.values
+    rows.append({"period": "1930-1963 (all)", "months": len(tv), "onsets": int(tv.sum()),
+                 "base_rate": tv.mean(),
+                 "auc_five": roc_auc_score(tv, pbv), "brier_five": float(np.mean((pbv - tv) ** 2)),
+                 "auc_attn": roc_auc_score(tv, pav), "brier_attn": float(np.mean((pav - tv) ** 2))})
+    return pd.DataFrame(rows)
+
+
 def write_combined_csv(lp, cmp):
     """Both tables in one CSV, section-blocked -- File > Import into Google Sheets."""
     lines = []
@@ -169,6 +206,26 @@ def write_combined_csv(lp, cmp):
            "loss; the shortest favours five.",
            "Eras won: 8-year blocks inside each window. Only 2-4 fit, so treat the column as "
            "illustrative."])
+
+    pp = per_period()
+    pp.to_csv(OUT / "per_period_table.csv", index=False)
+    block("TABLE 3 - Per-period performance, real-time (1930 start, both models)",
+          ["period", "months", "onsets", "base rate",
+           "AUC five series", "AUC attention", "Brier five series", "Brier attention"],
+          [[r["period"], r["months"], r["onsets"], f"{r['base_rate']:.3f}",
+            ("" if pd.isna(r["auc_five"]) else f"{r['auc_five']:.3f}"),
+            ("" if pd.isna(r["auc_attn"]) else f"{r['auc_attn']:.3f}"),
+            f"{r['brier_five']:.3f}", f"{r['brier_attn']:.3f}"] for _, r in pp.iterrows()],
+          ["Predictions come from the 1930 start - the longest forward-only run, so every decade "
+           "is predicted by a model that never saw it.",
+           "AUC: 0.50 = coin flip, higher is better. Brier: mean squared error of the probability, "
+           "LOWER is better.",
+           "Accuracy is deliberately not reported: at a 24% base rate, always answering 'no onset' "
+           "scores 76% while ranking nothing.",
+           "The 1930s are the failure decade for both models - AUC below coin flip, i.e. the "
+           "ranking runs backwards.",
+           "Decade AUCs rest on 36-120 months and 1-3 independent 3-year blocks each; they are "
+           "descriptive, not tests."])
 
     path = OUT / "press_model_tables.csv"
     pd.DataFrame(lines).to_csv(path, index=False, header=False)
