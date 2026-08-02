@@ -1,0 +1,15 @@
+{
+  "penalty": "l1",
+  "C": 0.5,
+  "n": 14251,
+  "n_blocks": 22,
+  "ladder": {
+    "2. claim features only": 0.560747372348181,
+    "3. economy only": 0.5380939401661444,
+    "4. claim + economy (additive)": 0.582215707988365,
+    "5. + direction x economy": 0.6484096919659513,
+    "6. gradient boosting (same inputs)": 0.6172160341599171
+  },
+  "perm_null": 0.47675915157556625,
+  "perm_reps": 20
+}
