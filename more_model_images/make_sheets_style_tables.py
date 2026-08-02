@@ -128,18 +128,18 @@ def forward_sheet():
     rows, colors = [], []
     for _, r in cmp.iterrows():
         attn = r["model"] == "Attention alone"
-        rows.append([f"{r['start']}-1963", r["model"], str(r["k"]), str(r["months"]),
+        rows.append([f"{r['start']}-1963", r["model"], str(r["months"]),
                      str(r["onsets"]), f"{r['auc']:.3f}", f"{r['eras_won']}/{r['n_eras']}",
                      PAIRED[r["start"]][0] if attn else "",
                      PAIRED[r["start"]][1] if attn else ""])
         colors.append(ACCENT_ORANGE if attn else ACCENT_BLUE)
     render_sheet(
         OUT / "sheets_forward_test.png",
-        ["training start", "model", "features", "months", "onsets", "AUC",
+        ["training start", "model", "months", "onsets", "AUC",
          "eras won", "paired diff", "95% CI"],
         rows,
-        widths=[1.05, 1.28, 0.62, 0.60, 0.58, 0.64, 0.68, 0.76, 1.00],
-        aligns=["l", "l", "r", "r", "r", "r", "r", "r", "r"],
+        widths=[1.05, 1.28, 0.60, 0.58, 0.64, 0.68, 0.76, 1.00],
+        aligns=["l", "l", "r", "r", "r", "r", "r", "r"],
         colors=colors,
         title="Forward-only backtest — five press series vs attention alone",
         notes=["AUC 0.50 = coin flip. Refit every year on all prior years; never sees the year it predicts.",
