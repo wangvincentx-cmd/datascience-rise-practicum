@@ -128,7 +128,7 @@ def draw(res):
              "3. economy only"]
     rows = [(LABEL[k], res["ladder"][k]) for k in order if k in res["ladder"]]
 
-    fig, ax = plt.subplots(figsize=(10.5, 4.6))
+    fig, ax = plt.subplots(figsize=(7.0, 4.6))
     y = np.arange(len(rows))[::-1]
     for (name, auc), yy in zip(rows, y):
         top = name == LABEL["5. + direction x economy"]
@@ -151,8 +151,9 @@ def draw(res):
     ax.set_xticks([.40, .45, .50, .55, .60, .65, .70])
     ax.set_xticklabels(["0.40", "0.45", "0.50", "0.55", "0.60", "0.65", "0.70"],
                        fontsize=11.5)
-    ax.set_xlabel("out-of-fold ROC-AUC   (leave-one-3-year-period-out, "
-                  f"{res['n_blocks']} blocks)", fontsize=12)
+    # Two lines: at this width the single-line version runs off the canvas.
+    ax.set_xlabel("out-of-fold ROC-AUC\n(leave-one-3-year-period-out, "
+                  f"{res['n_blocks']} blocks)", fontsize=11.5)
     ax.grid(axis="y", visible=False)
     fig.tight_layout()
     p = OUT / "figQ2_ladder_l1.png"
