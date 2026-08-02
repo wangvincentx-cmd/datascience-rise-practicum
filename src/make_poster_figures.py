@@ -30,6 +30,8 @@ from pathlib import Path
 from truth_data import NBER_RECESSIONS
 
 BLUE, VERM, GREEN, GRAY = "#0072B2", "#D55E00", "#009E73", "#9AA0A6"
+RED = "#C0392B"          # figQ2_ladder_l1's highlight red, for the one bar that
+                         # is singled out by subject rather than by value
 INK, MUTED = "#1a1a1a", "#6b6b6b"
 OUT = Path("figures/poster_figures"); OUT.mkdir(exist_ok=True)
 plt.rcParams.update({
@@ -331,7 +333,10 @@ def fig_topics(s):
 
     # F1: accuracy by topic
     fig, ax1 = plt.subplots(figsize=(7.5, 6.45))
-    colors = [VERM if v < .5 else BLUE for v in g["mean"]]
+    # Colour marks WHICH topic, not whether it clears the coin flip -- the
+    # dashed line at .5 already carries that, and general business is the topic
+    # the poster argues about.
+    colors = [RED if t == "general_business" else BLUE for t in g.index]
     ax1.barh(range(len(g)), g["mean"], color=colors, height=.62, zorder=3)
     for i, (v, n) in enumerate(zip(g["mean"], g["size"])):
         ax1.text(v + .012, i, f"{v:.1%}", va="center", fontsize=13,
