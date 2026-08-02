@@ -330,7 +330,7 @@ def fig_topics(s):
     g = g[g["size"] >= 150].sort_values("mean")
 
     # F1: accuracy by topic
-    fig, ax1 = plt.subplots(figsize=(7.5, 4.3))
+    fig, ax1 = plt.subplots(figsize=(7.5, 6.45))
     colors = [VERM if v < .5 else BLUE for v in g["mean"]]
     ax1.barh(range(len(g)), g["mean"], color=colors, height=.62, zorder=3)
     for i, (v, n) in enumerate(zip(g["mean"], g["size"])):
