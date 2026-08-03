@@ -186,68 +186,44 @@ def fig_ledger(d, reps=2000):
 
 # --- K. THE MODEL ----------------------------------------------------------
 def fig_model():
-    """What the hit predictor is worth, and whether its probabilities mean
-    anything. Reads hit_predictor_results.json so the chart cannot drift out of
-    sync with the model."""
+    """Do the hit predictor's probabilities mean anything? The calibration
+    curve, nothing else.
+
+    Reads ladder_l1.json -- the full rung (claim + economy + interaction) on
+    the same leave-one-3-year-period-out CV as the main model, refitted with an
+    L1 (lasso) penalty at C = 0.5. Raw out-of-fold probabilities in decile
+    bins, so the curve shows the model as deployed, not after a calibrator has
+    been fitted on top of it. Reading a cached file means the chart cannot
+    drift out of sync with the fit it claims to show."""
     import json
-    p = Path("data/models/hit_predictor_results.json")
-    if not p.exists():
-        print("   [skipping figK: run `python src/hit_predictor.py` first]")
+    p = Path("data/models/ladder_l1.json")
+    res = json.loads(p.read_text()) if p.exists() else {}
+    if "calibration" not in res:
+        print("   [skipping figK: run `python src/make_l1_ladder_figure.py "
+              "--refit` first, then recompute the L1 calibration curve]")
         return
-    res = json.loads(p.read_text())
-    order = ["2. claim features only", "3. economy only",
-             "4. claim + economy (additive)", "6. gradient boosting (same inputs)",
-             "5. + direction x economy"]
-    label = {"2. claim features only": "how the forecast is written",
-             "3. economy only": "the economy at print time",
-             "4. claim + economy (additive)": "both, added together",
-             "6. gradient boosting (same inputs)": "gradient boosting, same inputs",
-             "5. + direction x economy": "both, allowed to INTERACT"}
-    rows = [(label[k], res["ladder"][k]["auc"]) for k in order
-            if k in res["ladder"]]
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5.2),
-                                   gridspec_kw={"width_ratios": [1.35, 1]})
-    y = np.arange(len(rows))
-    best = max(r[1] for r in rows)
-    # Lollipops anchored at 0.5, not bars from an arbitrary truncated origin:
-    # AUC's meaningful zero IS chance, and a bar starting at 0.45 would make
-    # 0.538 look like half of 0.647 when the real comparison is 0.038 vs 0.147
-    # above chance.
-    for i, (_, v) in enumerate(rows):
-        color = BLUE if v == best else GRAY
-        ax1.plot([.5, v], [i, i], color=color, lw=4, solid_capstyle="round",
-                 zorder=3)
-        ax1.plot([v], [i], marker="o", ms=13, color=color, mec="white",
-                 mew=2, zorder=4)
-        ax1.text(v + .008, i, f"{v:.3f}", va="center", fontsize=12,
-                 color=INK, fontweight="bold" if v == best else "normal")
-    ax1.axvline(.5, color="#999999", lw=1.4, ls="--", zorder=2)
-    ax1.text(.5, -.75, "chance", color=MUTED, fontsize=10.5, ha="center")
-    ax1.set_yticks(y); ax1.set_yticklabels([n for n, _ in rows], fontsize=11.5)
-    ax1.set_xlim(.485, .70); ax1.set_ylim(len(rows) - .5, -1.1)
-    ax1.set_xlabel("out-of-fold ROC-AUC  (leave-one-3-year-period-out)")
-    ax1.grid(axis="y", visible=False)
-
     cal = res["calibration"]
-    ax2.plot([0, 1], [0, 1], color="#bbbbbb", lw=1.4, ls="--", zorder=2)
-    ax2.plot(cal["predicted"], cal["actual"], color=BLUE, lw=2.4, marker="o",
-             ms=9, mec="white", mew=1.6, zorder=3)
-    ax2.set_xlim(0, 1); ax2.set_ylim(0, 1)
-    ax2.set_xticks([0, .25, .5, .75, 1]); ax2.set_yticks([0, .25, .5, .75, 1])
-    ax2.set_xticklabels(["0", "25%", "50%", "75%", "100%"])
-    ax2.set_yticklabels(["0", "25%", "50%", "75%", "100%"])
-    ax2.set_xlabel("probability the model assigned")
-    ax2.set_ylabel("share that actually came true")
-    ax2.text(.06, .90, "perfect calibration", color=MUTED, fontsize=10.5,
-             rotation=39)
+
+    fig, ax = plt.subplots(figsize=(5.8, 5.4))
+    ax.plot([0, 1], [0, 1], color="#bbbbbb", lw=1.4, ls="--", zorder=2)
+    ax.plot(cal["predicted"], cal["actual"], color=BLUE, lw=2.4, marker="o",
+            ms=9, mec="white", mew=1.6, zorder=3)
+    ax.set_xlim(0, 1); ax.set_ylim(0, 1)
+    ax.set_xticks([0, .25, .5, .75, 1]); ax.set_yticks([0, .25, .5, .75, 1])
+    ax.set_xticklabels(["0", "25%", "50%", "75%", "100%"])
+    ax.set_yticklabels(["0", "25%", "50%", "75%", "100%"])
+    ax.set_xlabel("probability the model assigned")
+    ax.set_ylabel("share that actually came true")
+    ax.text(.06, .90, "perfect calibration", color=MUTED, fontsize=10.5,
+            rotation=39)
 
     fig.tight_layout()
     fig.savefig(OUT / "figK_hit_model.png", bbox_inches="tight")
     plt.close(fig)
     print(f"-> {OUT}/figK_hit_model.png")
-    print(f"   figK: best AUC {best:.3f}; n = {res['n']:,} forecasts across "
-          f"{res['n_periods']} held-out 3-year periods")
+    print(f"   figK: calibration, L1 penalty, C = {res['C']}; "
+          f"Brier {res['brier']:.3f}; n = {res['n']:,} forecasts across "
+          f"{res['n_blocks']} held-out 3-year periods")
 
 
 if __name__ == "__main__":
