@@ -55,7 +55,7 @@ def draw(top_n):
     names = [LABEL.get(f, f.replace("_", "\n")) for f in d["feature"]]
     vals, sds = d["drop"].values, d["sd"].values
 
-    fig, ax = plt.subplots(figsize=(8.6, 5.0))
+    fig, ax = plt.subplots(figsize=(8.6, 6.25))
     x = range(len(vals))
     colors = [BLUE] * (len(vals) - 1) + [RED]
     ax.bar(x, vals, width=.66, color=colors, zorder=3)
