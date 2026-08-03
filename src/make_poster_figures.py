@@ -30,8 +30,9 @@ from pathlib import Path
 from truth_data import NBER_RECESSIONS
 
 BLUE, VERM, GREEN, GRAY = "#0072B2", "#D55E00", "#009E73", "#9AA0A6"
-RED = "#C0392B"          # figQ2_ladder_l1's highlight red, for the one bar that
-                         # is singled out by subject rather than by value
+RED = "#C0392B"          # figQ2_ladder_l1's highlight red: the bar singled out
+                         # by subject rather than by value (figF1), and the
+                         # recession side of the boom/bust pair (figA1)
 INK, MUTED = "#1a1a1a", "#6b6b6b"
 OUT = Path("figures/poster_figures"); OUT.mkdir(exist_ok=True)
 plt.rcParams.update({
@@ -94,7 +95,9 @@ def fig_mechanism(s):
     labels = [f"Expansion\n(n={g.loc[False, 'n']:,})",
               f"Recession\n(n={g.loc[True, 'n']:,})"]
     vals = [g.loc[False, "pess"], g.loc[True, "pess"]]
-    ax1.bar(labels, vals, color=[GRAY, VERM], width=.55, zorder=3)
+    # figF1/figK's blue and red, so a reader crossing between poster panels
+    # meets one palette rather than three.
+    ax1.bar(labels, vals, color=[BLUE, RED], width=.55, zorder=3)
     for i, v in enumerate(vals):
         ax1.text(i, v + .01, f"{v:.1%}", ha="center", fontsize=14,
                  fontweight="bold", color=INK)
