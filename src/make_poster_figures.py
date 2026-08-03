@@ -88,7 +88,11 @@ def fig_mechanism(s):
 
     # A1: the share that predicted a downturn, expansion vs recession
     fig, ax1 = plt.subplots(figsize=(6, 4.6))
-    labels = ["Expansion", "Recession"]
+    # n on the tick, not in a caption: the two bars rest on very different
+    # sample sizes, and a reader comparing them should see that without
+    # leaving the axes. Same (n=...) form figF1 uses.
+    labels = [f"Expansion\n(n={g.loc[False, 'n']:,})",
+              f"Recession\n(n={g.loc[True, 'n']:,})"]
     vals = [g.loc[False, "pess"], g.loc[True, "pess"]]
     ax1.bar(labels, vals, color=[GRAY, VERM], width=.55, zorder=3)
     for i, v in enumerate(vals):

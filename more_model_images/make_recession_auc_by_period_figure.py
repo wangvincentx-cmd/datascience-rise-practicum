@@ -19,6 +19,13 @@ signal ranks recession onsets within a period at all. The forward-only numbers
 are the real-time claim; these are the per-period one. Do not mix them in one
 sentence.
 
+The 1960-63 bar is the exception: the corpus ends 1963-12, so its training set
+is 1901-1959 and nothing else, which makes it real-time by accident. It is also
+the bar to trust least -- one NBER peak (1960-04) falls in the window, so the
+period holds 3 positive months, all consecutive. Enumerating all 7,770 ways 3
+positives can be ranked among 37 months puts the null AUC's 95% range at
+[0.157, 0.843]; anything this period reports sits inside it.
+
 Model, features and target are imported from make_broad_vs_attention_figure --
 same five d12 press series, same L2 logistic regression at C = 1, same
 "NBER recession starts within 12 months" target on expansion months only -- so
