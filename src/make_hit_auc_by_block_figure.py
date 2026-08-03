@@ -1,12 +1,18 @@
 """How well the hit predictor ranked forecasts, era by era.
 
-  figures/prelim_figures/figS_hit_auc_by_block.png
+  figures/prelim_figures/figS_hit_auc_by_block.png        (L2, pooled 0.647)
+  figures/prelim_figures/figS_hit_auc_by_block_l1.png     (L1, pooled 0.648)
 
-The ladder reports ONE pooled out-of-fold AUC (0.647). That number is an average
-over 64 years, and the project's own rule -- the effective sample is ~21 blocks,
+The ladder reports ONE pooled out-of-fold AUC. That number is an average over
+64 years, and the project's own rule -- the effective sample is ~21 blocks,
 not 14,251 claims -- says the interesting question is how much it moves between
 them. This splits the same out-of-fold predictions by their 3-year block and
 scores each one on its own.
+
+`--penalty l1` reads the lasso-fit predictions instead of the ridge ones, so the
+chart matches the ladder in ladder_l1.json. Every headline number in the chart
+is computed from whichever file was loaded -- none of them is written into the
+text -- so the two versions cannot silently disagree with their own data.
 
 Every point is honest in the same way the pooled number is: `ladder_oof.csv`
 holds leave-one-3-year-period-out predictions, so the claims in a block were
@@ -20,8 +26,11 @@ Two things the chart is careful about:
     plotted with their claim count below so a 0.99 on 404 claims cannot be read
     as equal evidence to a 0.65 on 1,025.
 
-Run from the repo root:  python src/make_hit_auc_by_block_figure.py
+Run from the repo root:
+    python src/make_hit_auc_by_block_figure.py
+    python src/make_hit_auc_by_block_figure.py --penalty l1
 """
+import argparse
 from pathlib import Path
 
 import matplotlib
@@ -32,8 +41,15 @@ import pandas as pd
 from scipy.stats import rankdata
 from sklearn.metrics import roc_auc_score
 
-OOF = Path("data/models/ladder_oof.csv")
 OUT = Path("figures/prelim_figures"); OUT.mkdir(parents=True, exist_ok=True)
+
+
+def paths(penalty):
+    """(predictions in, figure out) for one penalty."""
+    if penalty == "l2":
+        return Path("data/models/ladder_oof.csv"), OUT / "figS_hit_auc_by_block.png"
+    return (Path(f"data/models/ladder_oof_{penalty}.csv"),
+            OUT / f"figS_hit_auc_by_block_{penalty}.png")
 
 BLUE, BAD = "#0072B2", "#b3261e"
 INK, MUTED, FAINT = "#202124", "#5f6368", "#9aa0a6"
@@ -84,14 +100,30 @@ def per_block(d):
 
 
 def main():
-    d = pd.read_csv(OOF)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--penalty", choices=["l2", "l1"], default="l2",
+                    help="which cached out-of-fold predictions to score "
+                         "(l1 = the lasso ladder in ladder_l1.json)")
+    a = ap.parse_args()
+    oof, out_png = paths(a.penalty)
+    if not oof.exists():
+        raise SystemExit(
+            f"{oof} not found -- build it with:\n"
+            f"  python -c \"import sys; sys.path.insert(0,'src'); "
+            f"import make_roc_figure as M; M.compute_oof('{a.penalty}')\"")
+
+    d = pd.read_csv(oof)
     d = d[d["full"].notna()]
     r = per_block(d)
     pooled = roc_auc_score(d["hit"], d["full"])
-    below = r[r["auc"] < .5]
 
+    # Near-square canvas with no title or caption block: the panels are the
+    # whole image, so the plotting area gets the room the text used to take.
+    # The claim-count strip keeps its 4.4:1 share -- it is a reference for
+    # reading the dots, not a second chart competing with them.
     fig, (ax, ax_n) = plt.subplots(
-        2, 1, figsize=(11.6, 5.4), sharex=True,
+        2, 1, figsize=(9.6, 8.4), sharex=True,
         gridspec_kw={"height_ratios": [4.4, 1], "hspace": 0.10})
 
     x = r["block"].to_numpy() + 1          # centre of the 3-year block
@@ -123,19 +155,29 @@ def main():
     # every 'improve' forecast hit and every 'worsen' one missed, so DIRECTION
     # alone separates the era. It is the clearest illustration on the chart of
     # why the effective sample is ~21 blocks and not 14,251 claims.
+    # Guarded, not unconditional: the "direction alone" reading was checked
+    # against the 1900-01 claims themselves. If a refit moves the top block
+    # elsewhere the sentence would be an assertion about data nobody looked at,
+    # so it is drawn only where it was verified.
     top = r.loc[r["auc"].idxmax()]
-    ax.annotate(f"{int(top['y0'])}–{int(top['y1'])}: every 'improve' forecast hit and "
-                "every 'worsen'\nforecast missed — direction alone separates "
-                "this era",
-                xy=(top["block"] + 1.6, top["auc"]), xytext=(1906, .93),
-                fontsize=8.8, color=MUTED, va="center", ha="left",
-                linespacing=1.5,
-                arrowprops=dict(arrowstyle="-", color=FAINT, lw=1,
-                                shrinkA=2, shrinkB=4))
+    if int(top["y0"]) == 1900 and top["auc"] >= .95:
+        ax.annotate(f"{int(top['y0'])}–{int(top['y1'])}: every 'improve' forecast hit and "
+                    "every 'worsen'\nforecast missed — direction alone separates "
+                    "this era",
+                    xy=(top["block"] + 1.6, top["auc"]), xytext=(1906, .93),
+                    fontsize=8.8, color=MUTED, va="center", ha="left",
+                    linespacing=1.5,
+                    arrowprops=dict(arrowstyle="-", color=FAINT, lw=1,
+                                    shrinkA=2, shrinkB=4))
 
-    ax.set_ylim(0, 1.06)
-    ax.set_yticks([0, .25, .5, .75, 1])
-    ax.set_yticklabels(["0", "0.25", "0.50", "0.75", "1.00"], fontsize=9.5)
+    # Cropped below 0.25 rather than run to zero. Truncating an axis is usually
+    # a distortion, but nothing here is measured from zero: the stems are drawn
+    # from the 0.5 chance line, so 0.5 is the baseline the eye compares against
+    # and an empty 0-0.18 band would only shrink the marks. The floor still
+    # clears the lowest whisker (1929-31 at 0.18) and its label.
+    ax.set_ylim(.12, 1.05)
+    ax.set_yticks([.25, .5, .75, 1])
+    ax.set_yticklabels(["0.25", "0.50", "0.75", "1.00"], fontsize=9.5)
     ax.set_ylabel("out-of-fold ROC-AUC\nwithin the block", fontsize=10,
                   color=MUTED, linespacing=1.5)
     ax.grid(axis="y", color=GRID, lw=.8)
@@ -152,29 +194,24 @@ def main():
     ax_n.set_xticklabels([str(y) for y in range(1900, 1965, 10)], fontsize=9.5)
     ax_n.set_xlabel("3-year block", fontsize=10, color=MUTED)
 
-    fig.suptitle("The pooled 0.647 is an average over eras that range from "
-                 "0.21 to 0.99", fontsize=13.5, fontweight="600",
-                 x=.008, ha="left", y=1.045)
-    fig.text(.008, .975,
-             "Each dot is one 3-year block of forecasts, scored by a model "
-             "fitted without that block · blue above chance, red below",
-             fontsize=10, color=MUTED, ha="left", va="center")
-    fig.text(.008, -.15,
-             f"{len(below)} of {len(r)} blocks rank BACKWARDS "
-             f"({', '.join(f'{b.y0}–{b.y1}' for b in below.itertuples())})"
-             " — the model does not merely weaken in those eras, it inverts. "
-             "Whiskers are a 95% bootstrap over\n"
-             "claims WITHIN a block, so they are the optimistic width: "
-             "forecasts in one era share wire copy and one macro reality, and "
-             "the true uncertainty on a single block is wider than drawn.\n"
-             "Blocks are not equally informative — the bottom panel is the "
-             "claim count behind each dot.",
-             fontsize=8.6, color=MUTED, ha="left", va="top", linespacing=1.6)
-
-    p = OUT / "figS_hit_auc_by_block.png"
+    # No title and no caption block: this figure is dropped into a document
+    # that carries its own heading and prose. The caveats the caption used to
+    # state are still REQUIRED reading, so they are printed to stdout below --
+    # dropping them from the PNG must not mean dropping them from the project.
+    p = out_png
     fig.savefig(p, bbox_inches="tight", facecolor="white", pad_inches=.10)
     plt.close(fig)
+
+    below = r[r["auc"] < .5]
+    pen = "lasso (L1)" if a.penalty == "l1" else "ridge (L2)"
     print(r.to_string(index=False, float_format=lambda v: f"{v:.3f}"))
+    print(f"\n{pen} · pooled out-of-fold AUC {pooled:.3f} · "
+          f"blocks range {r['auc'].min():.2f}-{r['auc'].max():.2f}")
+    print(f"{len(below)} of {len(r)} blocks rank BACKWARDS "
+          f"({', '.join(f'{b.y0}-{b.y1}' for b in below.itertuples())}) -- "
+          "the model inverts there, it does not merely weaken.")
+    print("Whiskers resample claims WITHIN a block, so they are the OPTIMISTIC "
+          "width; true per-block uncertainty is wider.")
     print(f"-> {p}")
 
 

@@ -45,6 +45,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import hit_predictor as HP
 from macro_context import BLOCK_YEARS, FACTORS
+from model_variants import clf_for
+
+C_L1 = 0.5   # matches the L2 model's C=0.5, so only the penalty differs
 
 OUT = "figures/poster_v2"
 CTX = "data/scored/macro_context.csv"
@@ -105,12 +108,24 @@ def clean(ax, keep=("left", "bottom")):
 
 
 # --- the predictions --------------------------------------------------------
-def compute_oof():
+def oof_path(penalty="l2"):
+    """Cache file for one penalty. L2 keeps the original filename so existing
+    callers and the committed artefact are untouched."""
+    return CACHE if penalty == "l2" else CACHE.with_name(f"ladder_oof_{penalty}.csv")
+
+
+def compute_oof(penalty="l2"):
     """Out-of-fold probabilities for every rung, under hit_predictor's own CV.
 
     Feature blocks and the estimator come from hit_predictor rather than being
     restated here, so this figure cannot describe a model different from the one
-    that was actually fitted and saved."""
+    that was actually fitted and saved.
+
+    `penalty` selects the logistic regression's penalty through model_variants'
+    clf_for, the same helper make_l1_ladder_figure uses -- so the L1 predictions
+    cached here are the ones behind ladder_l1.json's AUCs, not a second fit that
+    merely resembles them."""
+    clf = None if penalty == "l2" else clf_for(penalty, C_L1)
     d = pd.read_csv(CTX, low_memory=False)
     d = d[d["hit"].isin([0, 1])].reset_index(drop=True)
     y = d["hit"].astype(int).values
@@ -128,18 +143,20 @@ def compute_oof():
     }
     out = pd.DataFrame({"date": d["date"], "block": groups, "hit": y})
     for key, (cat, num) in specs.items():
-        print(f"  fitting {key} ...", flush=True)
-        out[key] = HP.oof_predict(X, y, groups, cat, num)
-    CACHE.parent.mkdir(parents=True, exist_ok=True)
-    out.to_csv(CACHE, index=False)
-    print(f"  -> {CACHE}")
+        print(f"  fitting {key} ({penalty}) ...", flush=True)
+        out[key] = HP.oof_predict(X, y, groups, cat, num, clf=clf)
+    path = oof_path(penalty)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    out.to_csv(path, index=False)
+    print(f"  -> {path}")
     return out
 
 
-def load_oof(refit=False):
-    if refit or not CACHE.exists():
-        return compute_oof()
-    return pd.read_csv(CACHE)
+def load_oof(refit=False, penalty="l2"):
+    path = oof_path(penalty)
+    if refit or not path.exists():
+        return compute_oof(penalty)
+    return pd.read_csv(path)
 
 
 # --- uncertainty ------------------------------------------------------------
