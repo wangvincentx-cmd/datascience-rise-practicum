@@ -50,9 +50,9 @@ plt.rcParams.update({
 
 LABEL = {"2. claim features only": "How the forecast is written",
          "3. economy only": "The economy at print time",
-         "4. claim + economy (additive)": "Both, added together",
+         "4. claim + economy (additive)": "Both, judged separately",
          "6. gradient boosting (same inputs)": "Gradient boosting, same inputs",
-         "5. + direction x economy": "Both, allowed to interact"}
+         "5. + direction x economy": "Both, with economy x direction labels"}
 
 
 def build():
@@ -123,19 +123,39 @@ def compute(perm):
 
 
 def draw(res):
-    order = ["5. + direction x economy", "6. gradient boosting (same inputs)",
-             "4. claim + economy (additive)", "2. claim features only",
-             "3. economy only"]
+    # The two "Both" rungs sit adjacent so the one comparison this figure
+    # exists to make is read off neighbouring bars; boosting drops to the
+    # bottom because it is the estimator control, not a rung of the ladder.
+    order = ["5. + direction x economy", "4. claim + economy (additive)",
+             "2. claim features only", "3. economy only",
+             "6. gradient boosting (same inputs)"]
     rows = [(LABEL[k], res["ladder"][k]) for k in order if k in res["ladder"]]
 
-    fig, ax = plt.subplots(figsize=(7.0, 4.6))
+    fig, ax = plt.subplots(figsize=(7.6, 4.6))
     y = np.arange(len(rows))[::-1]
+    pos = {}
     for (name, auc), yy in zip(rows, y):
         top = name == LABEL["5. + direction x economy"]
         ax.barh(yy, auc - 0.40, left=0.40, height=.62, zorder=3,
                 color=RED if top else BLUE)
         ax.text(auc + 0.004, yy, f"{auc:.3f}", va="center", fontsize=13.5,
                 fontweight="bold", color=INK)
+        pos[name] = (yy, auc)
+
+    # What the interaction terms are worth: a drop from the red bar's tip to
+    # the additive bar's level, with the gap the additive model never closes.
+    hi, lo = LABEL["5. + direction x economy"], LABEL["4. claim + economy (additive)"]
+    if hi in pos and lo in pos:
+        (y_hi, a_hi), (y_lo, a_lo) = pos[hi], pos[lo]
+        edge = y_lo + .34   # top edge of the lower bar; clears its value label
+        ax.plot([a_lo, a_hi], [edge, edge], color=GRAY, lw=1.0, ls=":",
+                zorder=4)
+        ax.annotate("", xy=(a_hi, edge), xytext=(a_hi, y_hi - .34),
+                    arrowprops=dict(arrowstyle="-|>", color=INK, lw=1.4,
+                                    shrinkA=0, shrinkB=0), zorder=5)
+        ax.text(a_hi - .008, (y_hi - .34 + edge) / 2, f"-{a_hi - a_lo:.3f}",
+                fontsize=12, fontweight="bold", color=INK, ha="right",
+                va="center", zorder=5)
 
     ax.axvline(.5, color="#444444", lw=1.4, ls="--", zorder=4)
     ax.text(.503, len(rows) - .55, "chance", fontsize=11.5, color=INK,
