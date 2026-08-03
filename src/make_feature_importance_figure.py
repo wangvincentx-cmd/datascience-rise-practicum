@@ -51,12 +51,13 @@ LABEL = {
 def draw(top_n):
     d = pd.read_csv(SRC)
     d = d[d["drop"] > 0].sort_values("drop", ascending=False).head(top_n)
+    d = d.iloc[::-1]                       # smallest at left, largest at right
     names = [LABEL.get(f, f.replace("_", "\n")) for f in d["feature"]]
     vals, sds = d["drop"].values, d["sd"].values
 
     fig, ax = plt.subplots(figsize=(8.6, 5.0))
     x = range(len(vals))
-    colors = [RED] + [BLUE] * (len(vals) - 1)
+    colors = [BLUE] * (len(vals) - 1) + [RED]
     ax.bar(x, vals, width=.66, color=colors, zorder=3)
     ax.errorbar(x, vals, yerr=sds, fmt="none", ecolor=GRAY, elinewidth=1.2,
                 capsize=3, zorder=4)
