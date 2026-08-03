@@ -133,29 +133,12 @@ def draw(res):
 
     fig, ax = plt.subplots(figsize=(7.6, 4.6))
     y = np.arange(len(rows))[::-1]
-    pos = {}
     for (name, auc), yy in zip(rows, y):
         top = name == LABEL["5. + direction x economy"]
         ax.barh(yy, auc - 0.40, left=0.40, height=.62, zorder=3,
                 color=RED if top else BLUE)
         ax.text(auc + 0.004, yy, f"{auc:.3f}", va="center", fontsize=13.5,
                 fontweight="bold", color=INK)
-        pos[name] = (yy, auc)
-
-    # What the interaction terms are worth: a drop from the red bar's tip to
-    # the additive bar's level, with the gap the additive model never closes.
-    hi, lo = LABEL["5. + direction x economy"], LABEL["4. claim + economy (additive)"]
-    if hi in pos and lo in pos:
-        (y_hi, a_hi), (y_lo, a_lo) = pos[hi], pos[lo]
-        edge = y_lo + .34   # top edge of the lower bar; clears its value label
-        ax.plot([a_lo, a_hi], [edge, edge], color=GRAY, lw=1.0, ls=":",
-                zorder=4)
-        ax.annotate("", xy=(a_hi, edge), xytext=(a_hi, y_hi - .34),
-                    arrowprops=dict(arrowstyle="-|>", color=INK, lw=1.4,
-                                    shrinkA=0, shrinkB=0), zorder=5)
-        ax.text(a_hi - .008, (y_hi - .34 + edge) / 2, f"-{a_hi - a_lo:.3f}",
-                fontsize=12, fontweight="bold", color=INK, ha="right",
-                va="center", zorder=5)
 
     ax.axvline(.5, color="#444444", lw=1.4, ls="--", zorder=4)
     ax.text(.503, len(rows) - .55, "chance", fontsize=11.5, color=INK,
