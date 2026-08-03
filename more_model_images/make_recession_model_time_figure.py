@@ -1,0 +1,150 @@
+"""The recession model over time: what it said each month, and where it worked.
+
+  figures/prelim_figures/fig10_recession_model_over_time.png
+  more_model_images/forward_only_predictions.csv   the plotted months, machine-readable
+
+Third member of the fig8/fig9 family -- same wide layout, same NBER shading, same
+reading habit: blue line is the model, grey bands are what the economy did. fig8
+plots the press's accuracy over time, fig9 the press's own downturn signal; this
+plots a FITTED model's out-of-sample probability, which is the thing fig9's
+docstring is careful to say it is not.
+
+Forward-only P(recession starts within 12 months). Every point comes from a model
+refit on all prior years only and never shown the year it predicts, so the line
+can be read left-to-right as real-time output. The line breaks at each recession
+-- recession months are not scored, since "will a recession start?" is only a
+question while one is not already running.
+
+Untitled by request: the figure carries its caption and no headline, so whatever
+it is dropped into supplies the claim. The per-decade AUCs still print to stdout
+(they are the answer to "when does this work?" -- the 1930s run below 0.5,
+meaning the ranking is inverted there) and are charted in fig_per_period.png.
+
+Both models come from make_broad_vs_attention_figure.forward_only, so this chart,
+broad_vs_attention.png and per_period_table.csv are one computation rendered
+three ways and cannot disagree.
+
+Run from the repo root:  python more_model_images/make_recession_model_time_figure.py
+"""
+import sys
+from pathlib import Path
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from sklearn.metrics import roc_auc_score
+
+sys.path.insert(0, "src")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+# The model first, the fig8 style second: both modules set rcParams at import,
+# and the later import must be the one whose look this figure borrows.
+from make_broad_vs_attention_figure import forward_only, SERIES, H
+from make_index_figures import BLUE, VERM, INK, MUTED, OUT, shade
+
+START = 1930          # longest forward-only run -- every decade predicted unseen
+DECADES = [("1930s", 1930, 1939), ("1940s", 1940, 1949),
+           ("1950s", 1950, 1959), ("1960-63", 1960, 1963)]
+CSV = Path(__file__).resolve().parent / "forward_only_predictions.csv"
+PAD = {"bbox": dict(facecolor="white", edgecolor="none", pad=1.2, alpha=.85)}
+
+
+def predictions():
+    """Out-of-sample P(onset within H months) for both models, on shared months."""
+    pb, truth = forward_only(SERIES, START)
+    pa, _ = forward_only(["attention"], START)
+    common = pb.index.intersection(pa.index)
+    d = pd.DataFrame({"five": pb[common], "attention": pa[common],
+                      "onset_within_12m": truth[common]}, index=common)
+    d["dt"] = d.index.to_timestamp()
+    return d
+
+
+def segments(d, col):
+    """Split at the recession gaps so no line is drawn across months the model
+    never scored -- a continuous line there would imply a prediction that does
+    not exist."""
+    brk = np.flatnonzero(np.diff([m.ordinal for m in d.index]) > 1) + 1
+    return [(g["dt"].values, g[col].values) for g in np.split(d, brk) if len(g)]
+
+
+def decade_auc(d):
+    rows = []
+    for lab, lo, hi in DECADES:
+        s = d[(d.index.year >= lo) & (d.index.year <= hi)]
+        t = s["onset_within_12m"]
+        rows.append({"period": lab, "months": len(s), "onsets": int(t.sum()),
+                     "base_rate": t.mean(),
+                     "auc_five": roc_auc_score(t, s["five"]),
+                     "auc_attn": roc_auc_score(t, s["attention"]),
+                     "x0": s["dt"].min(), "x1": s["dt"].max()})
+    return pd.DataFrame(rows)
+
+
+def main():
+    d = predictions()
+    dec = decade_auc(d)
+    base = d["onset_within_12m"].mean()
+    auc_five = roc_auc_score(d["onset_within_12m"], d["five"])
+    auc_attn = roc_auc_score(d["onset_within_12m"], d["attention"])
+
+    d.drop(columns="dt").to_csv(CSV, index_label="month")
+
+    fig, ax = plt.subplots(figsize=(11, 4.6))
+    shade(ax, 0, 1)
+    for k, (xs, ys) in enumerate(segments(d, "five")):
+        ax.plot(xs, ys, color=BLUE, lw=2.0, zorder=3,
+                label="five press series" if k == 0 else None)
+    for k, (xs, ys) in enumerate(segments(d, "attention")):
+        ax.plot(xs, ys, color=VERM, lw=1.6, alpha=.85, zorder=2,
+                label="attention alone" if k == 0 else None)
+
+    # The base rate, not 0.5: 24% of expansion months are followed by an onset,
+    # so 0.24 is what "no information" looks like here and 0.5 is meaningless.
+    ax.axhline(base, color="#999999", lw=1, ls="--", zorder=1)
+    # Every label in this panel sits on a white pad: the two lines cross most of
+    # the plotting area, so unpadded text lands on a series somewhere.
+    ax.text(d["dt"].max(), base + .015, f"base rate ({base:.2f})", fontsize=8,
+            color=MUTED, ha="right", zorder=5, **PAD)
+    ax.set_ylim(0, 1)
+    # Lower left is the one corner both lines leave empty (the 1933-37 stretch
+    # never drops below 0.17); upper right is where the 1944 and 1953 peaks go.
+    ax.set_xlim(d["dt"].min() - pd.Timedelta(days=200),
+                d["dt"].max() + pd.Timedelta(days=200))
+    ax.set_ylabel(f"P(recession starts within {H} months)")
+    ax.legend(loc="lower left", ncol=2, fontsize=9, framealpha=.9,
+              facecolor="white", edgecolor="none").set_zorder(5)
+    ax.set_title("", pad=22)          # no headline; the caption carries the read
+    ax.text(0, 1.015,
+            "Forward-only out-of-sample probability from monthly press series, "
+            f"{START}-1963: refit every year on all prior years, never shown the "
+            "year it predicts.\nGrey bands are NBER recessions. Full-window AUC "
+            f"{auc_five:.3f} (five series) and {auc_attn:.3f} (attention alone).",
+            transform=ax.transAxes, fontsize=9, color=MUTED, va="bottom")
+
+    # Built from `dec`, not typed in, so the caption cannot drift from the
+    # predictions plotted above it.
+    per_period = "   ".join(f"{r['period']}  {r['auc_five']:.3f} / "
+                            f"{r['auc_attn']:.3f}" for _, r in dec.iterrows())
+    fig.text(0.012, -0.02,
+             "ROC-AUC by period (five press series / attention alone):   "
+             + per_period,
+             fontsize=8.2, color=MUTED, ha="left", va="top", linespacing=1.5,
+             transform=fig.transFigure)
+
+    p = OUT / "fig10_recession_model_over_time.png"
+    fig.savefig(p, bbox_inches="tight")
+    plt.close(fig)
+
+    print(f"months {len(d)} · onsets {int(d['onset_within_12m'].sum())} "
+          f"· base rate {base:.3f}")
+    print(f"full window AUC  five {auc_five:.3f} · attention {auc_attn:.3f}")
+    print(dec[["period", "months", "onsets", "base_rate", "auc_five", "auc_attn"]]
+          .to_string(index=False, float_format=lambda v: f"{v:.3f}"))
+    print(f"-> {p}\n-> {CSV}")
+
+
+if __name__ == "__main__":
+    main()

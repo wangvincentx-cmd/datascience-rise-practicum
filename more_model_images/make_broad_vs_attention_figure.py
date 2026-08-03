@@ -103,12 +103,25 @@ def build():
     return X[keep], y[keep]
 
 
-X, y = build()
-yr = pd.Series([m.year for m in X.index], index=X.index)
+_DATA = None
+
+
+def data():
+    """Design matrix, target and year index -- built once, on first use.
+
+    Lazy rather than module-level so other figure scripts can import
+    forward_only() and get the same model without paying build() at import
+    time, and without a second copy of it drifting out of step with this one."""
+    global _DATA
+    if _DATA is None:
+        X, y = build()
+        _DATA = (X, y, pd.Series([m.year for m in X.index], index=X.index))
+    return _DATA
 
 
 def forward_only(cols, start):
     """Out-of-fold predictions: train on years < cut, predict cut, march forward."""
+    X, y, yr = data()
     Xf = X[cols]
     idx, pred = [], []
     for cut in range(start, 1964):
@@ -141,99 +154,105 @@ def block_ci(p, truth, n_boot=N_BOOT, block_years=3, seed=0):
 MODELS = [("Five press series", SERIES, BLUE),
           ("Attention alone", ["attention"], ORANGE)]
 
-rows = []
-for start in STARTS:
-    for name, cols, _ in MODELS:
-        p, truth = forward_only(cols, start)
-        lo, hi = block_ci(p, truth)
-        rows.append({"model": name, "n_features": len(cols), "start": start,
-                     "months": len(truth), "onsets": int(truth.sum()),
-                     "auc": roc_auc_score(truth, p), "ci_lo": lo, "ci_hi": hi})
-res = pd.DataFrame(rows)
-res.to_csv(OUT / "broad_vs_attention.csv", index=False)
 
-# paired difference on the shared prediction set, per start year
-diff_txt = []
-for start in STARTS:
-    pb, tb = forward_only(SERIES, start)
-    pa, _ = forward_only(["attention"], start)
-    common = pb.index.intersection(pa.index)
-    pb, pa, t = pb[common], pa[common], tb[common]
-    years = np.array([m.year for m in common])
-    blocks = (years - years.min()) // 3
-    uniq, rng, d = np.unique(blocks), np.random.default_rng(0), []
-    for _ in range(N_BOOT):
-        pick = rng.choice(uniq, size=len(uniq), replace=True)
-        sel = np.concatenate([np.where(blocks == b)[0] for b in pick])
-        tt = t.values[sel]
-        if tt.min() == tt.max():
-            continue
-        d.append(roc_auc_score(tt, pa.values[sel]) - roc_auc_score(tt, pb.values[sel]))
-    lo, hi = np.percentile(d, [2.5, 97.5])
-    diff_txt.append(f"{start}– Δ{np.mean(d):+.3f} [{lo:+.2f}, {hi:+.2f}]")
+def main():
+    rows = []
+    for start in STARTS:
+        for name, cols, _ in MODELS:
+            p, truth = forward_only(cols, start)
+            lo, hi = block_ci(p, truth)
+            rows.append({"model": name, "n_features": len(cols), "start": start,
+                         "months": len(truth), "onsets": int(truth.sum()),
+                         "auc": roc_auc_score(truth, p), "ci_lo": lo, "ci_hi": hi})
+    res = pd.DataFrame(rows)
+    res.to_csv(OUT / "broad_vs_attention.csv", index=False)
 
-# ------------------------------------------------------------------ figure
-fig, ax = plt.subplots(figsize=(7.0, 4.5), dpi=220)
-W = 0.34
-xs = np.arange(len(STARTS))
+    # paired difference on the shared prediction set, per start year
+    diff_txt = []
+    for start in STARTS:
+        pb, tb = forward_only(SERIES, start)
+        pa, _ = forward_only(["attention"], start)
+        common = pb.index.intersection(pa.index)
+        pb, pa, t = pb[common], pa[common], tb[common]
+        years = np.array([m.year for m in common])
+        blocks = (years - years.min()) // 3
+        uniq, rng, d = np.unique(blocks), np.random.default_rng(0), []
+        for _ in range(N_BOOT):
+            pick = rng.choice(uniq, size=len(uniq), replace=True)
+            sel = np.concatenate([np.where(blocks == b)[0] for b in pick])
+            tt = t.values[sel]
+            if tt.min() == tt.max():
+                continue
+            d.append(roc_auc_score(tt, pa.values[sel]) - roc_auc_score(tt, pb.values[sel]))
+        lo, hi = np.percentile(d, [2.5, 97.5])
+        diff_txt.append(f"{start}– Δ{np.mean(d):+.3f} [{lo:+.2f}, {hi:+.2f}]")
 
-for k, (name, cols, color) in enumerate(MODELS):
-    sub = res[res["model"] == name].set_index("start").loc[list(STARTS)]
-    pos = xs + (k - 0.5) * (W + 0.02)          # 2px-equivalent gap between adjacent bars
-    ax.bar(pos, sub["auc"], W, color=color, edgecolor=SURFACE, linewidth=1.4,
-           zorder=3, label=f"{name}  ({sub['n_features'].iloc[0]} feature"
-                           f"{'s' if len(cols) > 1 else ''})")
-    ax.vlines(pos, sub["ci_lo"], sub["ci_hi"], color=INK2, lw=1.3, zorder=4)
-    ax.hlines(sub["ci_lo"], pos - 0.05, pos + 0.05, color=INK2, lw=1.3, zorder=4)
-    ax.hlines(sub["ci_hi"], pos - 0.05, pos + 0.05, color=INK2, lw=1.3, zorder=4)
-    for xp, v in zip(pos, sub["auc"]):
-        ax.text(xp, v - 0.022, f"{v:.3f}", ha="center", va="top", fontsize=9,
-                color=SURFACE, fontweight="600", zorder=5)
+    # ------------------------------------------------------------------ figure
+    fig, ax = plt.subplots(figsize=(7.0, 4.5), dpi=220)
+    W = 0.34
+    xs = np.arange(len(STARTS))
 
-ax.axhline(0.5, color=MUTED, lw=1.1, ls=(0, (4, 3)), zorder=2)
-ax.text(len(STARTS) - 0.42, 0.508, "coin flip", fontsize=8.5, color=MUTED, va="bottom", ha="right")
+    for k, (name, cols, color) in enumerate(MODELS):
+        sub = res[res["model"] == name].set_index("start").loc[list(STARTS)]
+        pos = xs + (k - 0.5) * (W + 0.02)          # 2px-equivalent gap between adjacent bars
+        ax.bar(pos, sub["auc"], W, color=color, edgecolor=SURFACE, linewidth=1.4,
+               zorder=3, label=f"{name}  ({sub['n_features'].iloc[0]} feature"
+                               f"{'s' if len(cols) > 1 else ''})")
+        ax.vlines(pos, sub["ci_lo"], sub["ci_hi"], color=INK2, lw=1.3, zorder=4)
+        ax.hlines(sub["ci_lo"], pos - 0.05, pos + 0.05, color=INK2, lw=1.3, zorder=4)
+        ax.hlines(sub["ci_hi"], pos - 0.05, pos + 0.05, color=INK2, lw=1.3, zorder=4)
+        for xp, v in zip(pos, sub["auc"]):
+            ax.text(xp, v - 0.022, f"{v:.3f}", ha="center", va="top", fontsize=9,
+                    color=SURFACE, fontweight="600", zorder=5)
 
-ax.set_xticks(xs)
-ax.set_xticklabels([f"{s}–1963" for s in STARTS])
-ax.set_xlabel("years predicted (model refit each year on all prior years)")
-ax.set_ylabel("forward-only ROC-AUC")
-ax.set_ylim(0.35, 1.0)
-ax.set_yticks(np.arange(0.4, 1.01, 0.1))
-ax.grid(axis="y", color=GRID, lw=0.8, zorder=0)
-ax.set_axisbelow(True)
-for s in ("top", "right"):
-    ax.spines[s].set_visible(False)
+    ax.axhline(0.5, color=MUTED, lw=1.1, ls=(0, (4, 3)), zorder=2)
+    ax.text(len(STARTS) - 0.42, 0.508, "coin flip", fontsize=8.5, color=MUTED, va="bottom", ha="right")
 
-ax.set_title("One press feature matches five in the two longer test windows",
-             fontsize=12.5, fontweight="600", color=INK, loc="left", pad=26)
-ax.text(0, 1.055, "Recession onset within 12 months · forward-only backtest, "
-                  "never trained on the year it predicts",
-        transform=ax.transAxes, fontsize=8.8, color=MUTED, va="bottom")
+    ax.set_xticks(xs)
+    ax.set_xticklabels([f"{s}–1963" for s in STARTS])
+    ax.set_xlabel("years predicted (model refit each year on all prior years)")
+    ax.set_ylabel("forward-only ROC-AUC")
+    ax.set_ylim(0.35, 1.0)
+    ax.set_yticks(np.arange(0.4, 1.01, 0.1))
+    ax.grid(axis="y", color=GRID, lw=0.8, zorder=0)
+    ax.set_axisbelow(True)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
 
-ax.legend(frameon=False, loc="upper left", fontsize=9, handlelength=1.1,
-          handleheight=1.1, borderaxespad=0.6)
+    ax.set_title("One press feature matches five in the two longer test windows",
+                 fontsize=12.5, fontweight="600", color=INK, loc="left", pad=26)
+    ax.text(0, 1.055, "Recession onset within 12 months · forward-only backtest, "
+                      "never trained on the year it predicts",
+            transform=ax.transAxes, fontsize=8.8, color=MUTED, va="bottom")
 
-n = res[res["start"] == 1940].iloc[0]
-fig.text(0.012, -0.06,
-         "Whiskers: 95% block bootstrap over 3-year blocks — forecasts within an era share "
-         "wire copy and one macro reality.\nPaired difference (attention − five series): "
-         + ";  ".join(diff_txt)
-         + ".\nThe two longer windows are indistinguishable — four series can be dropped "
-           "without measurable loss. In the shortest\nwindow (137 months, ~5 independent "
-           "blocks) the five-series model is ahead, so the equivalence is not universal.",
-         fontsize=8.2, color=MUTED, ha="left", va="top", linespacing=1.55,
-         transform=fig.transFigure)
+    ax.legend(frameon=False, loc="upper left", fontsize=9, handlelength=1.1,
+              handleheight=1.1, borderaxespad=0.6)
 
-fig.savefig(OUT / "broad_vs_attention.png", bbox_inches="tight", facecolor=SURFACE)
-plt.close(fig)
+    n = res[res["start"] == 1940].iloc[0]
+    fig.text(0.012, -0.06,
+             "Whiskers: 95% block bootstrap over 3-year blocks — forecasts within an era share "
+             "wire copy and one macro reality.\nPaired difference (attention − five series): "
+             + ";  ".join(diff_txt)
+             + ".\nThe two longer windows are indistinguishable — four series can be dropped "
+               "without measurable loss. In the shortest\nwindow (137 months, ~5 independent "
+               "blocks) the five-series model is ahead, so the equivalence is not universal.",
+             fontsize=8.2, color=MUTED, ha="left", va="top", linespacing=1.55,
+             transform=fig.transFigure)
 
-from PIL import Image
-im = Image.open(OUT / "broad_vs_attention.png")
-if im.mode in ("RGBA", "LA", "P"):
-    bg = Image.new("RGB", im.size, "#ffffff")
-    bg.paste(im.convert("RGBA"), mask=im.convert("RGBA").split()[-1])
-    bg.save(OUT / "broad_vs_attention.png")
+    fig.savefig(OUT / "broad_vs_attention.png", bbox_inches="tight", facecolor=SURFACE)
+    plt.close(fig)
 
-print(res.to_string(index=False, float_format=lambda v: f"{v:.3f}"))
-print("\npaired diffs: " + " | ".join(diff_txt))
-print(f"\nwritten to {OUT}/broad_vs_attention.png (+ .csv)")
+    from PIL import Image
+    im = Image.open(OUT / "broad_vs_attention.png")
+    if im.mode in ("RGBA", "LA", "P"):
+        bg = Image.new("RGB", im.size, "#ffffff")
+        bg.paste(im.convert("RGBA"), mask=im.convert("RGBA").split()[-1])
+        bg.save(OUT / "broad_vs_attention.png")
+
+    print(res.to_string(index=False, float_format=lambda v: f"{v:.3f}"))
+    print("\npaired diffs: " + " | ".join(diff_txt))
+    print(f"\nwritten to {OUT}/broad_vs_attention.png (+ .csv)")
+
+
+if __name__ == "__main__":
+    main()
