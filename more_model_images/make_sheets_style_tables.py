@@ -53,7 +53,11 @@ def col_letters(n):
 
 def render_sheet(path, header, rows, widths, aligns, colors=None, title=None,
                  notes=(), freeze_after=1):
-    """rows: list of list[str]. colors: optional list of per-row text colors."""
+    """rows: list of list[str].
+
+    colors: optional list, one entry per row. An entry may be a single colour
+    (the whole row takes it) or a list of per-cell colours the same length as the
+    row, for tables where only one column carries the signal."""
     ncol = len(header)
     body = [header] + rows
     nrow = len(body)
@@ -95,7 +99,11 @@ def render_sheet(path, header, rows, widths, aligns, colors=None, title=None,
             ha = "left" if aligns[j] == "l" else "right"
             pad = 0.07
             x = xs[j] + pad if ha == "left" else xs[j + 1] - pad
-            color = INK if (is_head or colors is None) else colors[i - 1]
+            if is_head or colors is None:
+                color = INK
+            else:
+                c = colors[i - 1]
+                color = c[j] if isinstance(c, (list, tuple)) else c
             ax.text(x, y + ROW_H / 2, cell, ha=ha, va="center", fontsize=FS,
                     color=color, fontweight="600" if is_head else "normal", zorder=3)
         if is_head and freeze_after:
