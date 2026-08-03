@@ -93,7 +93,10 @@ def main():
 
     d.drop(columns="dt").to_csv(CSV, index_label="month")
 
-    fig, ax = plt.subplots(figsize=(11, 4.6))
+    # Taller and larger than the fig8/fig9 strip: with nothing above or below it,
+    # the axes are the whole image, and 4.6in of height made a line that swings
+    # between 0.01 and 0.98 look flatter than it is.
+    fig, ax = plt.subplots(figsize=(13, 7.5))
     shade(ax, 0, 1)
     for k, (xs, ys) in enumerate(segments(d, "p_onset")):
         ax.plot(xs, ys, color=BLUE, lw=2.0, zorder=3,
@@ -104,33 +107,24 @@ def main():
     ax.axhline(base, color="#999999", lw=1, ls="--", zorder=1)
     # White pad behind the label: the line crosses most of the plotting area, so
     # unpadded text lands on it somewhere.
-    ax.text(d["dt"].max(), base + .015, f"base rate ({base:.2f})", fontsize=8,
+    ax.text(d["dt"].max(), base + .012, f"base rate ({base:.2f})", fontsize=10,
             color=MUTED, ha="right", zorder=5, **PAD)
     ax.set_ylim(0, 1)
     # Lower left is the one corner the line leaves empty (the 1933-37 stretch
     # never drops below 0.17); upper right is where the 1944 and 1953 peaks go.
     ax.set_xlim(d["dt"].min() - pd.Timedelta(days=200),
                 d["dt"].max() + pd.Timedelta(days=200))
-    ax.set_ylabel(f"P(recession starts within {H} months)")
-    ax.legend(loc="lower left", fontsize=9, framealpha=.9,
+    # Type scaled up with the canvas -- 10pt on a 13in figure reads as fine print.
+    ax.set_ylabel(f"P(recession starts within {H} months)", fontsize=12)
+    ax.tick_params(labelsize=11)
+    ax.legend(loc="lower left", fontsize=11, framealpha=.9,
               facecolor="white", edgecolor="none").set_zorder(5)
-    ax.set_title("", pad=22)          # no headline; the caption carries the read
-    ax.text(0, 1.015,
-            "Forward-only out-of-sample probability from monthly press series, "
-            f"{START}-1963: refit every year on all prior years, never shown the "
-            "year it predicts.\nGrey bands are NBER recessions. Full-window AUC "
-            f"{auc:.3f}.",
-            transform=ax.transAxes, fontsize=9, color=MUTED, va="bottom")
 
-    # Built from `dec`, not typed in, so the caption cannot drift from the
-    # predictions plotted above it.
-    per_period = "   ".join(f"{r['period']}  {r['auc']:.3f}"
-                            for _, r in dec.iterrows())
-    fig.text(0.012, -0.02, "ROC-AUC by period:   " + per_period,
-             fontsize=8.2, color=MUTED, ha="left", va="top", linespacing=1.5,
-             transform=fig.transFigure)
-
+    # No title, subtitle or caption by request -- the plot is the whole image, so
+    # every number that used to sit around it now only prints to stdout. Whatever
+    # this is dropped into has to carry the method line and the per-period AUCs.
     p = OUT / "fig10_recession_model_over_time.png"
+    fig.tight_layout(pad=0.6)
     fig.savefig(p, bbox_inches="tight")
     plt.close(fig)
 
