@@ -61,8 +61,10 @@ findings [`docs/RESULTS_MONTHLY.md`](docs/RESULTS_MONTHLY.md) ·
 method [`docs/SCORING.md`](docs/SCORING.md) ·
 forecast-model variants [`docs/RESULTS_MODEL_VARIANTS.md`](docs/RESULTS_MODEL_VARIANTS.md)
 
-The recession model has no prose write-up yet — its results live as committed
-tables and figure scripts in [`more_model_images/`](more_model_images/).
+The recession model has no prose write-up yet. It is fitted in
+[`more_model_images/make_broad_vs_attention_figure.py`](more_model_images/make_broad_vs_attention_figure.py)
+(five press series) and `make_more_model_figures.py` (attention alone); the
+result tables it writes are documented in `more_model_images/press_model_tables.csv`.
 
 ## How correctness is decided
 
@@ -139,8 +141,9 @@ python src/macro_context.py       # -> data/scored/macro_context.csv + attributi
 python src/hit_predictor.py       # -> data/models/hit_predictor.joblib
 python src/make_macro_figures.py  # -> figures/poster_figures/figI, figJ, figK
 
-# recession-model figures (read committed result CSVs)
-python more_model_images/make_recession_model_graphs.py
+# the recession model: five press series vs attention alone, forward-only
+python more_model_images/make_broad_vs_attention_figure.py
+python more_model_images/make_recession_auc_by_period_figure.py   # per-decade split
 ```
 
 Rebuilding the *corpus* from scratch (a ~24 h scrape plus a paid extraction pass)
