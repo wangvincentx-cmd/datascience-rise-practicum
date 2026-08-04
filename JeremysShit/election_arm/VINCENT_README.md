@@ -1,5 +1,9 @@
 # Who Saw It Coming? American Predictions and Their Accuracy, 1900-2010
 
+> **FAILED / ABANDONED — see [STATUS.md](STATUS.md).** Nothing in the election
+> arm reached the poster; the NYT API returns titles only. The ProQuest economy
+> pipeline in this folder is the part that is still live.
+
 The project pulls a century of predictions out of American newspapers, both
 election forecasts and economic forecasts, grades each one with an LLM,
 validates the grading with human double-coding, checks every claim against

@@ -1,5 +1,9 @@
 # Vincent's pipeline — integration status (2026-07-09)
 
+> **FAILED / ABANDONED — see [STATUS.md](STATUS.md).** Nothing in the election
+> arm reached the poster; the NYT API returns titles only. The ProQuest economy
+> pipeline in this folder is the part that is still live.
+
 Vincent's full two-arm pipeline lives here (his docs: [VINCENT_README.md](VINCENT_README.md)).
 Integrated and verified against the economy arm in the parent folder.
 
