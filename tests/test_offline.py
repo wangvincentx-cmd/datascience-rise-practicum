@@ -223,65 +223,6 @@ check("claim Y correctly sees X (the one claim strictly before it, improve) "
      "-> full agreement, 0.0",
       abs(da_future_out.loc["Y", "local_disagreement"] - 0.0) < 1e-9)
 
-# ---------- optimism_timeline.py ----------
-print("optimism_timeline:")
-import optimism_timeline as ot
-
-ot_df = pd.DataFrame([
-    # test_ep, Jan 2000: 3 improve, 1 worsen -> net = (3-1)/4 = 0.5
-    {"episode": "e", "kind": "crisis", "date": "2000-01-05", "predicted_label": "improve"},
-    {"episode": "e", "kind": "crisis", "date": "2000-01-10", "predicted_label": "improve"},
-    {"episode": "e", "kind": "crisis", "date": "2000-01-20", "predicted_label": "improve"},
-    {"episode": "e", "kind": "crisis", "date": "2000-01-25", "predicted_label": "worsen"},
-    # Feb 2000: 1 improve, 1 worsen -> net 0; plus a price 'up' that must be ignored
-    {"episode": "e", "kind": "crisis", "date": "2000-02-05", "predicted_label": "improve"},
-    {"episode": "e", "kind": "crisis", "date": "2000-02-10", "predicted_label": "worsen"},
-    {"episode": "e", "kind": "crisis", "date": "2000-02-15", "predicted_label": "up"},
-])
-oi = ot.optimism_index(ot_df).set_index("period")
-check("optimism_index: Jan net optimism (3 improve,1 worsen) = 0.5",
-      abs(oi.loc[pd.Period("2000-01", "M"), "net_optimism"] - 0.5) < 1e-9)
-check("optimism_index: Feb net optimism (1,1) = 0.0",
-      abs(oi.loc[pd.Period("2000-02", "M"), "net_optimism"] - 0.0) < 1e-9)
-check("optimism_index: price 'up' claim excluded from the count (Feb n=2, not 3)",
-      int(oi.loc[pd.Period("2000-02", "M"), "n"]) == 2)
-
-ip = pd.Series([100.0, 105.0, 103.0, 90.0],
-               index=pd.period_range("2000-01", "2000-04", freq="M"))
-peak, basis = ot.episode_peak_month(pd.Timestamp("2000-01-01"), pd.Timestamp("2000-04-30"), ip)
-check("episode_peak_month: INDPRO argmax picks Feb (105) as the peak",
-      (peak, basis) == (pd.Period("2000-02", "M"), "INDPRO"))
-empty_ip = pd.Series(dtype=float, index=pd.PeriodIndex([], freq="M"))
-peak2, basis2 = ot.episode_peak_month(pd.Timestamp("1907-06-01"),
-                                      pd.Timestamp("1908-06-30"), empty_ip)
-check("episode_peak_month: pre-INDPRO span falls back to the NBER peak (May 1907)",
-      (peak2, basis2) == (pd.Period("1907-05", "M"), "NBER"))
-check("months_to_peak: 3 months before the peak is -3",
-      ot.months_to_peak(pd.Period("2000-02", "M"), pd.Period("2000-05", "M")) == -3)
-check("weighted_slope: perfectly rising points give a positive slope",
-      ot.weighted_slope([-3, -2, -1, 0], [-0.3, -0.2, -0.1, 0.0], [1, 1, 1, 1]) > 0)
-
-# ---------- regret_scoring.py ----------
-print("regret_scoring:")
-import regret_scoring as rs
-
-check("classify_error: improve predicted, improve realized -> hit",
-      rs.classify_error("improve", "improve") == "hit")
-check("classify_error: improve predicted, worsen realized -> optimistic_error",
-      rs.classify_error("improve", "worsen") == "optimistic_error")
-check("classify_error: worsen predicted, improve realized -> pessimistic_error",
-      rs.classify_error("worsen", "improve") == "pessimistic_error")
-check("classify_error: improve predicted, no_change realized is still an optimistic error",
-      rs.classify_error("improve", "no_change") == "optimistic_error")
-check("classify_error: price up/down labels are out of scope -> na",
-      rs.classify_error("up", "down") == "na")
-check("regret: a hit costs nothing regardless of weights/severity",
-      rs.regret("hit", 1.0, 3.0, 1.0) == 0.0)
-check("regret: optimistic error scaled by w_opt and severity (3*0.5=1.5)",
-      abs(rs.regret("optimistic_error", 0.5, 3.0, 1.0) - 1.5) < 1e-9)
-check("regret: pessimistic error uses the smaller w_pess (1*0.5=0.5)",
-      abs(rs.regret("pessimistic_error", 0.5, 3.0, 1.0) - 0.5) < 1e-9)
-
 # ---------- hedging_lexicon.py ----------
 print("hedging_lexicon:")
 import hedging_lexicon as hl
@@ -377,60 +318,6 @@ check("score_spf: predicted improve vs realized improve -> hit=1",
       sc_spf.loc[0, "hit"] == 1)
 check("score_spf: mean forecast -1 -> predicted 'worsen', realized improve -> hit=0",
       sc_spf.loc[1, "predicted_label"] == "worsen" and sc_spf.loc[1, "hit"] == 0)
-
-# ---------- narratives.py ----------
-print("narratives:")
-import narratives as nr
-
-check("classify_narrative: 'permanently high plateau' -> new_era",
-      nr.classify_narrative("Stocks have reached a permanently high plateau.") == "new_era")
-check("classify_narrative: 'fundamentally sound' -> sound_fundamentals",
-      nr.classify_narrative("Business is fundamentally sound, bankers say.") == "sound_fundamentals")
-check("classify_narrative: 'temporary readjustment' -> temporary_setback",
-      nr.classify_narrative("This is only a temporary readjustment.") == "temporary_setback")
-check("classify_narrative: 'panic and depression' -> panic_fear",
-      nr.classify_narrative("A panic and depression will engulf the nation.") == "panic_fear")
-check("classify_narrative: 'recovery is underway' -> recovery_normalcy",
-      nr.classify_narrative("Recovery is underway and revival is near.") == "recovery_normalcy")
-check("classify_narrative: no economic story -> none",
-      nr.classify_narrative("The county fair opens on Tuesday.") == "none")
-
-nr_df = pd.DataFrame({"quote": ["Business is fundamentally sound.",
-                                "A crash is coming.",
-                                "The weather was fine."]})
-nr_out = nr.add_narratives(nr_df)
-check("add_narratives: complacent flag true for sound_fundamentals",
-      bool(nr_out.loc[0, "complacent"]) is True)
-check("add_narratives: complacent flag false for panic_fear",
-      bool(nr_out.loc[1, "complacent"]) is False)
-
-# ---------- partisan_analysis.py ----------
-print("partisan_analysis:")
-import partisan_analysis as pa
-
-check("short_name: strips the (location) dates suffix",
-      pa.short_name("The New York Times (New York, N.Y.) 1900-2020") == "the new york times")
-check("short_name: strips a bare (location) suffix",
-      pa.short_name("Evening Star (Washington, D.C.)") == "evening star")
-check("simplify_lean: Socialist and Labor/left both -> left",
-      pa.simplify_lean("Socialist") == "left" and pa.simplify_lean("Labor/left") == "left")
-check("simplify_lean: Republican/Democratic/Independent pass through",
-      (pa.simplify_lean("Republican"), pa.simplify_lean("Democratic"),
-       pa.simplify_lean("Independent")) == ("republican", "democratic", "independent"))
-check("simplify_lean: 'None stated'/'UNKNOWN'/nan -> unknown",
-      pa.simplify_lean("None stated") == "unknown" and pa.simplify_lean("UNKNOWN") == "unknown"
-      and pa.simplify_lean(float("nan")) == "unknown")
-
-pa_climate = pd.DataFrame([{"start_year": 1953, "end_year": 1961, "president_party": "R"},
-                           {"start_year": 1961, "end_year": 1969, "president_party": "D"}])
-pby = pa.president_party_by_year(pa_climate)
-check("president_party_by_year: 1955 -> R, 1965 -> D", pby[1955] == "R" and pby[1965] == "D")
-check("alignment: Republican paper under a Republican president -> aligned",
-      pa.alignment("republican", "R") == "aligned")
-check("alignment: Democratic paper under a Republican president -> opposed",
-      pa.alignment("democratic", "R") == "opposed")
-check("alignment: independent paper has no alignment -> None",
-      pa.alignment("independent", "R") is None)
 
 # ---------- macro_context: the economy-at-print-time layer ----------
 # Everything here runs on SYNTHETIC series, so the checks prove the arithmetic

@@ -69,3 +69,6 @@ data/scored/crisis_context.csv
 # in ~1 min. The fitted model, its metrics, and its importances ARE committed.
 data/models/*hit_predictions.csv
 data/models/no_epu_hit_predictor.joblib
+
+# JetBrains IDE config — was tracked by accident
+.idea/

@@ -1,8 +1,0 @@
-# Derived context tables: regenerable in ~1 minute from the committed
-# shiller_sp500_monthly.csv plus a scored file, and ~9 MB each. The inputs are
-# committed; the outputs are not.
-macro_context_*.csv
-
-# Fitted artefacts from fit_hit.py -- same reasoning, and hit_predictions.csv is
-# 2.6 MB. The results JSON is small but is a build output like the rest.
-models/
