@@ -21,19 +21,27 @@ Deliverables live in `docs/`: `POSTER.md` (the poster text), `RESULTS_MONTHLY.md
 
 ```
 src/          all Python, flat on purpose — see "Why src/ is flat" below
-tests/        three suites: test_offline (129), test_scoring (33), test_forecasts (33)
+tests/        three suites: test_offline, test_scoring (33), test_forecasts (33)
 data/
   corpus/     raw pages (GITIGNORED, huge, regenerable by re-scraping)
   claims/     extractor output — the expensive artifact, committed
   scored/     scorer output + the monthly press index, committed
+  models/     the fitted forecast model and its held-out predictions
   reference/  Livingston/SPF spreadsheets, publisher metadata
-  proquest/   37k claims 1965-2009 from a ProQuest run (extends past LOC's 1963 end)
-  v1_outputs/ frozen outputs of the original episode-based pipeline
 validation/   gold_extraction/ (the gold standard + eval harness), handgrade_newspapers/
-figures/      poster_figures/ (final), prelim_figures/, v1_episode/
+figures/      poster_figures/ — the figures behind the poster
+more_model_images/  recession-model result tables, CSVs, and figure scripts
 docs/         poster text, results, methods, operational runbooks
-notebooks/    Livingston survey analysis
+notebooks/    Livingston survey analysis, hit_model.ipynb
+poster_models/  alternative estimands/inference for the forecast model
 cache/        raw API responses (GITIGNORED)
+```
+
+The v1 episode-based arm, the unused v2 poster draft, and `new_model/` were
+removed in 3a47ca5. The ProQuest 1965–2009 export moved to the
+`proquest-tdm-integration` branch (2defb95) — that branch is the next step.
+
+```
 ```
 
 ## Pipeline (run from the repo root)
