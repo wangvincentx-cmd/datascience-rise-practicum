@@ -24,6 +24,58 @@ evaluation (the target event is always rare).
 Unless a task explicitly references the economy or election arm, assume work
 is scoped to `bill_arm/`.
 
+## ProQuest TDM run (economy arm)
+
+The ProQuest corpus extraction (branch `proquest-tdm-integration`, detailed in
+`JeremysShit/election_arm/PROQUEST_TDM_GUIDE.md`) runs **inside ProQuest's TDM
+Studio VM, not on this machine** — full text may not leave that VM, so only
+label-only exports come back. It is a weeks-long job gated by a shared daily
+LLM cost cap, so the operating procedure is to relaunch it once a day until
+`corpus_progress.py` reports phase DONE. The extract → verify phase switch is
+automatic.
+
+All commands below run in the VM's Jupyter terminal.
+
+Check whether it is still running — nothing printed means it has stopped:
+
+```
+cd /home/ec2-user/SageMaker/election_arm
+pgrep -af extract_gpt
+```
+
+Start it, but only when that check printed nothing: two concurrent runs fight
+over the rate-limited proxy and double-process articles into duplicate claims.
+
+```
+unset PY
+PYTHONUNBUFFERED=1 nohup setsid bash run_corpus_economy.sh >> batch.log 2>&1 &
+disown
+```
+
+`unset PY` clears any stale interpreter override so `run_corpus_economy.sh`
+falls back to its known-good hardcoded path; `setsid` + `disown` keep the run
+alive after the browser tab closes. Give it a minute — the script prints
+`corpus_progress.py` before it spawns `extract_gpt`, so `pgrep` is legitimately
+empty for the first ~30 seconds — then confirm and read progress:
+
+```
+pgrep -af extract_gpt
+tail -5 batch.log
+/home/ec2-user/SageMaker/.conda/envs/sample-2025.12.578/bin/python3.12 corpus_progress.py --rate 3000
+```
+
+A PID line plus an `extract <year>` banner means it is away. `DAILY RATE LIMIT`
+in the log means the cap has not reset — retry later, the run resumes exactly
+where it stopped. `Interpreter not found` means that hardcoded env path is
+stale for this workbench; find the real one with
+`ls -d /home/ec2-user/SageMaker/.conda/envs/*/` (take the `sample-*` env that is
+**not** `-r`, and `bin/python3.12`, not `bin/python`) and export it as `$PY`.
+
+Judge progress from `corpus_progress.py`, never from `batch.log`: under `nohup`
+Python block-buffers stdout, so the log looks frozen while work is happening.
+`wc -l` on the prediction files is not a page count either — those lines are
+claims, running ~2.4 per page.
+
 ## Environment
 
 The repo-root `.venv` is broken (stale interpreter path, no packages) — do not
